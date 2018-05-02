@@ -4,13 +4,11 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace RetuEngine
 {
-	Engine::Engine()
-	{
-	}
-
 	Engine::~Engine()
 	{
 		delete swapChain;
@@ -20,6 +18,8 @@ namespace RetuEngine
 		delete indexBuffer;
 		delete vertexBuffer;
 		delete mainRectangle;
+		delete camera;
+		delete inputManager;
 	}
 
 	void Engine::InitVulkan()
@@ -41,8 +41,9 @@ namespace RetuEngine
 		transferCommandPool = new CommandPool(&logicalDevice,indices.transferFamily,VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
 		vertexBuffer = new VertexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
 		indexBuffer = new IndexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
-		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
+		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue,camera);
 		mainRectangle = new Gameobject(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue); //EYY gameobjects man
+		CreateTextureImage("Pekka.bmp");
 		CreateDescriptorPool();
 		CreateDescriptorSet();
 		CreateCommandBuffers();
@@ -88,6 +89,42 @@ namespace RetuEngine
 			glfwPollEvents();
 			uniformBuffer->Update(&logicalDevice,*swapChain->GetExtent());
 			DrawFrame();
+
+			float cameraSpeed = 0.005f; // adjust accordingly
+			if (glfwGetKey(windowObj.window, GLFW_KEY_W) == GLFW_PRESS)
+				inputManager->camera->cameraPos += cameraSpeed * inputManager->camera->cameraFront;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_S) == GLFW_PRESS)
+				inputManager->camera->cameraPos -= cameraSpeed * inputManager->camera->cameraFront;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_A) == GLFW_PRESS)
+			{
+				glm::vec3 cross = glm::cross(inputManager->camera->cameraFront, inputManager->camera->cameraUp);
+				if (cross == glm::vec3(0, 0, 0))
+				{
+					inputManager->camera->cameraPos.x -= cameraSpeed;
+				}
+				else 
+				{
+					glm::vec3 norm = glm::normalize(cross); 
+					inputManager->camera->cameraPos -= norm*cameraSpeed;
+				}			
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_D) == GLFW_PRESS)
+			{
+				glm::vec3 cross = glm::cross(inputManager->camera->cameraFront, inputManager->camera->cameraUp);
+				if (cross == glm::vec3(0, 0, 0))
+				{
+					inputManager->camera->cameraPos.x += cameraSpeed;
+				}
+				else 
+				{
+					glm::vec3 norm = glm::normalize(cross); 
+					inputManager->camera->cameraPos += norm*cameraSpeed;
+				}
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_SPACE) == GLFW_PRESS)
+				inputManager->camera->cameraPos.y += cameraSpeed;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+				inputManager->camera->cameraPos.y -= cameraSpeed;
 		}
 		vkDeviceWaitIdle(logicalDevice);
 		CleanUpVulkan();
@@ -98,6 +135,10 @@ namespace RetuEngine
 		windowObj.Create();
 		glfwSetWindowUserPointer(windowObj.window, this);
 		glfwSetWindowSizeCallback(windowObj.window, Engine::OnWindowResized);
+		glfwSetInputMode(windowObj.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		camera = new Camera();
+		glfwSetCursorPosCallback(windowObj.window, mouse_callback);
+		inputManager = new Input(windowObj.window,windowObj.height, windowObj.width,camera);
 	}
 
 	void Engine::ReCreateSwapChain()
@@ -118,6 +159,7 @@ namespace RetuEngine
 			throw std::runtime_error("Validation layer requested but are not available");
 		}
 		VkApplicationInfo appInfo = {};
+		
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 		appInfo.pNext = nullptr;
 		appInfo.pApplicationName = "VulkanApp";
@@ -814,5 +856,142 @@ namespace RetuEngine
 		presentInfo.pImageIndices = &imageIndex;
 
 		vkQueuePresentKHR(displayQueue, &presentInfo);
+	}
+
+		
+	void Engine::CreateTextureImage(const char* file)
+	{
+		int width;
+		int height;
+		int channels;
+		VkImage image;
+		VkDeviceMemory imageMemory;
+		stbi_uc* pix = stbi_load(file, &width, &height, &channels, STBI_rgb_alpha);
+		VkDeviceSize imageSize = height * width * 4; //4 because red/green/blue/alpha
+
+		if (!pix)
+		{
+			throw std::runtime_error("failed to load texture");
+		}
+		Buffer stagingBuffer;
+		stagingBuffer.CreateBuffer(&logicalDevice, &physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		void* data;
+		vkMapMemory(logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
+		memcpy(data, pix, static_cast<size_t>(imageSize));
+		vkUnmapMemory(logicalDevice, *stagingBuffer.GetBufferMemory());
+		stbi_image_free(pix);
+		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,image, imageMemory);
+		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		CopyBufferToImage(*stagingBuffer.GetBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+	
+
+
+	void Engine::CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+	{
+		VkImageCreateInfo imageInfo = {};
+		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = static_cast<uint32_t>(width);
+		imageInfo.extent.height = static_cast<uint32_t>(height);
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create image");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(logicalDevice, image, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+		
+		if (vkAllocateMemory(logicalDevice,&allocInfo,nullptr,&imageMemory) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate image memory");
+		}
+		vkBindImageMemory(logicalDevice, image, imageMemory, 0);
+	}
+	VkCommandBuffer Engine::beginSingleCommands()
+	{
+		VkCommandBufferAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool = *transferCommandPool->GetCommandPool();
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		return commandBuffer;
+	}
+	void Engine::endSingleTimeCommands(VkCommandBuffer commandBuffer)
+	{
+		vkEndCommandBuffer(commandBuffer);
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		vkQueueSubmit(displayQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(displayQueue);
+
+		vkFreeCommandBuffers(logicalDevice, *transferCommandPool->GetCommandPool(), 1, &commandBuffer);
+	}
+	void Engine::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+	{
+		VkCommandBuffer commandBuffer = beginSingleCommands();
+		VkImageMemoryBarrier barrier = {};
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.oldLayout = oldLayout;
+		barrier.newLayout = newLayout;
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.image = image;
+		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		barrier.subresourceRange.baseMipLevel = 0;
+		barrier.subresourceRange.levelCount = 1;
+		barrier.subresourceRange.baseArrayLayer = 0;
+		barrier.subresourceRange.layerCount = 1;
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = 0;
+		vkCmdPipelineBarrier(commandBuffer, 0, 0, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+		endSingleTimeCommands(commandBuffer);
+	}
+	void Engine::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+	{
+		VkCommandBuffer commandBuffer = beginSingleCommands();
+
+		VkBufferImageCopy region = {};
+		region.bufferOffset = 0;
+		region.bufferRowLength = 0;
+		region.bufferImageHeight = 0;
+		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.imageSubresource.mipLevel = 0;
+		region.imageSubresource.baseArrayLayer = 0;
+		region.imageSubresource.layerCount = 1;
+		region.imageOffset = { 0,0,0 };
+		region.imageExtent = { width,height,1 };
+
+		vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+		endSingleTimeCommands(commandBuffer);
 	}
 }

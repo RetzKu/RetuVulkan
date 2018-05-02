@@ -5,19 +5,19 @@
 
 namespace RetuEngine
 {
+	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 	class Buffer
 	{
 	public:
 		Buffer();
 		~Buffer();
 		VkBuffer* GetBuffer() { return &buffer; }
-
+		VkDeviceMemory* GetBufferMemory() { return &bufferMemory; }
+		void CreateBuffer(const VkDevice* logicalDevice,const VkPhysicalDevice* physicalDevice,VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 	protected:
 		void CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		void CleanUpBuffer(const VkDevice* logicalDevice, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-		uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
 		void CopyBuffer(const VkDevice* logicalDevice, const VkCommandPool* commandPool, VkBuffer src, VkBuffer dst, VkDeviceSize size, const VkQueue* queue);
 
 	protected:
@@ -26,5 +26,4 @@ namespace RetuEngine
 		VkBuffer buffer;
 		VkDeviceMemory bufferMemory;
 	};
-
 }

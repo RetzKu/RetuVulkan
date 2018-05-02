@@ -12,6 +12,34 @@ namespace RetuEngine
 	{
 	}
 
+	void Buffer::CreateBuffer(const VkDevice* logicalDevice,const VkPhysicalDevice* physicalDevice,VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+	{
+		VkBufferCreateInfo bufferInfo = {};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(*logicalDevice, &bufferInfo, nullptr,&this->buffer) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create buffer");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(*logicalDevice, this->buffer, &memRequirements);
+		
+		VkMemoryAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = findMemoryType(*physicalDevice,memRequirements.memoryTypeBits,properties);
+
+		if (vkAllocateMemory(*logicalDevice, &allocInfo, nullptr, &this->bufferMemory) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate memory for buffer");
+		}
+		vkBindBufferMemory(*logicalDevice, this->buffer, this->bufferMemory, 0);
+	}
+
 	void Buffer::CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 	{
 		VkBufferCreateInfo bufferInfo = {};
@@ -67,7 +95,7 @@ namespace RetuEngine
 		vkFreeMemory(*logicalDevice, bufferMemory, nullptr);
 	}
 
-	uint32_t Buffer::findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
 		VkPhysicalDeviceMemoryProperties memProperties;
 		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);

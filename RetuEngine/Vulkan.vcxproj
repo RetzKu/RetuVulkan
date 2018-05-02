@@ -98,6 +98,7 @@
     <ClInclude Include="CommandPool.h" />
     <ClInclude Include="Gameobject.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="QueueFamily.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="UniformBuffer.h" />

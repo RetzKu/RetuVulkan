@@ -15,10 +15,6 @@ namespace RetuEngine
 		glm::vec3 translate;
 
 	private:
-		IndexBuffer* indexBuffer;
-		VertexBuffer* vertexBuffer;
-		UniformBuffer* uniformBuffer;
-
 		const VkDevice* logicalDevice;
 	};
 

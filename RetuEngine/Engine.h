@@ -12,8 +12,10 @@
 #include "UniformBuffer.h"
 #include "QueueFamily.h"
 #include "CommandPool.h"
+#include "Buffer.h"
 /*Engine Objects*/
 #include "Gameobject.h"
+#include "Input.h"
 
 namespace RetuEngine 
 {
@@ -31,21 +33,22 @@ namespace RetuEngine
 		file.seekg(0);
 		file.read(buffer.data(), fileSize);
 		file.close();
-
 		return buffer;
 	}
 
 	class Engine
 	{
 	public:
-		Engine();
+		Engine() 
+		{
+		};
 		~Engine();
 
 		void InitVulkan();
 		void CleanUpVulkan();
 		void GameLoop();
 		Window windowObj;
-
+		Input* inputManager;
 	private:
 		void InitWindow();
 		void ReCreateSwapChain();
@@ -58,6 +61,13 @@ namespace RetuEngine
 			Engine* engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
 			engine->ReCreateSwapChain();
 		}
+		static void mouse_callback(GLFWwindow*window, double xpos, double ypos)
+		{
+			void* engine = glfwGetWindowUserPointer(window);
+			Engine* motors = static_cast<Engine*>(engine);
+			motors->inputManager->UpdateCamera(xpos, ypos);
+		}
+
 		void CreateInstance();
 		void CleanUpSwapChain();
 		bool CheckValidationLayerSupport();
@@ -79,6 +89,13 @@ namespace RetuEngine
 		void CreateSemaphores();
 		void DrawFrame();
 
+		//graphical fucntions;
+		void CreateTextureImage(const char* file);
+		void CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+		VkCommandBuffer beginSingleCommands();
+		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 		VkResult CreateDebugReportReportCallbackEXT(
 			VkInstance istance,
@@ -146,6 +163,8 @@ namespace RetuEngine
 		VkDescriptorSet descriptorSet;
 
 		Gameobject* mainRectangle;
+
+		Camera* camera;
 
 #ifdef NDEBUG
 		const bool enableValidationLayers = false;
