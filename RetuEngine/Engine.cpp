@@ -43,11 +43,11 @@ namespace RetuEngine
 		indexBuffer = new IndexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
 		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue,camera);
 		mainRectangle = new Gameobject(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue); //EYY gameobjects man
-		CreateTextureImage("Pekka.bmp");
 		CreateDescriptorPool();
 		CreateDescriptorSet();
 		CreateCommandBuffers();
 		CreateSemaphores();
+		CreateTextureImage("Pekka.bmp");//tehdään image;
 		GameLoop();
 	}
 
@@ -61,6 +61,8 @@ namespace RetuEngine
 		vertexBuffer->CleanUp(&logicalDevice);
 		vkDestroySemaphore(logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
+		vkDestroyImage(logicalDevice, testImage, nullptr);
+		vkFreeMemory(logicalDevice, testImageMemory, nullptr);
 		graphicsCommandPool->CleanUp(&logicalDevice);
 		transferCommandPool->CleanUp(&logicalDevice);
 		vkDestroyDevice(logicalDevice, VK_NULL_HANDLE);
@@ -125,6 +127,11 @@ namespace RetuEngine
 				inputManager->camera->cameraPos.y += cameraSpeed;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				inputManager->camera->cameraPos.y -= cameraSpeed;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			{
+				glfwDestroyWindow(windowObj.window);
+				glfwTerminate();
+			}
 		}
 		vkDeviceWaitIdle(logicalDevice);
 		CleanUpVulkan();
@@ -864,8 +871,6 @@ namespace RetuEngine
 		int width;
 		int height;
 		int channels;
-		VkImage image;
-		VkDeviceMemory imageMemory;
 		stbi_uc* pix = stbi_load(file, &width, &height, &channels, STBI_rgb_alpha);
 		VkDeviceSize imageSize = height * width * 4; //4 because red/green/blue/alpha
 
@@ -880,10 +885,29 @@ namespace RetuEngine
 		memcpy(data, pix, static_cast<size_t>(imageSize));
 		vkUnmapMemory(logicalDevice, *stagingBuffer.GetBufferMemory());
 		stbi_image_free(pix);
-		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,image, imageMemory);
-		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		CopyBufferToImage(*stagingBuffer.GetBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,testImage, testImageMemory);
+		TransitionImageLayout(testImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		CopyBufferToImage(*stagingBuffer.GetBuffer(), testImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+		TransitionImageLayout(testImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		vkDestroyBuffer(logicalDevice, *stagingBuffer.GetBuffer(), nullptr);
+		vkFreeMemory(logicalDevice, *stagingBuffer.GetBufferMemory(), nullptr);
+
+		VkImageViewCreateInfo imageViewInfo = {};
+		imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageViewInfo.image = testImage;
+		imageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+		imageViewInfo.components = { VK_COMPONENT_SWIZZLE_IDENTITY };
+		imageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageViewInfo.subresourceRange.baseMipLevel = 0;
+		imageViewInfo.subresourceRange.levelCount = 1;
+		imageViewInfo.subresourceRange.baseArrayLayer = 0;
+		imageViewInfo.subresourceRange.layerCount = 1;
+
+		if (vkCreateImageView(logicalDevice, &imageViewInfo, nullptr, &testView) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create test view");
+		}
 	}
 	
 
@@ -898,13 +922,12 @@ namespace RetuEngine
 		imageInfo.extent.depth = 1;
 		imageInfo.mipLevels = 1;
 		imageInfo.arrayLayers = 1;
-		imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.format = format;
+		imageInfo.tiling = tiling;
 		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.usage = usage;
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-		imageInfo.flags = 0;
 
 		if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		{
@@ -930,7 +953,7 @@ namespace RetuEngine
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = *transferCommandPool->GetCommandPool();
+		allocInfo.commandPool = *graphicsCommandPool->GetCommandPool(); //what command pool is this
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
@@ -953,7 +976,7 @@ namespace RetuEngine
 		vkQueueSubmit(displayQueue, 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(displayQueue);
 
-		vkFreeCommandBuffers(logicalDevice, *transferCommandPool->GetCommandPool(), 1, &commandBuffer);
+		vkFreeCommandBuffers(logicalDevice, *graphicsCommandPool->GetCommandPool(), 1, &commandBuffer);
 	}
 	void Engine::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
@@ -970,9 +993,30 @@ namespace RetuEngine
 		barrier.subresourceRange.levelCount = 1;
 		barrier.subresourceRange.baseArrayLayer = 0;
 		barrier.subresourceRange.layerCount = 1;
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = 0;
-		vkCmdPipelineBarrier(commandBuffer, 0, 0, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+		VkPipelineStageFlags sourceStage = {};
+		VkPipelineStageFlags destinationStage = {};
+
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		{
+			barrier.srcAccessMask = 0;
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else
+		{
+			throw std::invalid_argument("unsupported layout transition");
+		}
+
+		vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		endSingleTimeCommands(commandBuffer);
 	}

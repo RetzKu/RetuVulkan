@@ -41,6 +41,7 @@ namespace RetuEngine
 		VkExtent2D* GetExtent() { return &swapChainExtent; }
 		size_t  GetFramebufferSize() { return swapChainFramebuffer.size(); }
 		VkFramebuffer* GetFramebuffer(unsigned int index) { return &swapChainFramebuffer[index]; }
+		void PushView(VkImageView newView) { swapChainImageViews.push_back(newView); }
 
 	private:
 

@@ -166,6 +166,10 @@ namespace RetuEngine
 
 		Camera* camera;
 
+		VkImage testImage;
+		VkDeviceMemory testImageMemory;
+		VkImageView testView;
+
 #ifdef NDEBUG
 		const bool enableValidationLayers = false;
 #else
