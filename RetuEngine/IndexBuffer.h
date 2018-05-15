@@ -14,6 +14,7 @@ namespace RetuEngine
 
 		uint32_t GetIndicesSize() { return indices.size(); }
 
+		std::vector<VkDeviceSize> offsets;
 	protected:
 		const std::vector<uint32_t> indices =
 		{

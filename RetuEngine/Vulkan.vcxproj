@@ -88,6 +88,7 @@
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="QueueFamily.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Reference.cpp" />
     <ClCompile Include="UniformBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="SwapChain.cpp" />

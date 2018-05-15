@@ -36,6 +36,12 @@ namespace RetuEngine
 		return buffer;
 	}
 
+	struct renderableObject
+	{
+		VertexBuffer* vertBuffer;
+		IndexBuffer* indxBuffer;
+	};
+
 	class Engine
 	{
 	public:
@@ -154,6 +160,9 @@ namespace RetuEngine
 		IndexBuffer* indexBuffer;
 		UniformBuffer* uniformBuffer;
 
+		VertexBuffer* testvert;
+		IndexBuffer* testindx;
+
 		std::vector<VkCommandBuffer> commandBuffers;
 
 		VkSemaphore imageAvailableSemaphore;
@@ -162,9 +171,13 @@ namespace RetuEngine
 
 		VkDescriptorSet descriptorSet;
 
-		Gameobject* mainRectangle;
+		std::vector<renderableObject> renderables;
 
 		Camera* camera;
+
+		VkImage testImage;
+		VkDeviceMemory testImageMemory;
+		VkImageView testView;
 
 #ifdef NDEBUG
 		const bool enableValidationLayers = false;

@@ -9,6 +9,7 @@ namespace RetuEngine
 	{
 	public:
 		VertexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		VertexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue, std::vector<Vertex> customVertices);
 		~VertexBuffer();
 
 		/*Getters*/
@@ -16,13 +17,14 @@ namespace RetuEngine
 
 		void Create(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
 		void CleanUp(const VkDevice* logicalDevice);
+		//void AddToBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue, std::vector<Vertex> newVertices);
 
 		std::vector<Vertex> vertices = 
 		{
-			{{-0.5f,-0.5f},{1.0f,1.0f,1.0f}},
-			{{0.5f,-0.5f},{1.0f,0.0f,0.0f}},
-			{{0.5f,0.5f},{0.0f,1.0f,0.0f}},
-			{{-0.5f,0.5f},{0.0f,0.0f,1.0f}}
+			{{-0.5f,-0.5f,0},{0.0f,1.0f,1.0f}},
+			{{0.5f,-0.5f,1},{1.0f,0.0f,1.0f}},
+			{{0.5f,0.5f,0},{1.0f,1.0f,0.0f}},
+			{{-0.5f,0.5f,0},{0.0f,0.0f,1.0f}}
 		};
 	private:
 	};
