@@ -68,10 +68,15 @@ namespace RetuEngine
 
 		/*End of test renderable object*/
 		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue,camera);
+<<<<<<< HEAD
+=======
+		mainRectangle = new Gameobject(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue); //EYY gameobjects man
+>>>>>>> b5b362c641d7e215d7129a363cf0462c5bdf3b2c
 		CreateDescriptorPool();
 		CreateDescriptorSet();
 		CreateCommandBuffers();
 		CreateSemaphores();
+		CreateTextureImage("Pekka.bmp");//tehd‰‰n image;
 		GameLoop();
 	}
 
