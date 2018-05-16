@@ -28,6 +28,7 @@ namespace RetuEngine
 		InitWindow();
 		CreateInstance();
 		SetupDebugCallback();
+		RenderInterface* testi = new RenderInterface(instance, windowObj.window);
 		CreateSurface();
 		GetPhysicalDevices();
 		CreateLogicalDevice();
@@ -42,13 +43,15 @@ namespace RetuEngine
 		transferCommandPool = new CommandPool(&logicalDevice,indices.transferFamily,VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
 		vertexBuffer = new VertexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
 		indexBuffer = new IndexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
+
+		delete testi;
 		
 		std::vector<Vertex> vertices = 
 		{
-			{{0.5f,0.5f,0},{0.0f,1.0f,1.0f}},
-			{{1.5f,0.5f,0},{1.0f,0.0f,1.0f}},
-			{{1.5f,1.5f,10.0f},{1.0f,1.0f,0.0f}},
-			{{0.5f,1.5f,10.0f},{0.0f,0.0f,1.0f}}
+			{ { -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+			{ { 0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+			{ { 0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+			{ { -0.5f, 0.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
 		};
 
 		testvert = new VertexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue, vertices);
@@ -68,18 +71,21 @@ namespace RetuEngine
 
 		/*End of test renderable object*/
 		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue,camera);
+		CreateTextureImage("Pekka.bmp");//tehdään image;
+		createTextureSampler();
 
 		CreateDescriptorPool();
 		CreateDescriptorSet();
 		CreateCommandBuffers();
 		CreateSemaphores();
-		CreateTextureImage("Pekka.bmp");//tehdään image;
 		GameLoop();
 	}
 
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
+		vkDestroyImageView(logicalDevice, testView, nullptr);
+		vkDestroySampler(logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(logicalDevice, descriptorPool, nullptr);
 		vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetlayout, nullptr);
 		uniformBuffer->CleanUp(&logicalDevice);
@@ -552,12 +558,21 @@ namespace RetuEngine
 		uboLayoutBinding.binding = 0;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &descriptorSetlayout) != VK_SUCCESS)
 		{
@@ -571,14 +586,16 @@ namespace RetuEngine
 
 	void Engine::CreateDescriptorPool()
 	{
-		VkDescriptorPoolSize poolSize = {};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = 1;
+		std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[0].descriptorCount = 1;
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = 1;
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = 1;
 
 		if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
@@ -609,21 +626,35 @@ namespace RetuEngine
 		{
 			std::cout << "Created Descriptor Pool Successfully" << std::endl;
 		}
+		VkDescriptorImageInfo imageInfo = {};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = testView;
+		imageInfo.sampler = defaultSampler;
+
 		VkDescriptorBufferInfo bufferInfo = {};
 		bufferInfo.buffer = *uniformBuffer->GetBuffer();
 		bufferInfo.offset = 0;
 		bufferInfo.range = uniformBuffer->GetUniformBufferSize();
 
-		VkWriteDescriptorSet descriptorWrite = {};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = descriptorSet;
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
-		vkUpdateDescriptorSets(logicalDevice, 1, &descriptorWrite, 0, nullptr);
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = descriptorSet;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = descriptorSet;
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pImageInfo = &imageInfo;
+
+		vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateGraphicsPipeline()
@@ -901,10 +932,6 @@ namespace RetuEngine
 	{
 		int width;
 		int height;
-		Vertex triang
-		{
-
-		};
 
 		int channels;
 		stbi_uc* pix = stbi_load(file, &width, &height, &channels, STBI_rgb_alpha);
@@ -916,10 +943,12 @@ namespace RetuEngine
 		}
 		Buffer stagingBuffer;
 		stagingBuffer.CreateBuffer(&logicalDevice, &physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
 		void* data;
 		vkMapMemory(logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
 		memcpy(data, pix, static_cast<size_t>(imageSize));
 		vkUnmapMemory(logicalDevice, *stagingBuffer.GetBufferMemory());
+
 		stbi_image_free(pix);
 		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,testImage, testImageMemory);
 		TransitionImageLayout(testImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -945,8 +974,27 @@ namespace RetuEngine
 			throw std::runtime_error("failed to create test view");
 		}
 	}
-	
 
+	void Engine::createTextureSampler() {
+		VkSamplerCreateInfo samplerInfo = {};
+		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		samplerInfo.magFilter = VK_FILTER_LINEAR;
+		samplerInfo.minFilter = VK_FILTER_LINEAR;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.anisotropyEnable = VK_FALSE;
+		samplerInfo.maxAnisotropy = 16;
+		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		samplerInfo.unnormalizedCoordinates = VK_FALSE;
+		samplerInfo.compareEnable = VK_FALSE;
+		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+		if (vkCreateSampler(logicalDevice, &samplerInfo, nullptr, &defaultSampler) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create texture sampler!");
+		}
+	}
 
 	void Engine::CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 	{

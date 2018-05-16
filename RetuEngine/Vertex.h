@@ -7,8 +7,10 @@ namespace RetuEngine
 {
 	struct Vertex
 	{
-		glm::vec3 pos;
+		glm::vec2 pos;
 		glm::vec3 color;
+		glm::vec2 texCoord;
+
 
 		static VkVertexInputBindingDescription getBindingDescription()
 		{
@@ -19,9 +21,9 @@ namespace RetuEngine
 			return bindingDescription;
 		}
 
-		static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescription()
+		static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescription()
 		{
-			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+			std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
 			/*Position attributes*/
 			attributeDescriptions[0].binding = 0;
 			attributeDescriptions[0].location = 0;
@@ -33,6 +35,11 @@ namespace RetuEngine
 			attributeDescriptions[1].location = 1;
 			attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 			attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+			attributeDescriptions[2].binding = 0;
+			attributeDescriptions[2].location = 2;
+			attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+			attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 			return attributeDescriptions;
 		}
 	};

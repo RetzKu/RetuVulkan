@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 /*Graphics Related Headeds*/
+#include "RenderInterface.h"
 #include "Window.h"
 #include "SwapChain.h"
 #include "Vertex.h"
@@ -97,6 +98,7 @@ namespace RetuEngine
 
 		//graphical fucntions;
 		void CreateTextureImage(const char* file);
+		void createTextureSampler();
 		void CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 		VkCommandBuffer beginSingleCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
@@ -178,6 +180,7 @@ namespace RetuEngine
 		VkImage testImage;
 		VkDeviceMemory testImageMemory;
 		VkImageView testView;
+		VkSampler defaultSampler;
 
 #ifdef NDEBUG
 		const bool enableValidationLayers = false;
