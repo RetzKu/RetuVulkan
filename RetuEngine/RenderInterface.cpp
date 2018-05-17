@@ -2,15 +2,22 @@
 #include <stdexcept>
 #include <iostream>
 #include <map>
+#include <set>
 
 #define SuccessLog(x) std::cout << x << " created successfully" << std::endl;
 #define RunErr(x) throw std::runtime_error("Failed to create" + (std::string)x);
 
 namespace RetuEngine
 {
-	RenderInterface::RenderInterface(VkInstance instance, GLFWwindow* window)
+	RenderInterface::RenderInterface(VkInstance instance, Window* window)
 	{
-		CreateSurface(instance, window);
+		this->window = window;
+		CreateSurface(instance, window->window);
+		GetPhysicalDevice(instance);
+		CreateLogicalDevice();
+		indices = FindQueueFamilies(&physicalDevice, &surface);
+		graphicsCommandPool = new CommandPool(&logicalDevice,indices.displayFamily);
+		transferCommandPool = new CommandPool(&logicalDevice,indices.transferFamily,VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
 	}
 
 	RenderInterface::~RenderInterface()
@@ -126,30 +133,83 @@ namespace RetuEngine
 		return true;
 	}
 
-	SwapChainSupportDetails RenderInterface::QuerySwapChainSupport(VkPhysicalDevice device)
+	SwapChainSupportDetails RenderInterface::QuerySwapChainSupport(VkPhysicalDevice deviceToRate)
 	{
 		SwapChainSupportDetails details;
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(deviceToRate, surface, &details.capabilities);
 
 		uint32_t formatCount;
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+		vkGetPhysicalDeviceSurfaceFormatsKHR(deviceToRate, surface, &formatCount, nullptr);
 
 		if (formatCount != 0)
 		{
 			details.formats.resize(formatCount);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+			vkGetPhysicalDeviceSurfaceFormatsKHR(deviceToRate, surface, &formatCount, details.formats.data());
 		}
 
 		uint32_t presentCount;
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentCount, nullptr);
+		vkGetPhysicalDeviceSurfacePresentModesKHR(deviceToRate, surface, &presentCount, nullptr);
 
 		if (presentCount != 0)
 		{
 			details.presentmodes.resize(presentCount);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentCount, details.presentmodes.data());
+			vkGetPhysicalDeviceSurfacePresentModesKHR(deviceToRate, surface, &presentCount, details.presentmodes.data());
 		}
 
 		return details;
 	}
-//const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue
+
+	bool RenderInterface::CreateLogicalDevice()
+	{
+		QueueFamilyIndices indices = FindQueueFamilies(&physicalDevice, &surface);
+		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+		std::set<int> uniqueQueueFamilies = { indices.displayFamily, indices.transferFamily };
+		const float queuePriority = 1.0f;
+		for (int queueFamily : uniqueQueueFamilies)
+		{
+			VkDeviceQueueCreateInfo queueCreateInfo = {};
+			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+			queueCreateInfo.pNext = nullptr;
+			queueCreateInfo.flags = 0;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(queueCreateInfo);
+		}
+
+
+		VkPhysicalDeviceFeatures deviceFeatures = {};
+
+		VkDeviceCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		createInfo.pNext = nullptr;
+		createInfo.flags = 0;
+		createInfo.queueCreateInfoCount = 1;
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+		if (enableValidationLayers)
+		{
+			createInfo.enabledLayerCount = validationLayers.size();
+			createInfo.ppEnabledLayerNames = validationLayers.data();
+		}
+		else
+		{
+			createInfo.enabledLayerCount = 0;
+			createInfo.ppEnabledLayerNames = nullptr;
+		}
+		createInfo.enabledExtensionCount = deviceExtensions.size();
+		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+		createInfo.pEnabledFeatures = &deviceFeatures;
+
+		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create logical device");
+		}
+		else
+		{
+			std::cout << "Logical device created successfully" << std::endl;
+		}
+		vkGetDeviceQueue(logicalDevice, indices.displayFamily, 0, &displayQueue);
+		vkGetDeviceQueue(logicalDevice, indices.transferFamily, 0, &transferQueue);
+	}
 }

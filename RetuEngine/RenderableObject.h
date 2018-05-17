@@ -8,13 +8,13 @@ namespace RetuEngine
 	class RenderableObject
 	{
 	public:
-		RenderableObject(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		RenderableObject(RenderInterface* renderer);
 		~RenderableObject();
 
 	/*Private Functions*/
 	private:
-		bool CreateVertexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
-		bool CreateIndexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		bool CreateVertexBuffer(RenderInterface* renderer);
+		bool CreateIndexBuffer(RenderInterface* renderer);
 
 	/*Private Variables*/
 	private:

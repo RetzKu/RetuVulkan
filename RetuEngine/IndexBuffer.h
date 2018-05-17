@@ -1,15 +1,16 @@
 #pragma once
 #include "Buffer.h"
+#include "RenderInterface.h"
 
 namespace RetuEngine
 {
 	class IndexBuffer : public Buffer
 	{
 	public:
-		IndexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		IndexBuffer(RenderInterface* renderer);
 		~IndexBuffer();
 
-		void Create(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		void Create(RenderInterface* renderer);
 		void CleanUp(const VkDevice* logicalDevice);
 
 		uint32_t GetIndicesSize() { return indices.size(); }

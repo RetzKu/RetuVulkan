@@ -2,21 +2,21 @@
 
 namespace RetuEngine
 {
-	UniformBuffer::UniformBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue, Camera* camera)
+	UniformBuffer::UniformBuffer(RenderInterface* renderer, Camera* camera)
 	{
 		this->camera = camera;
-		Create(logicalDevice, physicalDevice, surface, commandPool, queue);
+		Create(renderer);
 	}
 
 	UniformBuffer::~UniformBuffer()
 	{
 	}
 
-	void UniformBuffer::Create(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue)
+	void UniformBuffer::Create(RenderInterface* renderer)
 	{
 		VkDeviceSize bufferSize = GetUniformBufferSize();
 
-		CreateBuffer(logicalDevice, physicalDevice, surface, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
+		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
 	}
 
 	void UniformBuffer::CleanUp(const VkDevice* logicalDevice)

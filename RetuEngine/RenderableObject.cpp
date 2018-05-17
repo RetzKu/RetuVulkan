@@ -4,10 +4,10 @@
 
 namespace RetuEngine
 {
-	RenderableObject::RenderableObject(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue)
+	RenderableObject::RenderableObject(RenderInterface* renderer)
 	{
-		CreateVertexBuffer(logicalDevice, physicalDevice, surface, commandPool, queue);
-		CreateIndexBuffer(logicalDevice, physicalDevice, surface, commandPool, queue);
+		CreateVertexBuffer(renderer);
+		CreateIndexBuffer(renderer);
 	}
 
 
@@ -15,16 +15,16 @@ namespace RetuEngine
 	{
 	}
 
-	bool RenderableObject::CreateIndexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue)
+	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer)
 	{
-		indexBuffer = new IndexBuffer(logicalDevice, physicalDevice, surface, commandPool, queue);
+		indexBuffer = new IndexBuffer(renderer);
 		if (indexBuffer != nullptr) { throw std::runtime_error("Failed to create Index Buffer"); return true; }
 		else { return false; }
 	}
 
-	bool RenderableObject::CreateVertexBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue)
+	bool RenderableObject::CreateVertexBuffer(RenderInterface* renderer)
 	{
-		vertexBuffer = new VertexBuffer(logicalDevice, physicalDevice, surface, commandPool, queue);
+		vertexBuffer = new VertexBuffer(renderer);
 		if (vertexBuffer != nullptr) { throw std::runtime_error("Failed to create Vertex Buffer"); return true; }
 		else { return false; }
 	}

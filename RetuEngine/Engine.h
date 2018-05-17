@@ -80,12 +80,6 @@ namespace RetuEngine
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();
 		void SetupDebugCallback();
-		void CreateSurface();
-		SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
-		void GetPhysicalDevices();
-		int RateDeviceSuitability(VkPhysicalDevice deviceToRate);
-		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
-		void CreateLogicalDevice();
 		void CreateRenderPass();
 		void CreateDescriptorSetlayout();
 		void CreateDescriptorPool();
@@ -132,38 +126,24 @@ namespace RetuEngine
 			return VK_FALSE;
 		};
 
+		const std::vector<const char*> validationLayers = { "VK_LAYER_LUNARG_standard_validation" };
 		const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 		//Vulkan handles
 		VkInstance instance;
 		VkDebugReportCallbackEXT callback;
-		VkSurfaceKHR surface;
-		VkDevice logicalDevice;
-		const std::vector<const char*> validationLayers = { "VK_LAYER_LUNARG_standard_validation" };
-		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-		VkQueue displayQueue;
-		VkQueue transferQueue;
+		RenderInterface* renderer;
 
 		SwapChain* swapChain;
-
 		VkRenderPass renderPass;
-
 		VkDescriptorSetLayout descriptorSetlayout;
-
 		VkPipelineLayout pipelineLayout;
-
 		VkPipeline graphicsPipeline;
-
-		CommandPool* graphicsCommandPool;
-		CommandPool* transferCommandPool;
 		VkDescriptorPool descriptorPool;
 
 		VertexBuffer* vertexBuffer;
 		IndexBuffer* indexBuffer;
 		UniformBuffer* uniformBuffer;
-
-		VertexBuffer* testvert;
-		IndexBuffer* testindx;
 
 		std::vector<VkCommandBuffer> commandBuffers;
 

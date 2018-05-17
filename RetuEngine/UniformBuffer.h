@@ -1,5 +1,6 @@
 #pragma once
 #include "Buffer.h"
+#include "RenderInterface.h"
 
 #define GLM_FORCE_RADIANS
 #include <glm\gtc\matrix_transform.hpp>
@@ -29,13 +30,13 @@ namespace RetuEngine
 			glm::mat4 proj;
 		};
 
-		UniformBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue, Camera* camera);
+		UniformBuffer(RenderInterface* renderer, Camera* camera);
 		~UniformBuffer();
 
 		/*Getters*/
 		VkDeviceSize GetUniformBufferSize() { return sizeof(UniformBufferObject);}
 
-		void Create(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, const VkCommandPool* commandPool, const VkQueue* queue);
+		void Create(RenderInterface* renderer);
 		void CleanUp(const VkDevice* logicalDevice);
 		void Update(const VkDevice* logicalDevice, const VkExtent2D &swapChainExtent);
 

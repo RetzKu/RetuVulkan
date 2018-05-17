@@ -11,14 +11,11 @@ namespace RetuEngine
 {
 	Engine::~Engine()
 	{
+		delete renderer;
 		delete swapChain;
-		delete graphicsCommandPool;
-		delete transferCommandPool;
 		delete uniformBuffer;
 		delete indexBuffer;
 		delete vertexBuffer;
-		delete testvert;
-		delete testindx;
 		delete camera;
 		delete inputManager;
 	}
@@ -28,49 +25,25 @@ namespace RetuEngine
 		InitWindow();
 		CreateInstance();
 		SetupDebugCallback();
-		RenderInterface* testi = new RenderInterface(instance, windowObj.window);
-		CreateSurface();
-		GetPhysicalDevices();
-		CreateLogicalDevice();
+		renderer = new RenderInterface(instance, &windowObj);
 		swapChain = new SwapChain();
-		swapChain->Create(&logicalDevice,&physicalDevice,&surface,&windowObj,QuerySwapChainSupport(physicalDevice));
+		swapChain->Create(renderer);
 		CreateRenderPass();
 		CreateDescriptorSetlayout();
 		CreateGraphicsPipeline();
 		swapChain->CreateFrameBuffers(&renderPass);
-		QueueFamilyIndices indices = FindQueueFamilies(&physicalDevice, &surface);
-		graphicsCommandPool = new CommandPool(&logicalDevice,indices.displayFamily);
-		transferCommandPool = new CommandPool(&logicalDevice,indices.transferFamily,VK_COMMAND_POOL_CREATE_TRANSIENT_BIT);
-		vertexBuffer = new VertexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
-		indexBuffer = new IndexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
 
-		delete testi;
-		
-		std::vector<Vertex> vertices = 
-		{
-			{ { -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { -0.5f, 0.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		};
+		vertexBuffer = new VertexBuffer(renderer);
+		indexBuffer = new IndexBuffer(renderer);
 
-		testvert = new VertexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue, vertices);
-		testindx = new IndexBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue);
-
-		/*Testi renderable Object joka pitää itsellään yksiä buffereita :S*/
+		///*Testi renderable Object joka pitää itsellään yksiä buffereita :S*/
 		renderableObject rend;
 		rend.vertBuffer = vertexBuffer;
 		rend.indxBuffer = indexBuffer;
 		renderables.push_back(rend);
 
-		renderableObject rend1;
-		rend1.vertBuffer = testvert;
-		rend1.indxBuffer = testindx;
-
-		renderables.push_back(rend1);
-
 		/*End of test renderable object*/
-		uniformBuffer = new UniformBuffer(&logicalDevice, &physicalDevice, &surface, transferCommandPool->GetCommandPool(), &transferQueue,camera);
+		uniformBuffer = new UniformBuffer(renderer,camera);
 		CreateTextureImage("Pekka.bmp");//tehdään image;
 		createTextureSampler();
 
@@ -84,25 +57,24 @@ namespace RetuEngine
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
-		vkDestroyImageView(logicalDevice, testView, nullptr);
-		vkDestroySampler(logicalDevice, defaultSampler, nullptr);
-		vkDestroyDescriptorPool(logicalDevice, descriptorPool, nullptr);
-		vkDestroyDescriptorSetLayout(logicalDevice, descriptorSetlayout, nullptr);
-		uniformBuffer->CleanUp(&logicalDevice);
+		vkDestroyImageView(renderer->logicalDevice, testView, nullptr);
+		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
+		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
+		vkDestroyDescriptorSetLayout(renderer->logicalDevice, descriptorSetlayout, nullptr);
+		uniformBuffer->CleanUp(&renderer->logicalDevice);
 		for (renderableObject rend : renderables)
 		{
-			rend.indxBuffer->CleanUp(&logicalDevice);
-			rend.vertBuffer->CleanUp(&logicalDevice);
+			rend.indxBuffer->CleanUp(&renderer->logicalDevice);
+			rend.vertBuffer->CleanUp(&renderer->logicalDevice);
 		}
-		vkDestroySemaphore(logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
-		vkDestroySemaphore(logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
-		vkDestroyImage(logicalDevice, testImage, nullptr);
-		vkFreeMemory(logicalDevice, testImageMemory, nullptr);
-		graphicsCommandPool->CleanUp(&logicalDevice);
-		transferCommandPool->CleanUp(&logicalDevice);
-		vkDestroyDevice(logicalDevice, VK_NULL_HANDLE);
+		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
+		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
+		vkDestroyImage(renderer->logicalDevice, testImage, nullptr);
+		vkFreeMemory(renderer->logicalDevice, testImageMemory, nullptr);
+		renderer->CleanCommandPools();
+		vkDestroyDevice(renderer->logicalDevice, VK_NULL_HANDLE);
 		DestoyDebugReportCallbackEXT(instance, callback, VK_NULL_HANDLE);
-		vkDestroySurfaceKHR(instance, surface, VK_NULL_HANDLE);
+		vkDestroySurfaceKHR(instance, renderer->surface, VK_NULL_HANDLE);
 		vkDestroyInstance(instance, VK_NULL_HANDLE);
 		glfwDestroyWindow(windowObj.window);
 		glfwTerminate();
@@ -111,10 +83,10 @@ namespace RetuEngine
 	void Engine::CleanUpSwapChain()
 	{
 		swapChain->CleanUpFrameBuffers();
-		vkFreeCommandBuffers(logicalDevice,*graphicsCommandPool->GetCommandPool(),static_cast<uint32_t>(commandBuffers.size()),commandBuffers.data());
-		vkDestroyPipeline(logicalDevice, graphicsPipeline, VK_NULL_HANDLE);
-		vkDestroyPipelineLayout(logicalDevice,pipelineLayout,VK_NULL_HANDLE);
-		vkDestroyRenderPass(logicalDevice,renderPass,VK_NULL_HANDLE);
+		vkFreeCommandBuffers(renderer->logicalDevice,*renderer->GetCommandPool(),static_cast<uint32_t>(commandBuffers.size()),commandBuffers.data());
+		vkDestroyPipeline(renderer->logicalDevice, graphicsPipeline, VK_NULL_HANDLE);
+		vkDestroyPipelineLayout(renderer->logicalDevice,pipelineLayout,VK_NULL_HANDLE);
+		vkDestroyRenderPass(renderer->logicalDevice,renderPass,VK_NULL_HANDLE);
 
 		swapChain->CleanUp();
 	}
@@ -124,7 +96,7 @@ namespace RetuEngine
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
 			glfwPollEvents();
-			uniformBuffer->Update(&logicalDevice,*swapChain->GetExtent());
+			uniformBuffer->Update(&renderer->logicalDevice,*swapChain->GetExtent());
 			DrawFrame();
 
 			float cameraSpeed = 0.005f; // adjust accordingly
@@ -168,7 +140,7 @@ namespace RetuEngine
 				glfwTerminate();
 			}
 		}
-		vkDeviceWaitIdle(logicalDevice);
+		vkDeviceWaitIdle(renderer->logicalDevice);
 		CleanUpVulkan();
 	}
 	
@@ -185,9 +157,9 @@ namespace RetuEngine
 
 	void Engine::ReCreateSwapChain()
 	{
-		vkDeviceWaitIdle(logicalDevice);
+		vkDeviceWaitIdle(renderer->logicalDevice);
 		CleanUpSwapChain();
-		swapChain->Create(&logicalDevice, &physicalDevice, &surface, &windowObj, QuerySwapChainSupport(physicalDevice));
+		swapChain->Create(renderer);
 		CreateRenderPass();
 		CreateGraphicsPipeline();
 		swapChain->CreateFrameBuffers(&renderPass);
@@ -312,196 +284,6 @@ namespace RetuEngine
 			std::cout << "Debug callback setup successfull" << std::endl;
 		}
 	}
-	void Engine::CreateSurface()
-	{
-		if (glfwCreateWindowSurface(instance,windowObj.window , nullptr,&surface) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create window surface");
-		}
-		else
-		{
-			std::cout << "Window surface created successfully" << std::endl;
-		}
-	}
-
-	SwapChainSupportDetails Engine::QuerySwapChainSupport(VkPhysicalDevice device)
-	{
-		SwapChainSupportDetails details;
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
-
-		uint32_t formatCount;
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
-
-		if (formatCount != 0)
-		{
-			details.formats.resize(formatCount);
-			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
-		}
-
-		uint32_t presentCount;
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentCount, nullptr);
-
-		if (presentCount != 0)
-		{
-			details.presentmodes.resize(presentCount);
-			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentCount, details.presentmodes.data());
-		}
-
-		return details;
-	}
-
-	void Engine::GetPhysicalDevices()
-	{
-		uint32_t physicalDeviceCount = 0;
-		vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
-		if (physicalDeviceCount == 0)
-		{
-			throw std::runtime_error("No devices with Vulkan support");
-		}
-		std::vector<VkPhysicalDevice> foundPhysicalDevices(physicalDeviceCount);
-		vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, foundPhysicalDevices.data());
-
-		std::multimap<int, VkPhysicalDevice> rankedDevices;
-
-		for (const auto& currentDevice : foundPhysicalDevices)
-		{
-			int score = RateDeviceSuitability(currentDevice);
-			rankedDevices.insert(std::make_pair(score, currentDevice));
-		}
-
-		if (rankedDevices.rbegin()->first > 0)
-		{
-			physicalDevice = rankedDevices.rbegin()->second;
-			std::cout << "PhysicalDevice Found" << std::endl;
-		}
-		else
-		{
-			throw std::runtime_error("No Physical devices that support Vulkan");
-		}
-	}
-
-	int Engine::RateDeviceSuitability(VkPhysicalDevice deviceToRate)
-	{
-		int score = 0;
-
-		QueueFamilyIndices indices = FindQueueFamilies(&deviceToRate, &surface);
-		bool extensionsSupported = CheckDeviceExtensionSupport(deviceToRate);
-		if (indices.isComplete() == false || !extensionsSupported)
-		{
-			return 0;
-		}
-
-		bool swapChainAdequate = false;
-		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(deviceToRate);
-		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentmodes.empty();
-		if (!swapChainAdequate)
-		{
-			return 0;
-		}
-
-		VkPhysicalDeviceFeatures deviceFeatures;
-		VkPhysicalDeviceProperties deviceProperties;
-		vkGetPhysicalDeviceProperties(deviceToRate, &deviceProperties);
-		vkGetPhysicalDeviceFeatures(deviceToRate, &deviceFeatures);
-
-		if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-		{
-			score += 1000;
-		}
-
-		score += deviceProperties.limits.maxImageDimension2D;
-
-		if (!deviceFeatures.geometryShader)
-		{
-			return 0;
-		}
-		return score;
-	}
-
-	void Engine::CreateLogicalDevice()
-	{
-		QueueFamilyIndices indices = FindQueueFamilies(&physicalDevice, &surface);
-		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<int> uniqueQueueFamilies = { indices.displayFamily, indices.transferFamily };
-		const float queuePriority = 1.0f;
-		for (int queueFamily : uniqueQueueFamilies)
-		{
-			VkDeviceQueueCreateInfo queueCreateInfo = { };
-			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-			queueCreateInfo.pNext = nullptr;
-			queueCreateInfo.flags = 0;
-			queueCreateInfo.queueFamilyIndex = queueFamily;
-			queueCreateInfo.queueCount = 1;
-			queueCreateInfo.pQueuePriorities = &queuePriority;
-			queueCreateInfos.push_back(queueCreateInfo);
-		}
-
-
-		VkPhysicalDeviceFeatures deviceFeatures = { };
-
-		VkDeviceCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-		createInfo.pNext = nullptr;
-		createInfo.flags = 0;
-		createInfo.queueCreateInfoCount = 1;
-		createInfo.pQueueCreateInfos = queueCreateInfos.data();
-
-		if (enableValidationLayers)
-		{
-			createInfo.enabledLayerCount = validationLayers.size();
-			createInfo.ppEnabledLayerNames = validationLayers.data();
-		}
-		else
-		{
-			createInfo.enabledLayerCount = 0;
-			createInfo.ppEnabledLayerNames = nullptr;
-		}
-		createInfo.enabledExtensionCount = deviceExtensions.size();
-		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-		createInfo.pEnabledFeatures = &deviceFeatures;
-
-		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create logical device");
-		}
-		else
-		{
-			std::cout << "Logical device created successfully" << std::endl;
-		}
-		vkGetDeviceQueue(logicalDevice,indices.displayFamily,0,&displayQueue);
-		vkGetDeviceQueue(logicalDevice,indices.transferFamily,0,&transferQueue);
-	}
-
-
-
-
-	bool Engine::CheckDeviceExtensionSupport(VkPhysicalDevice device)
-	{
-		uint32_t extensioncount;
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensioncount, nullptr);
-
-		std::vector<VkExtensionProperties> availableExtension(extensioncount);
-		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensioncount, availableExtension.data());
-
-		for (const char* currentextension : deviceExtensions)
-		{
-			bool extensionFound = false;
-			for (const auto& extension : availableExtension)
-			{
-				if (strcmp(currentextension, extension.extensionName) == 0)
-				{
-					extensionFound = true;
-				}
-			}
-			if (!extensionFound)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-
 
 	void Engine::CreateRenderPass()
 	{
@@ -541,7 +323,7 @@ namespace RetuEngine
 		renderPassCreateInfo.dependencyCount = 1;
 		renderPassCreateInfo.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(logicalDevice, &renderPassCreateInfo, nullptr, &renderPass) != VK_SUCCESS)
+		if (vkCreateRenderPass(renderer->logicalDevice, &renderPassCreateInfo, nullptr, &renderPass) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create renderPass");
 		}
@@ -574,7 +356,7 @@ namespace RetuEngine
 		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 		layoutInfo.pBindings = bindings.data();
 
-		if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &descriptorSetlayout) != VK_SUCCESS)
+		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &layoutInfo, nullptr, &descriptorSetlayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create DescriptorLayout");
 		}
@@ -598,7 +380,7 @@ namespace RetuEngine
 		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = 1;
 
-		if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
+		if (vkCreateDescriptorPool(renderer->logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create Descriptor Pool");
 		}
@@ -618,7 +400,7 @@ namespace RetuEngine
 		allocInfo.descriptorSetCount = 1;
 		allocInfo.pSetLayouts = layouts;
 
-		if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, &descriptorSet) != VK_SUCCESS)
+		if (vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &descriptorSet) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create Descriptor Pool");
 		}
@@ -654,7 +436,7 @@ namespace RetuEngine
 		descriptorWrites[1].descriptorCount = 1;
 		descriptorWrites[1].pImageInfo = &imageInfo;
 
-		vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateGraphicsPipeline()
@@ -752,7 +534,7 @@ namespace RetuEngine
 		pipelineLayoutInfo.setLayoutCount = 1;
 		pipelineLayoutInfo.pSetLayouts = &descriptorSetlayout;
 
-		if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+		if (vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create pipeline layout");
 		}
@@ -775,7 +557,7 @@ namespace RetuEngine
 		pipelineCreateInfo.renderPass = renderPass;
 		pipelineCreateInfo.subpass = 0;
 
-		if (vkCreateGraphicsPipelines(logicalDevice,VK_NULL_HANDLE,1,&pipelineCreateInfo,nullptr,&graphicsPipeline) != VK_SUCCESS)
+		if (vkCreateGraphicsPipelines(renderer->logicalDevice,VK_NULL_HANDLE,1,&pipelineCreateInfo,nullptr,&graphicsPipeline) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create graphicspipeline");
 		}
@@ -783,8 +565,8 @@ namespace RetuEngine
 		{
 			std::cout << "Created graphics pipeline successfully" << std::endl;
 		}
-		vkDestroyShaderModule(logicalDevice,vertShaderModule,VK_NULL_HANDLE);
-		vkDestroyShaderModule(logicalDevice,fragShaderModule,VK_NULL_HANDLE);
+		vkDestroyShaderModule(renderer->logicalDevice,vertShaderModule,VK_NULL_HANDLE);
+		vkDestroyShaderModule(renderer->logicalDevice,fragShaderModule,VK_NULL_HANDLE);
 	}
 
 	VkShaderModule Engine::CreateShaderModule(const std::vector<char>& code)
@@ -798,7 +580,7 @@ namespace RetuEngine
 		createInfo.pCode = codeAligned.data();
 
 		VkShaderModule shaderModule;
-		if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+		if (vkCreateShaderModule(renderer->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create shader module");
 		}
@@ -815,11 +597,11 @@ namespace RetuEngine
 		
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.commandPool = *graphicsCommandPool->GetCommandPool();
+		allocInfo.commandPool = *renderer->GetCommandPool();
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
 
-		if (vkAllocateCommandBuffers(logicalDevice, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
+		if (vkAllocateCommandBuffers(renderer->logicalDevice, &allocInfo, commandBuffers.data()) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create command buffers");
 		}
@@ -876,8 +658,8 @@ namespace RetuEngine
 		VkSemaphoreCreateInfo semaphoreCreateInfo = {};
 		semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-		if (vkCreateSemaphore(logicalDevice, &semaphoreCreateInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS || 
-			vkCreateSemaphore(logicalDevice, &semaphoreCreateInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS)
+		if (vkCreateSemaphore(renderer->logicalDevice, &semaphoreCreateInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS || 
+			vkCreateSemaphore(renderer->logicalDevice, &semaphoreCreateInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create semaphore");
 		}
@@ -891,7 +673,7 @@ namespace RetuEngine
 	{
 		uint32_t imageIndex;
 
-		vkAcquireNextImageKHR(logicalDevice, *swapChain->GetSwapchain(), std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+		vkAcquireNextImageKHR(renderer->logicalDevice, *swapChain->GetSwapchain(), std::numeric_limits<uint64_t>::max(), imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
 
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -909,7 +691,7 @@ namespace RetuEngine
 		submitInfo.commandBufferCount = 1;	
 		submitInfo.pCommandBuffers = &commandBuffers[imageIndex];	
 
-		if (vkQueueSubmit(displayQueue,1,&submitInfo,VK_NULL_HANDLE) != VK_SUCCESS)
+		if (vkQueueSubmit(renderer->displayQueue,1,&submitInfo,VK_NULL_HANDLE) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to submit");
 		}
@@ -924,7 +706,7 @@ namespace RetuEngine
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
 
-		vkQueuePresentKHR(displayQueue, &presentInfo);
+		vkQueuePresentKHR(renderer->displayQueue, &presentInfo);
 	}
 
 		
@@ -942,20 +724,20 @@ namespace RetuEngine
 			throw std::runtime_error("failed to load texture");
 		}
 		Buffer stagingBuffer;
-		stagingBuffer.CreateBuffer(&logicalDevice, &physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		stagingBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 		void* data;
-		vkMapMemory(logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
+		vkMapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
 		memcpy(data, pix, static_cast<size_t>(imageSize));
-		vkUnmapMemory(logicalDevice, *stagingBuffer.GetBufferMemory());
+		vkUnmapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory());
 
 		stbi_image_free(pix);
 		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,testImage, testImageMemory);
 		TransitionImageLayout(testImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		CopyBufferToImage(*stagingBuffer.GetBuffer(), testImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 		TransitionImageLayout(testImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		vkDestroyBuffer(logicalDevice, *stagingBuffer.GetBuffer(), nullptr);
-		vkFreeMemory(logicalDevice, *stagingBuffer.GetBufferMemory(), nullptr);
+		vkDestroyBuffer(renderer->logicalDevice, *stagingBuffer.GetBuffer(), nullptr);
+		vkFreeMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), nullptr);
 
 		VkImageViewCreateInfo imageViewInfo = {};
 		imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -969,7 +751,7 @@ namespace RetuEngine
 		imageViewInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewInfo.subresourceRange.layerCount = 1;
 
-		if (vkCreateImageView(logicalDevice, &imageViewInfo, nullptr, &testView) != VK_SUCCESS)
+		if (vkCreateImageView(renderer->logicalDevice, &imageViewInfo, nullptr, &testView) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to create test view");
 		}
@@ -991,7 +773,7 @@ namespace RetuEngine
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-		if (vkCreateSampler(logicalDevice, &samplerInfo, nullptr, &defaultSampler) != VK_SUCCESS) {
+		if (vkCreateSampler(renderer->logicalDevice, &samplerInfo, nullptr, &defaultSampler) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create texture sampler!");
 		}
 	}
@@ -1013,35 +795,35 @@ namespace RetuEngine
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 
-		if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
+		if (vkCreateImage(renderer->logicalDevice, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create image");
 		}
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(logicalDevice, image, &memRequirements);
+		vkGetImageMemoryRequirements(renderer->logicalDevice, image, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = findMemoryType(renderer->physicalDevice, memRequirements.memoryTypeBits, properties);
 		
-		if (vkAllocateMemory(logicalDevice,&allocInfo,nullptr,&imageMemory) != VK_SUCCESS)
+		if (vkAllocateMemory(renderer->logicalDevice,&allocInfo,nullptr,&imageMemory) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to allocate image memory");
 		}
-		vkBindImageMemory(logicalDevice, image, imageMemory, 0);
+		vkBindImageMemory(renderer->logicalDevice, image, imageMemory, 0);
 	}
 	VkCommandBuffer Engine::beginSingleCommands()
 	{
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = *graphicsCommandPool->GetCommandPool(); //what command pool is this
+		allocInfo.commandPool = *renderer->GetCommandPool(); //what command pool is this
 		allocInfo.commandBufferCount = 1;
 
 		VkCommandBuffer commandBuffer;
-		vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+		vkAllocateCommandBuffers(renderer->logicalDevice, &allocInfo, &commandBuffer);
 
 		VkCommandBufferBeginInfo beginInfo = {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1057,10 +839,10 @@ namespace RetuEngine
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &commandBuffer;
 
-		vkQueueSubmit(displayQueue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(displayQueue);
+		vkQueueSubmit(renderer->displayQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(renderer->displayQueue);
 
-		vkFreeCommandBuffers(logicalDevice, *graphicsCommandPool->GetCommandPool(), 1, &commandBuffer);
+		vkFreeCommandBuffers(renderer->logicalDevice, *renderer->GetCommandPool(), 1, &commandBuffer);
 	}
 	void Engine::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{

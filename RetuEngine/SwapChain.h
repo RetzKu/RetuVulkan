@@ -1,19 +1,13 @@
 #pragma once
-
 #include <vulkan\vulkan.h>
 #include <vector>
 #include <iostream>
 #include <stdexcept>
 #include "Window.h"
+#include "RenderInterface.h"
 
 namespace RetuEngine
 {
-	struct SwapChainSupportDetails
-	{
-		VkSurfaceCapabilitiesKHR capabilities;
-		std::vector<VkSurfaceFormatKHR> formats;
-		std::vector<VkPresentModeKHR> presentmodes;
-	};
 
 	class SwapChain
 	{
@@ -21,7 +15,7 @@ namespace RetuEngine
 		SwapChain();
 		~SwapChain();
 
-		void Create(const VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface,Window* windowObj, SwapChainSupportDetails swapChainSupport);
+		void Create(RenderInterface* renderer);
 		void CleanUp();
 		void CleanUpFrameBuffers();
 
