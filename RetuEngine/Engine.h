@@ -17,6 +17,8 @@
 /*Engine Objects*/
 #include "Gameobject.h"
 #include "Input.h"
+#include "RenderableObject.h"
+#include "Texture.h"
 
 namespace RetuEngine 
 {
@@ -36,12 +38,6 @@ namespace RetuEngine
 		file.close();
 		return buffer;
 	}
-
-	struct renderableObject
-	{
-		VertexBuffer* vertBuffer;
-		IndexBuffer* indxBuffer;
-	};
 
 	class Engine
 	{
@@ -83,21 +79,13 @@ namespace RetuEngine
 		void CreateRenderPass();
 		void CreateDescriptorSetlayout();
 		void CreateDescriptorPool();
-		void CreateDescriptorSet();
+		void CreateDescriptorSet(VkImageView view);
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
 		void CreateCommandBuffers();
 		void CreateSemaphores();
 		void DrawFrame();
-
-		//graphical fucntions;
-		void CreateTextureImage(const char* file);
 		void createTextureSampler();
-		void CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-		VkCommandBuffer beginSingleCommands();
-		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 		VkResult CreateDebugReportReportCallbackEXT(
 			VkInstance istance,
@@ -141,25 +129,19 @@ namespace RetuEngine
 		VkPipeline graphicsPipeline;
 		VkDescriptorPool descriptorPool;
 
-		VertexBuffer* vertexBuffer;
-		IndexBuffer* indexBuffer;
-		UniformBuffer* uniformBuffer;
-
 		std::vector<VkCommandBuffer> commandBuffers;
 
 		VkSemaphore imageAvailableSemaphore;
 
 		VkSemaphore renderFinishedSemaphore;
 
-		VkDescriptorSet descriptorSet;
+		std::vector<VkDescriptorSet> descriptorSets;
 
-		std::vector<renderableObject> renderables;
+		std::vector<RenderableObject*> renderables;
 
 		Camera* camera;
 
-		VkImage testImage;
-		VkDeviceMemory testImageMemory;
-		VkImageView testView;
+		std::vector<Texture> textures;
 		VkSampler defaultSampler;
 
 #ifdef NDEBUG
