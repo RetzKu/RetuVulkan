@@ -8,6 +8,11 @@ namespace RetuEngine
 	{
 		Create(renderer);
 	}
+	IndexBuffer::IndexBuffer(RenderInterface* renderer,std::vector<uint32_t> indices)
+	{
+		this->indices = indices;
+		Create(renderer);
+	}
 
 
 	IndexBuffer::~IndexBuffer()

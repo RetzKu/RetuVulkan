@@ -1,5 +1,6 @@
 #include "SwapChain.h"
 #include <algorithm>
+#include <array>
 
 namespace RetuEngine
 {
@@ -9,7 +10,7 @@ namespace RetuEngine
 
 	SwapChain::~SwapChain()
 	{
-
+		delete depth;
 	}
 
 	void SwapChain::Create(RenderInterface* renderer)
@@ -57,55 +58,10 @@ namespace RetuEngine
 		swapChainImageFormat = surfaceFormat.format;
 		swapChainExtent = extent;
 
+		depth = new Depth(renderer, extent);
+
 		CreateImageViews();
 	}
-
-	//void SwapChain::Create(const VkDevice* logicalDevice, VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface,Window* windowObj,SwapChainSupportDetails swapChainSupport)
-	//{
-	//	device = logicalDevice;
-	//	VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-	//	VkPresentModeKHR swapPresentMode = ChooseSwapPresentMode(swapChainSupport.presentmodes);
-	//	VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities,*windowObj);
-	//	
-	//	VkSwapchainCreateInfoKHR createInfo = {};
-	//	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	//	createInfo.surface = *surface;
-
-	//	uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-	//	if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
-	//	{
-	//		imageCount = swapChainSupport.capabilities.maxImageCount;
-	//	}
-	//	createInfo.minImageCount = imageCount;
-	//	createInfo.imageFormat = surfaceFormat.format;
-	//	createInfo.imageColorSpace = surfaceFormat.colorSpace;
-	//	createInfo.imageExtent = extent;
-	//	createInfo.imageArrayLayers = 1;
-	//	createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	//	createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;	
-	//	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-	//	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	//	createInfo.presentMode = swapPresentMode;
-	//	createInfo.clipped = VK_TRUE;
-	//	createInfo.oldSwapchain = VK_NULL_HANDLE;
-
-	//	if (vkCreateSwapchainKHR(*logicalDevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
-	//	{
-	//		throw std::runtime_error("Failed to create swapchain");
-	//	}
-	//	else
-	//	{
-	//		std::cout << "Swapchain created successfully" << std::endl;
-	//	}
-	//	vkGetSwapchainImagesKHR(*logicalDevice, swapChain, &imageCount, nullptr);
-	//	swapChainImages.resize(imageCount);
-	//	vkGetSwapchainImagesKHR(*logicalDevice, swapChain, &imageCount, swapChainImages.data());
-
-	//	swapChainImageFormat = surfaceFormat.format;
-	//	swapChainExtent = extent;
-
-	//	CreateImageViews();
-	//}
 
 	void SwapChain::CleanUp()
 	{
@@ -160,13 +116,13 @@ namespace RetuEngine
 
 		for (size_t i = 0; i < swapChainImageViews.size(); i++)
 		{
-			VkImageView attachments[] = { swapChainImageViews[i] };
+			std::array<VkImageView, 2> attachments = { swapChainImageViews[i],depth->depthImageView };
 
 			VkFramebufferCreateInfo framebufferCreateInfo = {};
 			framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferCreateInfo.renderPass = *renderPass;
-			framebufferCreateInfo.attachmentCount = 1;
-			framebufferCreateInfo.pAttachments = attachments;
+			framebufferCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+			framebufferCreateInfo.pAttachments = attachments.data();
 			framebufferCreateInfo.width = swapChainExtent.width;
 			framebufferCreateInfo.height = swapChainExtent.height;
 			framebufferCreateInfo.layers = 1;

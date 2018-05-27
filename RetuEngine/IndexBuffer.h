@@ -8,6 +8,7 @@ namespace RetuEngine
 	{
 	public:
 		IndexBuffer(RenderInterface* renderer);
+		IndexBuffer(RenderInterface* renderer,std::vector<uint32_t> indices);
 		~IndexBuffer();
 
 		void Create(RenderInterface* renderer);
@@ -17,7 +18,7 @@ namespace RetuEngine
 
 		std::vector<VkDeviceSize> offsets;
 	protected:
-		const std::vector<uint32_t> indices =
+		std::vector<uint32_t> indices =
 		{
 			0,1,2,2,3,0
 		};

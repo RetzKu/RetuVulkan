@@ -4,7 +4,8 @@
 #include <map>
 #include <algorithm>
 #include <set>
-
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
 
 namespace RetuEngine
 {
@@ -35,20 +36,22 @@ namespace RetuEngine
 
 		std::vector<Vertex> vertices =
 		{
-			{ { 0.5f, 0.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 1.5f, 0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 1.5f, 1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { 0.5f, 1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+			{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+			{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+			{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+			{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
 		};
 
-		renderables.push_back(new RenderableObject(renderer, camera));
-		renderables.push_back(new RenderableObject(renderer, camera,vertices));
+		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
+		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
+		//renderables.push_back(new Sprite(renderer, camera, "Weeb.bmp"));
+		renderables.push_back(new Model(renderer, camera, "chalet.obj"));
 
-		textures.push_back(Texture{ "Pekka.bmp",renderer });
-
+		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
+		//delete model;
 		createTextureSampler();
 		CreateDescriptorPool();
-		CreateDescriptorSet(textures[0].imageView);
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 		CreateSemaphores();
 		GameLoop();
@@ -288,6 +291,20 @@ namespace RetuEngine
 
 	void Engine::CreateRenderPass()
 	{
+		VkAttachmentDescription depthAttachment = {};
+		depthAttachment.format = *swapChain->GetDepthFormat();
+		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference depthAttachmentRef = {};
+		depthAttachmentRef.attachment = 1;
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
 		VkAttachmentDescription colorAttachment = {};
 		colorAttachment.format = *swapChain->GetImageFormat();
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -306,6 +323,7 @@ namespace RetuEngine
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
 		VkSubpassDependency dependency = {};
 		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -315,10 +333,12 @@ namespace RetuEngine
 		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
+		std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+
 		VkRenderPassCreateInfo renderPassCreateInfo = {};
 		renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassCreateInfo.attachmentCount = 1;
-		renderPassCreateInfo.pAttachments = &colorAttachment;
+		renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		renderPassCreateInfo.pAttachments = attachments.data();
 		renderPassCreateInfo.subpassCount = 1;
 		renderPassCreateInfo.pSubpasses = &subpass;
 		renderPassCreateInfo.dependencyCount = 1;
@@ -371,15 +391,15 @@ namespace RetuEngine
 	{
 		std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount = 1;
+		poolSizes[0].descriptorCount = 1 + renderables.size();
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[1].descriptorCount = 1;
+		poolSizes[1].descriptorCount = renderables.size();
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = 1;
+		poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
 
 		if (vkCreateDescriptorPool(renderer->logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
 		{
@@ -391,56 +411,52 @@ namespace RetuEngine
 		}
 	}
 
-	void Engine::CreateDescriptorSet(VkImageView view)
+	void Engine::CreateDescriptorSets()
 	{
-		VkDescriptorSetLayout layouts[] = { descriptorSetlayout };
-
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = descriptorPool;
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = layouts;
-
-		VkDescriptorSet newDesc;
-		descriptorSets.push_back(newDesc);
-
-		if (vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &descriptorSets[0]) != VK_SUCCESS)
+		for (RenderableObject* object : renderables)
 		{
-			throw std::runtime_error("Failed to create Descriptor Pool");
+			VkDescriptorSetLayout layouts[] = { descriptorSetlayout };
+
+			VkDescriptorSetAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = descriptorPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = layouts;
+
+			if (vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, object->GetDescriptorSet()) != VK_SUCCESS) { throw std::runtime_error("Failed to create Descriptor Pool"); }
+			else { std::cout << "Created Descriptor Pool Successfully" << std::endl; }
+
+			std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = *object->GetUniformBuffer();
+			bufferInfo.offset = 0;
+			bufferInfo.range = object->GetUniformBufferSize();
+
+			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrites[0].dstSet = *object->GetDescriptorSet();
+			descriptorWrites[0].dstBinding = 0;
+			descriptorWrites[0].dstArrayElement = 0;
+			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrites[0].descriptorCount = 1;
+			descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+			VkDescriptorImageInfo imageInfo = {};
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = object->texture->imageView;
+			imageInfo.sampler = defaultSampler;
+
+			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrites[1].dstSet = *object->GetDescriptorSet();
+			descriptorWrites[1].dstBinding = 1;
+			descriptorWrites[1].dstArrayElement = 0;
+			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrites[1].descriptorCount = 1;
+			descriptorWrites[1].pImageInfo = &imageInfo;
+
+			vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
-		else
-		{
-			std::cout << "Created Descriptor Pool Successfully" << std::endl;
-		}
-		VkDescriptorImageInfo imageInfo = {};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = view;
-		imageInfo.sampler = defaultSampler;
 
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = *renderables[0]->GetUniformBuffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = renderables[0]->GetUniformBufferSize();
-
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = descriptorSets[0];
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = descriptorSets[0];
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pImageInfo = &imageInfo;
-
-		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateGraphicsPipeline()
@@ -538,6 +554,18 @@ namespace RetuEngine
 		pipelineLayoutInfo.setLayoutCount = 1;
 		pipelineLayoutInfo.pSetLayouts = &descriptorSetlayout;
 
+		VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f;
+		depthStencil.maxDepthBounds = 1.0f;
+		depthStencil.stencilTestEnable = VK_FALSE;
+		depthStencil.front = {};
+		depthStencil.back = {};
+
 		if (vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create pipeline layout");
@@ -559,6 +587,7 @@ namespace RetuEngine
 		pipelineCreateInfo.pColorBlendState = &colorBlending;
 		pipelineCreateInfo.layout = pipelineLayout;
 		pipelineCreateInfo.renderPass = renderPass;
+		pipelineCreateInfo.pDepthStencilState = &depthStencil;
 		pipelineCreateInfo.subpass = 0;
 
 		if (vkCreateGraphicsPipelines(renderer->logicalDevice,VK_NULL_HANDLE,1,&pipelineCreateInfo,nullptr,&graphicsPipeline) != VK_SUCCESS)
@@ -628,11 +657,13 @@ namespace RetuEngine
 			renderPassInfo.framebuffer = *swapChain->GetFramebuffer(i);
 			renderPassInfo.renderArea.offset = { 0,0 };
 			renderPassInfo.renderArea.extent = *swapChain->GetExtent();
-			VkClearValue clearColor = { 0.0f,0.0f,0.0f,1.0f };
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
 
-			/*Begin of Cut*/
+			std::array<VkClearValue, 2> clearValues = {};
+			clearValues[0].color = { 0.0f,0.0f,0.0f,1.0f };
+			clearValues[1].depthStencil = { 1.0f,0 };
+			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+			renderPassInfo.pClearValues = clearValues.data();
+
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
@@ -644,12 +675,11 @@ namespace RetuEngine
 				VkBuffer indexBuffer = *renderables[j]->GetIndexBuffer();
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[0], 0, nullptr);
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j]->GetDescriptorSet(), 0, nullptr);
 
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j]->GetIndicesSize()), 1, 0, 0, 0);
 			}
 			vkCmdEndRenderPass(commandBuffers[i]);
-			/*End of Cut*/
 
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
 			{

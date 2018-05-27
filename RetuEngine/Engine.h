@@ -1,4 +1,8 @@
 #pragma once
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 #include "VDeleter.h"
 #include <fstream>
 #include <vector>
@@ -14,11 +18,14 @@
 #include "QueueFamily.h"
 #include "CommandPool.h"
 #include "Buffer.h"
+#include "Depth.h"
 /*Engine Objects*/
 #include "Gameobject.h"
 #include "Input.h"
 #include "RenderableObject.h"
 #include "Texture.h"
+#include "Model.h"
+#include "Sprite.h"
 
 namespace RetuEngine 
 {
@@ -79,7 +86,7 @@ namespace RetuEngine
 		void CreateRenderPass();
 		void CreateDescriptorSetlayout();
 		void CreateDescriptorPool();
-		void CreateDescriptorSet(VkImageView view);
+		void CreateDescriptorSets();
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
 		void CreateCommandBuffers();
@@ -134,8 +141,6 @@ namespace RetuEngine
 		VkSemaphore imageAvailableSemaphore;
 
 		VkSemaphore renderFinishedSemaphore;
-
-		std::vector<VkDescriptorSet> descriptorSets;
 
 		std::vector<RenderableObject*> renderables;
 

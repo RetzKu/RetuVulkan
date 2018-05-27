@@ -4,18 +4,20 @@
 
 namespace RetuEngine
 {
-	RenderableObject::RenderableObject(RenderInterface* renderer,Camera* camera)
-	{
-		CreateVertexBuffer(renderer);
-		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer,camera);
-	}
-	RenderableObject::RenderableObject(RenderInterface* renderer, Camera* camera, std::vector<Vertex> vertices)
-	{
-		CreateVertexBuffer(renderer,vertices);
-		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer,camera);
-	}
+	//RenderableObject::RenderableObject(RenderInterface* renderer,Camera* camera,const char* file)
+	//{
+	//	texture = new Texture(file, renderer);
+	//	CreateVertexBuffer(renderer);
+	//	CreateIndexBuffer(renderer);
+	//	CreateUniformBuffer(renderer,camera);
+	//}
+	//RenderableObject::RenderableObject(RenderInterface* renderer, Camera* camera, std::vector<Vertex> vertices,const char* file)
+	//{
+	//	texture = new Texture(file, renderer);
+	//	CreateVertexBuffer(renderer,vertices);
+	//	CreateIndexBuffer(renderer);
+	//	CreateUniformBuffer(renderer,camera);
+	//}
 
 	void RenderableObject::CleanUp(VkDevice* device)
 	{
@@ -27,6 +29,13 @@ namespace RetuEngine
 	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer)
 	{
 		indexBuffer = new IndexBuffer(renderer);
+		if (indexBuffer == nullptr) { throw std::runtime_error("Failed to create Index Buffer"); return false; }
+		else { return true; }
+	}
+
+	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer, std::vector<uint32_t> indices)
+	{
+		indexBuffer = new IndexBuffer(renderer, indices);
 		if (indexBuffer == nullptr) { throw std::runtime_error("Failed to create Index Buffer"); return false; }
 		else { return true; }
 	}
