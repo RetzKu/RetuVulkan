@@ -26,6 +26,7 @@
 #include "Texture.h"
 #include "Model.h"
 #include "Sprite.h"
+#include "Pointlight.h"
 
 namespace RetuEngine 
 {
@@ -86,6 +87,9 @@ namespace RetuEngine
 		void CreateRenderPass();
 		void CreateDescriptorSetlayout();
 		void CreateDescriptorPool();
+		void CreateLights();
+		void CreateLightCullingDescriptorSet();
+		void LightVisibilityBuffer();
 		void CreateDescriptorSets();
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
@@ -132,6 +136,7 @@ namespace RetuEngine
 		SwapChain* swapChain;
 		VkRenderPass renderPass;
 		VkDescriptorSetLayout descriptorSetlayout;
+		VkDescriptorSetLayout lightDescriptorSetlayout;
 		VkPipelineLayout pipelineLayout;
 		VkPipeline graphicsPipeline;
 		VkDescriptorPool descriptorPool;
@@ -148,6 +153,12 @@ namespace RetuEngine
 
 		std::vector<Texture> textures;
 		VkSampler defaultSampler;
+
+		VkDescriptorSet lightDescriptor;
+		Buffer lightsStagingBuffer;
+		Buffer lightBuffer;
+		Buffer pointLightBuffer;
+		std::vector<Pointlight> pointLights;
 
 #ifdef NDEBUG
 		const bool enableValidationLayers = false;

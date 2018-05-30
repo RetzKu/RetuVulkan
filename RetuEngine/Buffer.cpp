@@ -17,6 +17,7 @@ namespace RetuEngine
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
+		bufferSize = size;
 		bufferInfo.usage = usage;
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -38,6 +39,61 @@ namespace RetuEngine
 			throw std::runtime_error("Failed to allocate memory for buffer");
 		}
 		vkBindBufferMemory(*logicalDevice, this->buffer, this->bufferMemory, 0);
+	}
+
+	void Buffer::CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice,const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags)
+	{
+		VkBufferCreateInfo buffer_info = {};
+		buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		buffer_info.size = size;
+		buffer_info.usage = usage;
+
+		QueueFamilyIndices indices = FindQueueFamilies(physicalDevice, surface);
+		if (indices.displayFamily == indices.transferFamily)
+		{
+			buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			uint32_t indicesArray[] = { static_cast<uint32_t>(indices.displayFamily) };
+			buffer_info.pQueueFamilyIndices = indicesArray;
+			buffer_info.queueFamilyIndexCount = 1;
+		}
+		else
+		{
+			buffer_info.sharingMode = VK_SHARING_MODE_CONCURRENT;
+			uint32_t indicesArray[] = { static_cast<uint32_t>(indices.displayFamily), static_cast<uint32_t>(indices.transferFamily) };
+			buffer_info.pQueueFamilyIndices = indicesArray;
+			buffer_info.queueFamilyIndexCount = 2;
+		}
+		buffer_info.flags = 0;
+		if (vkCreateBuffer(*logicalDevice, &buffer_info, nullptr, &buffer) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Error while creating buffer");
+		}
+		else
+		{
+			std::cout << "buffer created successfully" << std::endl;
+		}
+
+		// allocate memory for buffer
+		VkMemoryRequirements memory_req;
+		vkGetBufferMemoryRequirements(*logicalDevice, buffer, &memory_req);
+
+		VkMemoryAllocateInfo memory_alloc_info = {};
+		memory_alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		memory_alloc_info.allocationSize = memory_req.size;
+		memory_alloc_info.memoryTypeIndex = findMemoryType(*physicalDevice, memory_req.memoryTypeBits, flags);
+
+		auto memory_result = vkAllocateMemory(*logicalDevice, &memory_alloc_info, nullptr, &bufferMemory);
+		if (memory_result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate buffer memory!");
+		}
+
+		// bind buffer with memory
+		auto bind_result = vkBindBufferMemory(*logicalDevice, buffer, bufferMemory, 0);
+		if (bind_result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to bind buffer memory!");
+		}
 	}
 
 	void Buffer::CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags, VkBuffer& buffer, VkDeviceMemory& bufferMemory)

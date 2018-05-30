@@ -6,9 +6,17 @@
 #include <set>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
+#include <glm\gtc\random.hpp>
 
 namespace RetuEngine
 {
+
+	struct _Dummy_VisibleLightsForTile
+	{
+		uint32_t count;
+		std::array<uint32_t, 63> lightindices;
+	};
+
 	Engine::~Engine()
 	{
 		delete renderer;
@@ -44,13 +52,16 @@ namespace RetuEngine
 
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
-		//renderables.push_back(new Sprite(renderer, camera, "Weeb.bmp"));
-		renderables.push_back(new Model(renderer, camera, "chalet.obj"));
+		renderables.push_back(new Sprite(renderer, camera, "Weeb.bmp"));
+		//renderables.push_back(new Model(renderer, camera, "chalet.obj"));
 
 		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
 		//delete model;
 		createTextureSampler();
 		CreateDescriptorPool();
+		CreateLights();
+		CreateLightCullingDescriptorSet();
+		LightVisibilityBuffer();
 		CreateDescriptorSets();
 		CreateCommandBuffers();
 		CreateSemaphores();
@@ -371,6 +382,7 @@ namespace RetuEngine
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
+
 		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -385,15 +397,68 @@ namespace RetuEngine
 		{
 			std::cout << "Created Descriptor Layout Successfully" << std::endl;
 		}
+
+		std::vector<VkDescriptorSetLayoutBinding> setLayoutBinding = {};
+
+		{
+			// create descriptor for storage buffer for light culling results
+			VkDescriptorSetLayoutBinding lb = {};
+			lb.binding = 0;
+			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			lb.descriptorCount = 1;
+			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			lb.pImmutableSamplers = nullptr;
+			setLayoutBinding.push_back(lb);
+		}
+
+		{
+			// uniform buffer for point lights
+			VkDescriptorSetLayoutBinding lb = {};
+			lb.binding = 1;
+			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // FIXME: change back to uniform
+			lb.descriptorCount = 1;  // maybe we can use this for different types of lights
+			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			lb.pImmutableSamplers = nullptr;
+			setLayoutBinding.push_back(lb);
+		}
+
+		VkDescriptorSetLayoutCreateInfo layout_info = {};
+		layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layout_info.bindingCount = static_cast<uint32_t>(setLayoutBinding.size());
+		layout_info.pBindings = setLayoutBinding.data();
+
+		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &layout_info, nullptr, &lightDescriptorSetlayout) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create light descriptor layout");
+		}
+
+	}
+
+	void Engine::CreateLights()
+	{
+		for (int i = 0; i < 100; i++) {
+			glm::vec3 color;
+			do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
+			pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,1), glm::vec3(10,10,10)), 10, 10);
+		}
+
+		auto lightNum = static_cast<int>(pointLights.size());
+
+		pointLightBuffer.bufferSize = sizeof(Pointlight) * 100 + sizeof(glm::vec4);
+
+		lightsStagingBuffer.CreateBuffer(&renderer->logicalDevice,&renderer->physicalDevice,&renderer->surface,pointLightBuffer.bufferSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	}
 
 	void Engine::CreateDescriptorPool()
 	{
-		std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+		std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		poolSizes[0].descriptorCount = 1 + renderables.size();
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount = renderables.size();
+		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		poolSizes[2].descriptorCount = 3;
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -408,6 +473,21 @@ namespace RetuEngine
 		else
 		{
 			std::cout << "Created Descriptor Pool Successfully" << std::endl;
+		}
+	}
+
+	void Engine::CreateLightCullingDescriptorSet()
+	{
+		VkDescriptorSetLayout layouts[] = { lightDescriptorSetlayout };
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = descriptorPool;
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = layouts;
+
+		if (vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &lightDescriptor) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create light descriptor set");
 		}
 	}
 
@@ -551,8 +631,9 @@ namespace RetuEngine
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &descriptorSetlayout;
+		std::array<VkDescriptorSetLayout, 2> setLayouts = { descriptorSetlayout,lightDescriptorSetlayout };
+		pipelineLayoutInfo.setLayoutCount = static_cast<int>(setLayouts.size());
+		pipelineLayoutInfo.pSetLayouts = setLayouts.data();
 
 		VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
@@ -622,6 +703,50 @@ namespace RetuEngine
 			std::cout << "Shader module created successfully" << std::endl;
 		}
 		return shaderModule;
+	}
+
+	void Engine::LightVisibilityBuffer()
+	{
+		int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
+		int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
+
+		VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
+
+		lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		VkBuffer testB;
+		VkDeviceMemory bufferMem;
+
+		VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
+		lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
+		lightVisibilityBufferInfo.offset = 0;
+		lightVisibilityBufferInfo.range = lightBufferSize;
+
+		VkDescriptorBufferInfo pointLightBufferInfo = {};
+		pointLightBufferInfo.buffer = *pointLightBuffer.GetBuffer();
+		pointLightBufferInfo.offset = 0;
+		pointLightBufferInfo.range = pointLightBuffer.bufferSize;
+
+
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = lightDescriptor;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = lightDescriptor;
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pBufferInfo = &pointLightBufferInfo;
+
+		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateCommandBuffers()
