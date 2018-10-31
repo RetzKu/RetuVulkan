@@ -40,6 +40,6 @@ void main()
 	
 	outColor = vec4(result,1.0);
 	
-	//outColor = texture(texSampler,fragTexCoord);
+	outColor = texture(texSampler,fragTexCoord);
 	//outColor = outColor * result;
 }

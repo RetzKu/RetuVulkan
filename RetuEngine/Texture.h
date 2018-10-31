@@ -3,6 +3,8 @@
 #include "Buffer.h"
 #include "RenderInterface.h"
 
+#define MAX_TEXTURE_COUNT 900
+
 namespace RetuEngine
 {
 	class Texture
@@ -33,4 +35,62 @@ namespace RetuEngine
 		RenderInterface* renderer;
 	};
 
+	class TextureVector
+	{
+	public:
+		TextureVector() {};
+		~TextureVector()
+		{
+			for (Texture* var : textures)
+			{
+				delete var;
+			}
+		}
+
+		void Push(const char* name, Texture texture)
+		{
+			bool taken = false;
+			for (std::string var : names)
+			{
+				if(strcmp(var.c_str(),name) == 0)
+				{
+					std::cout << "Name taken: " << name << std::endl;
+					taken = true;
+					break;
+				}
+			}
+			if (!taken)
+			{
+				textures.push_back(new Texture(texture));
+				names.push_back(name);
+			}
+		}
+		void CleanUp()
+		{
+			for (Texture* var : textures)
+			{
+				var->CleanUpView();
+				var->CleanUpImage();
+				var->CleanUpMemory();
+			}
+		}
+		Texture* Get(std::string name)
+		{
+			int index = 0;
+			for (std::string var : names)
+			{
+				if (strcmp(name.c_str(), var.c_str()) == 0)
+				{
+					return textures[index];
+				}
+				index++;
+			}
+			return nullptr;
+		}
+		
+	private:
+		std::vector<Texture*> textures;
+		std::vector<std::string> names;
+		std::vector<int> freeSlots;
+	};
 }

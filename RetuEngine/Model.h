@@ -11,7 +11,8 @@ namespace RetuEngine
 	class Model : public RenderableObject 
 	{
 	public:
-		Model(RenderInterface * renderer,Camera* camera, const char * filepath);
+		Model(RenderInterface * renderer,Camera* camera, const char * filepath, glm::vec3 offset);
+		Model(RenderInterface * renderer,Camera* camera, const char * filepath,Texture* texture);
 		~Model();
 
 		void LoadModel(const char* filepath);

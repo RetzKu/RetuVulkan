@@ -21,26 +21,27 @@ namespace RetuEngine
 	{
 		delete renderer;
 		delete swapChain;
-		for (int i = 0; i < renderables.size(); i++)
-		{
-			delete renderables[i];
-		}
+		//for (int i = 0; i < renderables.size(); i++)
+		//{
+		//	delete renderables[i];
+		//}
 		delete camera;
 		delete inputManager;
 	}
 
 	void Engine::InitVulkan()
 	{
-		InitWindow();
-		CreateInstance();
-		SetupDebugCallback();
-		renderer = new RenderInterface(instance, &windowObj);
-		swapChain = new SwapChain();
+		InitWindow(); //Create GLFW window
+		CreateInstance(); //Create vulkan instance
+		SetupDebugCallback(); //Get vulkan call when something breaks up
+		renderer = new RenderInterface(instance, &windowObj); //renderinterface holds in multible parts of vulkan.
+		swapChain = new SwapChain(); 
 		swapChain->Create(renderer);
 		CreateRenderPass();
 		CreateDescriptorSetlayout();
 		CreateGraphicsPipeline();
-		swapChain->CreateFrameBuffers(&renderPass);
+		LoadTextures();
+		swapChain->CreateFrameBuffers(&renderPass); 
 
 		std::vector<Vertex> vertices =
 		{
@@ -52,8 +53,18 @@ namespace RetuEngine
 
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
-		renderables.push_back(new Sprite(renderer, camera, "Weeb.bmp"));
-		//renderables.push_back(new Model(renderer, camera, "chalet.obj"));
+		
+
+		for (int i = 0; i < 100; i++)
+		{
+			vertices[0].pos.x += 1;
+			vertices[1].pos.x += 1;
+			vertices[2].pos.x += 1;
+			vertices[3].pos.x += 1;
+			renderables.push_back(Sprite(renderer, camera, vertices, textures.Get("Weeb")));
+		}
+
+		//renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
 
 		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
 		//delete model;
@@ -71,18 +82,16 @@ namespace RetuEngine
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
-		for (Texture texture : textures) { texture.CleanUpView(); }
+		textures.CleanUp();
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, descriptorSetlayout, nullptr);
-		for (RenderableObject* rend : renderables)
+		for (RenderableObject rend : renderables)
 		{
-			rend->CleanUp(&renderer->logicalDevice);
+			rend.CleanUp(&renderer->logicalDevice);
 		}
 		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
-		for (Texture texture : textures) { texture.CleanUpImage(); }
-		for (Texture texture : textures) { texture.CleanUpMemory(); }
 		renderer->CleanCommandPools();
 		vkDestroyDevice(renderer->logicalDevice, VK_NULL_HANDLE);
 		DestoyDebugReportCallbackEXT(instance, callback, VK_NULL_HANDLE);
@@ -94,6 +103,7 @@ namespace RetuEngine
 
 	void Engine::CleanUpSwapChain()
 	{
+
 		swapChain->CleanUpFrameBuffers();
 		vkFreeCommandBuffers(renderer->logicalDevice,*renderer->GetCommandPool(),static_cast<uint32_t>(commandBuffers.size()),commandBuffers.data());
 		vkDestroyPipeline(renderer->logicalDevice, graphicsPipeline, VK_NULL_HANDLE);
@@ -108,9 +118,9 @@ namespace RetuEngine
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
 			glfwPollEvents();
-			for (RenderableObject* var : renderables)
+			for (RenderableObject var : renderables)
 			{
-				var->UpdateUniform(&renderer->logicalDevice, *swapChain->GetExtent());
+				var.UpdateUniform(&renderer->logicalDevice, *swapChain->GetExtent());
 			}
 			DrawFrame();
 
@@ -168,6 +178,20 @@ namespace RetuEngine
 		camera = new Camera();
 		glfwSetCursorPosCallback(windowObj.window, mouse_callback);
 		inputManager = new Input(windowObj.window,windowObj.height, windowObj.width,camera);
+	}
+
+	void Engine::LoadTextures()
+	{
+		Texture tempTexture("chalet.jpg",renderer);	//Textures for the house;
+		textures.Push("chalet", tempTexture);
+
+		tempTexture = Texture("Weeb.bmp", renderer); //Texture for weeb sprite;
+		textures.Push("Weeb", tempTexture);
+	}
+
+	void Engine::AddRenderable(glm::vec3 position, RenderableObject renderable)
+	{
+		renderables.push_back(renderable);
 	}
 
 	void Engine::ReCreateSwapChain()
@@ -464,7 +488,7 @@ namespace RetuEngine
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.maxSets = static_cast<uint32_t>(renderables.size()*2 + 1);
 
 		if (vkCreateDescriptorPool(renderer->logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
 		{
@@ -493,7 +517,7 @@ namespace RetuEngine
 
 	void Engine::CreateDescriptorSets()
 	{
-		for (RenderableObject* object : renderables)
+		for (int i = 0; i < renderables.size(); i++)
 		{
 			VkDescriptorSetLayout layouts[] = { descriptorSetlayout };
 
@@ -503,18 +527,25 @@ namespace RetuEngine
 			allocInfo.descriptorSetCount = 1;
 			allocInfo.pSetLayouts = layouts;
 
-			if (vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, object->GetDescriptorSet()) != VK_SUCCESS) { throw std::runtime_error("Failed to create Descriptor Pool"); }
-			else { std::cout << "Created Descriptor Pool Successfully" << std::endl; }
+			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, renderables[i].GetDescriptorSet());
+			if (result != VK_SUCCESS) 
+			{
+				throw std::runtime_error("Failed to allocate descriptorset"); 
+			}
+			else 
+			{ 
+				std::cout << "Allocated descriptor succesfully" << std::endl; 
+			}
 
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = *object->GetUniformBuffer();
+			bufferInfo.buffer = *renderables[i].GetUniformBuffer();
 			bufferInfo.offset = 0;
-			bufferInfo.range = object->GetUniformBufferSize();
+			bufferInfo.range = renderables[i].GetUniformBufferSize();
 
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[0].dstSet = *object->GetDescriptorSet();
+			descriptorWrites[0].dstSet = *renderables[i].GetDescriptorSet();
 			descriptorWrites[0].dstBinding = 0;
 			descriptorWrites[0].dstArrayElement = 0;
 			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -523,11 +554,11 @@ namespace RetuEngine
 
 			VkDescriptorImageInfo imageInfo = {};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = object->texture->imageView;
+			imageInfo.imageView = renderables[i].texture->imageView;
 			imageInfo.sampler = defaultSampler;
 
 			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[1].dstSet = *object->GetDescriptorSet();
+			descriptorWrites[1].dstSet = *renderables[i].GetDescriptorSet();
 			descriptorWrites[1].dstBinding = 1;
 			descriptorWrites[1].dstArrayElement = 0;
 			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -536,7 +567,6 @@ namespace RetuEngine
 
 			vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
-
 	}
 
 	void Engine::CreateGraphicsPipeline()
@@ -794,15 +824,16 @@ namespace RetuEngine
 
 			for (int j = 0; j < renderables.size(); j++)
 			{
-				VkBuffer vertexBuffers[] = { *renderables[j]->GetVertexBuffer() };
+				VkBuffer vertexBuffers[] = { *renderables[j].GetVertexBuffer() };
 				VkDeviceSize offsets[] = { 0 };
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				VkBuffer indexBuffer = *renderables[j]->GetIndexBuffer();
+				VkBuffer indexBuffer = *renderables[j].GetIndexBuffer();
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j]->GetDescriptorSet(), 0, nullptr);
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j].GetDescriptorSet(), 0, nullptr);
 
-				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j]->GetIndicesSize()), 1, 0, 0, 0);
+				//TODO: broken function. descriptor is empty
+				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j].GetIndicesSize()), 1, 0, 0, 0);
 			}
 			vkCmdEndRenderPass(commandBuffers[i]);
 

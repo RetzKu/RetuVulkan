@@ -60,6 +60,9 @@ namespace RetuEngine
 		void GameLoop();
 		Window windowObj;
 		Input* inputManager;
+
+		void AddRenderable(glm::vec3 position, RenderableObject renderable);
+		void LoadTextures();
 	private:
 		void InitWindow();
 		void ReCreateSwapChain();
@@ -142,16 +145,13 @@ namespace RetuEngine
 		VkDescriptorPool descriptorPool;
 
 		std::vector<VkCommandBuffer> commandBuffers;
-
 		VkSemaphore imageAvailableSemaphore;
-
 		VkSemaphore renderFinishedSemaphore;
-
-		std::vector<RenderableObject*> renderables;
+		std::vector<RenderableObject> renderables;
 
 		Camera* camera;
 
-		std::vector<Texture> textures;
+		TextureVector textures;
 		VkSampler defaultSampler;
 
 		VkDescriptorSet lightDescriptor;

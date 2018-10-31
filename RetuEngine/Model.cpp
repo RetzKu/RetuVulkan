@@ -21,16 +21,29 @@ namespace std {
 
 namespace RetuEngine
 {
-	Model::Model(RenderInterface * renderer,Camera* camera, const char * filepath)
+	Model::Model(RenderInterface * renderer,Camera* camera, const char * filepath, glm::vec3 offset)
 	{
 		this->renderer = renderer;
 		LoadModel(filepath);
+		for(int i = 0; i < vertices.size(); i++)
+		{
+			vertices[i].pos += offset;
+		}
 		CreateVertexBuffer(renderer,vertices);
 		CreateIndexBuffer(renderer,indices);
 		CreateUniformBuffer(renderer, camera);
-		texture = new Texture("chalet.jpg", renderer);
 	}
 
+	Model::Model(RenderInterface * renderer,Camera* camera, const char * filepath, Texture* texture)
+	{
+		this->renderer = renderer;
+		LoadModel(filepath);
+		this->texture = texture;
+		CreateVertexBuffer(renderer,vertices);
+		CreateIndexBuffer(renderer,indices);
+		CreateUniformBuffer(renderer, camera);
+	}
+	
 	Model::~Model()
 	{
 
