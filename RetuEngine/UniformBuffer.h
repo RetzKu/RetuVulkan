@@ -33,6 +33,8 @@ namespace RetuEngine
 		UniformBuffer(RenderInterface* renderer, Camera* camera);
 		~UniformBuffer();
 
+		UniformBufferObject ubo = {  };
+
 		/*Getters*/
 		VkDeviceSize GetUniformBufferSize() { return sizeof(UniformBufferObject);}
 

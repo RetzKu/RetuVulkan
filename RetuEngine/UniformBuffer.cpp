@@ -25,8 +25,7 @@ namespace RetuEngine
 	}
 	void UniformBuffer::Update(const VkDevice* logicalDevice, const VkExtent2D &swapChainExtent)
 	{
-		UniformBufferObject ubo = {  };
-		ubo.Model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f) , glm::vec3(1.0f, 0.0f, 0.0f));
+		//ubo.Model = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f) , glm::vec3(1.0f, 0.0f, 0.0f));
 		//glm::lookat(worldspace of eye,point eye is looking at, which way is upwards)
 		ubo.view = glm::lookAt(camera->cameraPos,  camera->cameraPos + camera->cameraFront, camera->cameraUp);
 		ubo.proj = glm::perspective(glm::radians(90.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10000.0f);

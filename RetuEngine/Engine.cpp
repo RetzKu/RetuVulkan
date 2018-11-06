@@ -45,17 +45,17 @@ namespace RetuEngine
 
 		std::vector<Vertex> vertices =
 		{
-			{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+			{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
+			{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
+			{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{1.0f,1.0f,0.0f}},
+			{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{1.0f,1.0f,0.0f}}
 		};
 
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
 		
 
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			vertices[0].pos.x += 1;
 			vertices[1].pos.x += 1;
