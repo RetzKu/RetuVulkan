@@ -6,7 +6,7 @@ namespace RetuEngine
 	class CommandPool
 	{
 	public:
-		CommandPool(const VkDevice* logicalDevice, uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags = 0/* = 0*/);
+		CommandPool(const VkDevice* logicalDevice, uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT/* = 0*/);
 		~CommandPool();
 
 		void CleanUp(const VkDevice* logicalDevice);

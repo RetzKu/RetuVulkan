@@ -160,7 +160,8 @@ namespace RetuEngine
 		Buffer pointLightBuffer;
 		std::vector<Pointlight> pointLights;
 
-#ifdef NDEBUG
+//#define NDEBUG
+#ifdef NDEBUG 
 		const bool enableValidationLayers = false;
 #else
 		const bool enableValidationLayers = true;

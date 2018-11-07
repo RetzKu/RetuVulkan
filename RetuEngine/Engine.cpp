@@ -45,10 +45,14 @@ namespace RetuEngine
 
 		std::vector<Vertex> vertices =
 		{
-			{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
-			{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
-			{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{1.0f,1.0f,0.0f}},
-			{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{1.0f,1.0f,0.0f}}
+			//{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
+			//{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
+			//{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{1.0f,1.0f,0.0f}},
+			//{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{1.0f,1.0f,0.0f}}
+			{ { 0.0f, 0.0f,0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
+			{ { 1.0f, 0.0f,0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
+			{ { 1.0f, 0.0f,1.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f } ,{0.0f,1.0f,0.0f}},
+			{ { 0.0f, 0.0f,1.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 1.0f } ,{0.0f,1.0f,0.0f}}
 		};
 
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
@@ -65,6 +69,8 @@ namespace RetuEngine
 		}
 
 		//renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
+
+		//renderables.push_back(Model(renderer, camera, "Bunny.obj", textures.Get("chalet")));
 
 		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
 		//delete model;
