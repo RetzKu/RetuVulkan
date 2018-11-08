@@ -59,7 +59,7 @@ namespace RetuEngine
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
 		
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			vertices[0].pos.x += 1;
 			vertices[1].pos.x += 1;
@@ -399,18 +399,18 @@ namespace RetuEngine
 	void Engine::CreateDescriptorSetlayout()
 	{
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.binding = 0; 
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; //uniform buffer. Uniform lisätty shaderiin
 		uboLayoutBinding.descriptorCount = 1;
 		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; //vertex shaderille
 
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //kerrotaan että bindattava on texshader
 		samplerLayoutBinding.descriptorCount = 1;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
 
 		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
@@ -432,30 +432,36 @@ namespace RetuEngine
 
 		{
 			// create descriptor for storage buffer for light culling results
-			VkDescriptorSetLayoutBinding lb = {};
-			lb.binding = 0;
-			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			lb.descriptorCount = 1;
-			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-			lb.pImmutableSamplers = nullptr;
-			setLayoutBinding.push_back(lb);
+			//VkDescriptorSetLayoutBinding lb = {};
+			//lb.binding = 0;
+			//lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			//lb.descriptorCount = 1;
+			//lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			//lb.pImmutableSamplers = nullptr;
+			//setLayoutBinding.push_back(lb);
 		}
 
 		{
 			// uniform buffer for point lights
 			VkDescriptorSetLayoutBinding lb = {};
-			lb.binding = 1;
+			lb.binding = 0;
 			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // FIXME: change back to uniform
 			lb.descriptorCount = 1;  // maybe we can use this for different types of lights
-			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			lb.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 			lb.pImmutableSamplers = nullptr;
 			setLayoutBinding.push_back(lb);
 		}
 
 		VkDescriptorSetLayoutCreateInfo layout_info = {};
 		layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layout_info.bindingCount = static_cast<uint32_t>(setLayoutBinding.size());
-		layout_info.pBindings = setLayoutBinding.data();
+		layout_info.pNext = NULL;
+		layout_info.flags = 0;
+		layout_info.bindingCount = 1;
+		layout_info.pBindings = &setLayoutBinding[0];
+
+		//layout_info.bindingCount = static_cast<uint32_t>(setLayoutBinding.size());
+		//layout_info.pBindings = setLayoutBinding.data();
+
 
 		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &layout_info, nullptr, &lightDescriptorSetlayout) != VK_SUCCESS)
 		{
@@ -466,10 +472,16 @@ namespace RetuEngine
 
 	void Engine::CreateLights()
 	{
-		for (int i = 0; i < 100; i++) {
-			glm::vec3 color;
-			do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
-			pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,1), glm::vec3(10,10,10)), 10, 10);
+		//for (int i = 0; i < 10; i++) {
+		//	glm::vec3 color;
+		//	do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
+		//	pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,1), glm::vec3(10,10,10)), 10, 10);
+		//}
+		
+		for (int i = 0; i < 10; i++)
+		{
+			Pointlight tmp(glm::vec3(i,0.5f,0), 10, glm::vec3(1,1,1));
+			pointLights.push_back(tmp);
 		}
 
 		auto lightNum = static_cast<int>(pointLights.size());
@@ -753,10 +765,10 @@ namespace RetuEngine
 		VkBuffer testB;
 		VkDeviceMemory bufferMem;
 
-		VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
-		lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
-		lightVisibilityBufferInfo.offset = 0;
-		lightVisibilityBufferInfo.range = lightBufferSize;
+		//VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
+		//lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
+		//lightVisibilityBufferInfo.offset = 0;
+		//lightVisibilityBufferInfo.range = lightBufferSize;
 
 		VkDescriptorBufferInfo pointLightBufferInfo = {};
 		pointLightBufferInfo.buffer = *pointLightBuffer.GetBuffer();
@@ -764,7 +776,15 @@ namespace RetuEngine
 		pointLightBufferInfo.range = pointLightBuffer.bufferSize;
 
 
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+		std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+
+		//descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		//descriptorWrites[0].dstSet = lightDescriptor;
+		//descriptorWrites[0].dstBinding = 0;
+		//descriptorWrites[0].dstArrayElement = 0;
+		//descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		//descriptorWrites[0].descriptorCount = 1;
+		//descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = lightDescriptor;
@@ -772,15 +792,7 @@ namespace RetuEngine
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
-
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = lightDescriptor;
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pBufferInfo = &pointLightBufferInfo;
+		descriptorWrites[0].pBufferInfo = &pointLightBufferInfo;
 
 		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}

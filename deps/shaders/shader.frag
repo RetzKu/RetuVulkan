@@ -1,7 +1,6 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
-
-layout(binding = 1) uniform sampler2D texSampler;
+#extension GL_ARB_shading_language_420pack : enable
 
 struct PointLight {
 	vec3 pos;
@@ -9,11 +8,15 @@ struct PointLight {
 	vec3 intensity;
 };
 
-layout(std140, set = 1, binding = 0) uniform UniformBufferObject
+layout(std140, set = 0, binding = 0) buffer readonly pointlights
 {
-	int lightNum;
-	PointLight pointlight[10000];
+	//int lightNum;
+	PointLight pointlight[10];
 };
+
+layout(set = 1, binding = 0) uniform sampler2D texSampler;
+
+
 
 
 layout(location = 0) in vec3 fragColor;
@@ -33,7 +36,8 @@ void main()
 	
 	
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(vec3(0,0,0) - FragPos);
+	//vec3 lightDir = normalize(vec3(0,0.5,0) - FragPos);
+	vec3 lightDir = normalize(pointlight[0].pos - FragPos);
 	float diff = max(dot(norm,lightDir),0.0);
 	vec3 diffuse = diff * lightCol;
 	vec3 result = (ambient + diffuse)* col;
