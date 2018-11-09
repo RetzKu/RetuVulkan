@@ -91,7 +91,7 @@ namespace RetuEngine
 		void CreateDescriptorSetlayout();
 		void CreateDescriptorPool();
 		void CreateLights();
-		void CreateLightCullingDescriptorSet();
+		void CreateLightDescriptorSets();
 		void LightVisibilityBuffer();
 		void CreateDescriptorSets();
 		void CreateGraphicsPipeline();

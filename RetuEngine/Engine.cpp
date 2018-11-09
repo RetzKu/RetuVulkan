@@ -76,10 +76,11 @@ namespace RetuEngine
 		//delete model;
 		createTextureSampler();
 		CreateDescriptorPool();
-		CreateLights();
-		CreateLightCullingDescriptorSet();
-		LightVisibilityBuffer();
 		CreateDescriptorSets();
+
+		CreateLights();
+		CreateLightDescriptorSets();
+		LightVisibilityBuffer();
 		CreateCommandBuffers();
 		CreateSemaphores();
 		GameLoop();
@@ -412,6 +413,7 @@ namespace RetuEngine
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
+		//VkDescriptorBufferInfo
 
 		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
@@ -427,6 +429,7 @@ namespace RetuEngine
 		{
 			std::cout << "Created Descriptor Layout Successfully" << std::endl;
 		}
+
 
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBinding = {};
 
@@ -472,24 +475,25 @@ namespace RetuEngine
 
 	void Engine::CreateLights()
 	{
-		//for (int i = 0; i < 10; i++) {
-		//	glm::vec3 color;
-		//	do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
-		//	pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,1), glm::vec3(10,10,10)), 10, 10);
-		//}
-		
-		for (int i = 0; i < 10; i++)
-		{
-			Pointlight tmp(glm::vec3(i,0.5f,0), 10, glm::vec3(1,1,1));
-			pointLights.push_back(tmp);
+		for (int i = 0; i < 10; i++) {
+			glm::vec3 color;
+			do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
+			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10));
 		}
+		
+		//for (int i = 0; i < 10; i++)
+		//{
+		//	Pointlight tmp(glm::vec3(i,0.5f,0), 10, glm::vec3(1,1,1));
+		//	pointLights.push_back(tmp);
+		//}
 
-		auto lightNum = static_cast<int>(pointLights.size());
+		pointLightBuffer.bufferSize = sizeof(Pointlight) * 10;
 
-		pointLightBuffer.bufferSize = sizeof(Pointlight) * 100 + sizeof(glm::vec4);
 
-		lightsStagingBuffer.CreateBuffer(&renderer->logicalDevice,&renderer->physicalDevice,&renderer->surface,pointLightBuffer.bufferSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		pointLightBuffer.Create(renderer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, pointLights, 10);
+		//lightsStagingBuffer.CreateBuffer(&renderer->logicalDevice,&renderer->physicalDevice,&renderer->surface,pointLightBuffer.bufferSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		//pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		//pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	}
 
 	void Engine::CreateDescriptorPool()
@@ -518,7 +522,7 @@ namespace RetuEngine
 		}
 	}
 
-	void Engine::CreateLightCullingDescriptorSet()
+	void Engine::CreateLightDescriptorSets()
 	{
 		VkDescriptorSetLayout layouts[] = { lightDescriptorSetlayout };
 		VkDescriptorSetAllocateInfo allocInfo = {};
@@ -531,6 +535,47 @@ namespace RetuEngine
 		{
 			throw std::runtime_error("Failed to create light descriptor set");
 		}
+
+		int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
+		int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
+
+		VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
+
+		lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		VkBuffer testB;
+		VkDeviceMemory bufferMem;
+
+		//VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
+		//lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
+		//lightVisibilityBufferInfo.offset = 0;
+		//lightVisibilityBufferInfo.range = lightBufferSize;
+
+		VkDescriptorBufferInfo pointLightBufferInfo = {};
+		pointLightBufferInfo.buffer = *pointLightBuffer.GetBuffer();
+		pointLightBufferInfo.offset = 0;
+		pointLightBufferInfo.range = pointLightBuffer.bufferSize;
+
+
+		std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
+
+		//descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		//descriptorWrites[0].dstSet = lightDescriptor;
+		//descriptorWrites[0].dstBinding = 0;
+		//descriptorWrites[0].dstArrayElement = 0;
+		//descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		//descriptorWrites[0].descriptorCount = 1;
+		//descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = lightDescriptor;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &pointLightBufferInfo;
+
+		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateDescriptorSets()
@@ -755,46 +800,7 @@ namespace RetuEngine
 
 	void Engine::LightVisibilityBuffer()
 	{
-		int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
-		int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
 
-		VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
-
-		lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-		VkBuffer testB;
-		VkDeviceMemory bufferMem;
-
-		//VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
-		//lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
-		//lightVisibilityBufferInfo.offset = 0;
-		//lightVisibilityBufferInfo.range = lightBufferSize;
-
-		VkDescriptorBufferInfo pointLightBufferInfo = {};
-		pointLightBufferInfo.buffer = *pointLightBuffer.GetBuffer();
-		pointLightBufferInfo.offset = 0;
-		pointLightBufferInfo.range = pointLightBuffer.bufferSize;
-
-
-		std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
-
-		//descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		//descriptorWrites[0].dstSet = lightDescriptor;
-		//descriptorWrites[0].dstBinding = 0;
-		//descriptorWrites[0].dstArrayElement = 0;
-		//descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		//descriptorWrites[0].descriptorCount = 1;
-		//descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
-
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = lightDescriptor;
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &pointLightBufferInfo;
-
-		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateCommandBuffers()
@@ -848,7 +854,9 @@ namespace RetuEngine
 				VkBuffer indexBuffer = *renderables[j].GetIndexBuffer();
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j].GetDescriptorSet(), 0, nullptr);
+				std::array<VkDescriptorSet, 2> descriptor_sets = { *renderables[j].GetDescriptorSet(), lightDescriptor };
+				//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j].GetDescriptorSet(), 0, nullptr);
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptor_sets.data(), 0, nullptr);
 
 				//TODO: broken function. descriptor is empty
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j].GetIndicesSize()), 1, 0, 0, 0);

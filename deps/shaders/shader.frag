@@ -8,22 +8,18 @@ struct PointLight {
 	vec3 intensity;
 };
 
-layout(std140, set = 0, binding = 0) buffer readonly pointlights
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
+
+layout(std140, set = 1, binding = 0) buffer pointlights
 {
 	//int lightNum;
 	PointLight pointlight[10];
 };
 
-layout(set = 1, binding = 0) uniform sampler2D texSampler;
-
-
-
-
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
-
-layout(location = 2)in vec3 Normal;
-layout(location = 3)in vec3 FragPos;
+layout(location = 2) in vec3 Normal;
+layout(location = 3) in vec3 FragPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -43,6 +39,10 @@ void main()
 	vec3 result = (ambient + diffuse)* col;
 	
 	outColor = vec4(result,1.0);
+
+	if(pointlight[0].pos.y != 0.5 || pointlight[0].pos.x != 0.5 || pointlight[0].pos.z != 0.5  )
+	{
+		//outColor = vec4(0,0,0,1);
+	}
 	
-	//outColor = texture(texSampler,fragTexCoord);
 }

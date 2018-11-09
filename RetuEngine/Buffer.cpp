@@ -41,6 +41,7 @@ namespace RetuEngine
 		vkBindBufferMemory(*logicalDevice, this->buffer, this->bufferMemory, 0);
 	}
 
+
 	void Buffer::CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice,const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags)
 	{
 		VkBufferCreateInfo buffer_info = {};
