@@ -13,8 +13,8 @@ namespace RetuEngine
 	class Buffer
 	{
 	public:
-		Buffer();
-		~Buffer();
+		Buffer(RenderInterface* renderer) { this->renderer = renderer; };
+		Buffer() {};
 		VkBuffer* GetBuffer() { return &buffer; }
 		VkDeviceMemory* GetBufferMemory() { return &bufferMemory; }
 		void CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
@@ -24,23 +24,35 @@ namespace RetuEngine
 
 		void CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags);
 		void CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, const VkSurfaceKHR* surface, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+		void* data;
+		VkDeviceSize currentOffset;
+
+		void StartMapping(VkDeviceSize bufferSize);
+		void Map(void* newData, VkDeviceSize size);
+		void StopMapping(VkBufferUsageFlags usage);
+
 		VkDeviceSize bufferSize;
+
+
+		VkBuffer buffer;
+		VkDeviceMemory bufferMemory;
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+
+		RenderInterface* renderer;
+
 	protected:
 		void CleanUpBuffer(const VkDevice* logicalDevice, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		void CopyBuffer(const VkDevice* logicalDevice, const VkCommandPool* commandPool, VkBuffer src, VkBuffer dst, VkDeviceSize size, const VkQueue* queue);
 
-	protected:
-
-		VkBuffer buffer;
-		VkDeviceMemory bufferMemory;
+	
 	};
 
 	template<class T>
 	void Buffer::Create(RenderInterface* renderer, VkBufferUsageFlags usage, std::vector<T> data, int amount) {
-		VkDeviceSize bufferSize = sizeof(data[0]) * amount;
+		bufferSize = sizeof(data[0]) * amount;
 
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
 
 		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 

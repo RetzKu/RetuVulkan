@@ -11,6 +11,8 @@
 namespace RetuEngine
 {
 
+#define MAX_LIGHT_COUNT 200
+
 	struct _Dummy_VisibleLightsForTile
 	{
 		uint32_t count;
@@ -79,6 +81,7 @@ namespace RetuEngine
 		CreateDescriptorSets();
 
 		CreateLights();
+		UpdateUniformBuffers();
 		CreateLightDescriptorSets();
 		LightVisibilityBuffer();
 		CreateCommandBuffers();
@@ -475,25 +478,22 @@ namespace RetuEngine
 
 	void Engine::CreateLights()
 	{
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			glm::vec3 color;
 			do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
-			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10));
+			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10),color);
 		}
-		
-		//for (int i = 0; i < 10; i++)
-		//{
-		//	Pointlight tmp(glm::vec3(i,0.5f,0), 10, glm::vec3(1,1,1));
-		//	pointLights.push_back(tmp);
-		//}
 
-		pointLightBuffer.bufferSize = sizeof(Pointlight) * 10;
+		int lightnum = pointLights.size();
 
+		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(int);
 
-		pointLightBuffer.Create(renderer, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, pointLights, 10);
-		//lightsStagingBuffer.CreateBuffer(&renderer->logicalDevice,&renderer->physicalDevice,&renderer->surface,pointLightBuffer.bufferSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		//pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		//pointLightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, pointLightBuffer.bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT , VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		pointLightBuffer = Buffer(renderer);
+		pointLightBuffer.StartMapping(size);
+		pointLightBuffer.Map(&lightnum, sizeof(int));
+		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
+		pointLightBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
 	}
 
 	void Engine::CreateDescriptorPool()
@@ -556,17 +556,7 @@ namespace RetuEngine
 		pointLightBufferInfo.offset = 0;
 		pointLightBufferInfo.range = pointLightBuffer.bufferSize;
 
-
 		std::array<VkWriteDescriptorSet, 1> descriptorWrites = {};
-
-		//descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		//descriptorWrites[0].dstSet = lightDescriptor;
-		//descriptorWrites[0].dstBinding = 0;
-		//descriptorWrites[0].dstArrayElement = 0;
-		//descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		//descriptorWrites[0].descriptorCount = 1;
-		//descriptorWrites[0].pBufferInfo = &lightVisibilityBufferInfo;
-
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = lightDescriptor;
 		descriptorWrites[0].dstBinding = 0;
@@ -855,7 +845,6 @@ namespace RetuEngine
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 				std::array<VkDescriptorSet, 2> descriptor_sets = { *renderables[j].GetDescriptorSet(), lightDescriptor };
-				//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, renderables[j].GetDescriptorSet(), 0, nullptr);
 				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptor_sets.data(), 0, nullptr);
 
 				//TODO: broken function. descriptor is empty
@@ -945,5 +934,19 @@ namespace RetuEngine
 		if (vkCreateSampler(renderer->logicalDevice, &samplerInfo, nullptr, &defaultSampler) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create texture sampler!");
 		}
+	}
+
+	void Engine::UpdateUniformBuffers()
+	{
+		//Light ubo
+		//int light_num = pointLights.size();
+		//VkDeviceSize bufferSize = sizeof(Pointlight) * MAX_LIGHT_COUNT + sizeof(glm::vec4);
+
+		//void* data;
+		//vkMapMemory(renderer->logicalDevice, lightBuffer.stagingBufferMemory, 0, lightBuffer.bufferSize, 0, &data);
+		//memcpy(data, &light_num, sizeof(int));
+		//memcpy((char*)data + sizeof(glm::vec4), pointLights.data(), bufferSize);
+		//vkUnmapMemory(renderer->logicalDevice, lightBuffer.stagingBufferMemory);
+		//lightBuffer.SwapStage(&renderer->logicalDevice, renderer->GetCommandPool(), &renderer->transferQueue);
 	}
 }

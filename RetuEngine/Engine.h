@@ -100,6 +100,7 @@ namespace RetuEngine
 		void CreateSemaphores();
 		void DrawFrame();
 		void createTextureSampler();
+		void UpdateUniformBuffers();
 
 		VkResult CreateDebugReportReportCallbackEXT(
 			VkInstance istance,
