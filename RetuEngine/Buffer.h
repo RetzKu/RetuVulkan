@@ -32,6 +32,10 @@ namespace RetuEngine
 		void Map(void* newData, VkDeviceSize size);
 		void StopMapping(VkBufferUsageFlags usage);
 
+		void StartUpdate();
+		void UpdateMap(void* newData, VkDeviceSize size);
+		void StopUpdate(VkBufferUsageFlags);
+
 		VkDeviceSize bufferSize;
 
 

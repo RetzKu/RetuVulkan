@@ -8,11 +8,20 @@
 
 namespace RetuEngine
 {
+	enum DefaultModelType
+	{
+		CUBE,
+		SPHERE,
+		PLANE,
+		TRIANGLE,
+	};
+
 	class Model : public RenderableObject 
 	{
 	public:
 		Model(RenderInterface * renderer,Camera* camera, const char * filepath, glm::vec3 offset);
 		Model(RenderInterface * renderer,Camera* camera, const char * filepath,Texture* texture);
+		Model(RenderInterface * renderer, Camera* camera, const char * filepath, glm::vec3 offset ,glm::vec3 color);
 		~Model();
 
 		void LoadModel(const char* filepath);

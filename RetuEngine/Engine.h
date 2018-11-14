@@ -94,6 +94,7 @@ namespace RetuEngine
 		void CreateLightDescriptorSets();
 		void LightVisibilityBuffer();
 		void CreateDescriptorSets();
+		void CreateCameraDescriptorSets();
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
 		void CreateCommandBuffers();
@@ -160,6 +161,10 @@ namespace RetuEngine
 		Buffer lightBuffer;
 		Buffer pointLightBuffer;
 		std::vector<Pointlight> pointLights;
+
+		VkDescriptorSetLayout cameraSetLayout;
+		VkDescriptorSet cameraSet;
+		Buffer cameraBuffer;
 
 //#define NDEBUG
 #ifdef NDEBUG 

@@ -51,15 +51,14 @@ namespace RetuEngine
 			//{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
 			//{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{1.0f,1.0f,0.0f}},
 			//{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{1.0f,1.0f,0.0f}}
-			{ { 0.0f, 0.0f,0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
-			{ { 1.0f, 0.0f,0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
+			{ { -1.0f, 0.0f,-1.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
+			{ { 1.0f, 0.0f,-1.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
 			{ { 1.0f, 0.0f,1.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f } ,{0.0f,1.0f,0.0f}},
-			{ { 0.0f, 0.0f,1.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 1.0f } ,{0.0f,1.0f,0.0f}}
+			{ { -1.0f, 0.0f,1.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 1.0f } ,{0.0f,1.0f,0.0f}}
 		};
 
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
-		
 
 		for (int i = 0; i < 1; i++)
 		{
@@ -67,22 +66,25 @@ namespace RetuEngine
 			vertices[1].pos.x += 1;
 			vertices[2].pos.x += 1;
 			vertices[3].pos.x += 1;
-			renderables.push_back(Sprite(renderer, camera, vertices, textures.Get("Weeb")));
+			//renderables.push_back(Sprite(renderer, camera, vertices, textures.Get("Weeb")));
 		}
 
 		//renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
-
-		//renderables.push_back(Model(renderer, camera, "Bunny.obj", textures.Get("chalet")));
+		
+		renderables.push_back(Model(renderer, camera, "Bunny.obj", textures.Get("chalet")));
 
 		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
 		//delete model;
 		createTextureSampler();
 		CreateDescriptorPool();
-		CreateDescriptorSets();
+
+		CreateDescriptorSets(); //for objects
 
 		CreateLights();
-		UpdateUniformBuffers();
-		CreateLightDescriptorSets();
+		CreateLightDescriptorSets();  
+
+		CreateCameraDescriptorSets();
+
 		LightVisibilityBuffer();
 		CreateCommandBuffers();
 		CreateSemaphores();
@@ -96,6 +98,7 @@ namespace RetuEngine
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, descriptorSetlayout, nullptr);
+		vkDestroyDescriptorSetLayout(renderer->logicalDevice, lightDescriptorSetlayout, nullptr);
 		for (RenderableObject rend : renderables)
 		{
 			rend.CleanUp(&renderer->logicalDevice);
@@ -132,6 +135,7 @@ namespace RetuEngine
 			{
 				var.UpdateUniform(&renderer->logicalDevice, *swapChain->GetExtent());
 			}
+			UpdateUniformBuffers();
 			DrawFrame();
 
 			float cameraSpeed = 0.005f; // adjust accordingly
@@ -416,6 +420,8 @@ namespace RetuEngine
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
+
+
 		//VkDescriptorBufferInfo
 
 		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
@@ -453,23 +459,40 @@ namespace RetuEngine
 			lb.binding = 0;
 			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // FIXME: change back to uniform
 			lb.descriptorCount = 1;  // maybe we can use this for different types of lights
-			lb.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT| VK_SHADER_STAGE_FRAGMENT_BIT;
 			lb.pImmutableSamplers = nullptr;
 			setLayoutBinding.push_back(lb);
 		}
 
-		VkDescriptorSetLayoutCreateInfo layout_info = {};
-		layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layout_info.pNext = NULL;
-		layout_info.flags = 0;
-		layout_info.bindingCount = 1;
-		layout_info.pBindings = &setLayoutBinding[0];
-
-		//layout_info.bindingCount = static_cast<uint32_t>(setLayoutBinding.size());
-		//layout_info.pBindings = setLayoutBinding.data();
+		VkDescriptorSetLayoutCreateInfo lightInfo = {};
+		lightInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		lightInfo.pNext = NULL;
+		lightInfo.flags = 0;
+		lightInfo.bindingCount = static_cast<uint32_t>(setLayoutBinding.size());
+		lightInfo.pBindings = setLayoutBinding.data();
 
 
-		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &layout_info, nullptr, &lightDescriptorSetlayout) != VK_SUCCESS)
+		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &lightInfo, nullptr, &lightDescriptorSetlayout) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create light descriptor layout");
+		}
+
+
+		VkDescriptorSetLayoutBinding cameraLayoutBinding = {};
+		cameraLayoutBinding.binding = 0;
+		cameraLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; //kerrotaan että bindattava on texshader
+		cameraLayoutBinding.descriptorCount = 1;
+		cameraLayoutBinding.pImmutableSamplers = nullptr;
+		cameraLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
+
+		VkDescriptorSetLayoutCreateInfo cameraLayoutInfo = {};
+		cameraLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		cameraLayoutInfo.pNext = NULL;
+		cameraLayoutInfo.flags = 0;
+		cameraLayoutInfo.bindingCount = 1;
+		cameraLayoutInfo.pBindings = &cameraLayoutBinding;
+
+		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &cameraLayoutInfo, nullptr, &cameraSetLayout) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create light descriptor layout");
 		}
@@ -479,9 +502,10 @@ namespace RetuEngine
 	void Engine::CreateLights()
 	{
 		for (int i = 0; i < 1; i++) {
-			glm::vec3 color;
-			do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
-			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10),color);
+			glm::vec3 color = glm::vec3(1.0, 1.0, 1.0);
+			// do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
+			
+			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10));
 		}
 
 		int lightnum = pointLights.size();
@@ -489,10 +513,13 @@ namespace RetuEngine
 		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(int);
 
 		pointLightBuffer = Buffer(renderer);
+
+#if 1
 		pointLightBuffer.StartMapping(size);
 		pointLightBuffer.Map(&lightnum, sizeof(int));
 		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
 		pointLightBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+#endif
 
 	}
 
@@ -504,7 +531,7 @@ namespace RetuEngine
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount = renderables.size();
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		poolSizes[2].descriptorCount = 3;
+		poolSizes[2].descriptorCount = 100;
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -536,15 +563,15 @@ namespace RetuEngine
 			throw std::runtime_error("Failed to create light descriptor set");
 		}
 
-		int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
-		int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
+		//int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
+		//int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
 
-		VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
+		//VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
 
-		lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		//lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		VkBuffer testB;
-		VkDeviceMemory bufferMem;
+		//VkBuffer testB;
+		//VkDeviceMemory bufferMem;
 
 		//VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
 		//lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
@@ -566,6 +593,48 @@ namespace RetuEngine
 		descriptorWrites[0].pBufferInfo = &pointLightBufferInfo;
 
 		vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+	}
+
+	void Engine::CreateCameraDescriptorSets()
+	{
+
+			VkDescriptorSetAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = descriptorPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = &cameraSetLayout;
+
+			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &cameraSet);
+
+			if (result != VK_SUCCESS)
+			{
+				throw std::runtime_error("Failed to allocate descriptorset");
+			}
+			else
+			{
+				std::cout << "Allocated descriptor succesfully" << std::endl;
+			}
+
+			cameraBuffer = Buffer(renderer);
+			cameraBuffer.StartMapping(sizeof(glm::vec3));
+			cameraBuffer.Map(&camera->cameraPos, sizeof(glm::vec3));
+			cameraBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+			VkDescriptorBufferInfo cameraBufferInfo = {};
+			cameraBufferInfo.buffer = cameraBuffer.buffer;
+			cameraBufferInfo.offset = 0;
+			cameraBufferInfo.range = cameraBuffer.bufferSize;
+
+			VkWriteDescriptorSet cameraWriteSet = {};
+			cameraWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			cameraWriteSet.dstSet = cameraSet;
+			cameraWriteSet.dstBinding = 0;
+			cameraWriteSet.dstArrayElement = 0;
+			cameraWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			cameraWriteSet.descriptorCount = 1;
+			cameraWriteSet.pBufferInfo = &cameraBufferInfo;
+
+			vkUpdateDescriptorSets(renderer->logicalDevice,1, &cameraWriteSet, 0, nullptr);
 	}
 
 	void Engine::CreateDescriptorSets()
@@ -617,6 +686,8 @@ namespace RetuEngine
 			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			descriptorWrites[1].descriptorCount = 1;
 			descriptorWrites[1].pImageInfo = &imageInfo;
+
+
 
 			vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
@@ -714,7 +785,7 @@ namespace RetuEngine
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		std::array<VkDescriptorSetLayout, 2> setLayouts = { descriptorSetlayout,lightDescriptorSetlayout };
+		std::array<VkDescriptorSetLayout, 3> setLayouts = { descriptorSetlayout,lightDescriptorSetlayout,cameraSetLayout };
 		pipelineLayoutInfo.setLayoutCount = static_cast<int>(setLayouts.size());
 		pipelineLayoutInfo.pSetLayouts = setLayouts.data();
 
@@ -844,8 +915,8 @@ namespace RetuEngine
 				VkBuffer indexBuffer = *renderables[j].GetIndexBuffer();
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				std::array<VkDescriptorSet, 2> descriptor_sets = { *renderables[j].GetDescriptorSet(), lightDescriptor };
-				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptor_sets.data(), 0, nullptr);
+				std::array<VkDescriptorSet, 3> descriptor_sets = { *renderables[j].GetDescriptorSet(), lightDescriptor, cameraSet };
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptor_sets.size(), descriptor_sets.data(), 0, nullptr);
 
 				//TODO: broken function. descriptor is empty
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j].GetIndicesSize()), 1, 0, 0, 0);
@@ -948,5 +1019,11 @@ namespace RetuEngine
 		//memcpy((char*)data + sizeof(glm::vec4), pointLights.data(), bufferSize);
 		//vkUnmapMemory(renderer->logicalDevice, lightBuffer.stagingBufferMemory);
 		//lightBuffer.SwapStage(&renderer->logicalDevice, renderer->GetCommandPool(), &renderer->transferQueue);
+
+
+		//std::cout << camera->cameraPos.x << " " << camera->cameraPos.y << " " << camera->cameraPos.z << std::endl;
+		cameraBuffer.StartUpdate();
+		cameraBuffer.UpdateMap(&camera->cameraPos, sizeof(glm::vec3));
+		cameraBuffer.StopUpdate(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 	}
 }

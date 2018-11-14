@@ -43,7 +43,16 @@ namespace RetuEngine
 		CreateIndexBuffer(renderer,indices);
 		CreateUniformBuffer(renderer, camera);
 	}
-	
+
+	Model::Model(RenderInterface * renderer, Camera* camera, const char * filepath,glm::vec3 offset, glm::vec3 color)
+	{
+		this->renderer = renderer;
+		LoadModel(filepath);
+		CreateVertexBuffer(renderer,vertices);
+		CreateIndexBuffer(renderer,indices);
+		CreateUniformBuffer(renderer, camera);
+	}
+
 	Model::~Model()
 	{
 
