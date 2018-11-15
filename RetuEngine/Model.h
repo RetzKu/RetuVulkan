@@ -37,6 +37,9 @@ namespace RetuEngine
 
 		RenderInterface* renderer;
 
+		glm::vec3 position;
+		glm::vec4 color;
+
 		tinyobj::attrib_t attributes;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;

@@ -153,8 +153,12 @@ namespace RetuEngine
 
 		Camera* camera;
 
+		Texture* defaultTexture;
 		TextureVector textures;
 		VkSampler defaultSampler;
+
+		VkDescriptorSet cameraMatrixSet;
+		Buffer cameraViewBuffer;
 
 		VkDescriptorSet lightDescriptor;
 		Buffer lightsStagingBuffer;

@@ -27,14 +27,14 @@ namespace RetuEngine
 		VkDescriptorSet* GetDescriptorSet() { return &descriptorSet; }
 
 		uint32_t GetIndicesSize() { return indexBuffer->GetIndicesSize(); }
-		VkDeviceSize GetUniformBufferSize() { return uniformBuffer->GetUniformBufferSize(); }
-		void UpdateUniform(VkDevice* logicalDevice, VkExtent2D extent) { uniformBuffer->Update(logicalDevice, extent); }
+		VkDeviceSize GetUniformBufferSize() { return sizeof(glm::mat4); }
+		void UpdateUniform() { uniformBuffer->Update(); }
 
 		Texture* texture;
 
 		bool CreateVertexBuffer(RenderInterface* renderer);
 		bool CreateVertexBuffer(RenderInterface* renderer,std::vector<Vertex> vertices);
-		bool CreateUniformBuffer(RenderInterface* renderer, Camera* camera);
+		bool CreateUniformBuffer(RenderInterface* renderer);
 		bool CreateIndexBuffer(RenderInterface* renderer);
 		bool CreateIndexBuffer(RenderInterface* renderer, std::vector<uint32_t> indices);
 

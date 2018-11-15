@@ -61,10 +61,6 @@ namespace RetuEngine
 		{
 			throw std::runtime_error("Error while creating buffer");
 		}
-		else
-		{
-			std::cout << "buffer created successfully" << std::endl;
-		}
 
 		// allocate memory for buffer
 		VkMemoryRequirements memory_req;
@@ -115,10 +111,6 @@ namespace RetuEngine
 		{
 			throw std::runtime_error("Error while creating buffer");
 		}
-		else
-		{
-			std::cout << "buffer created successfully" << std::endl;
-		}
 
 		VkMemoryRequirements memReqs;
 		vkGetBufferMemoryRequirements(*logicalDevice, buffer, &memReqs);
@@ -131,10 +123,6 @@ namespace RetuEngine
 		if (vkAllocateMemory(*logicalDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to allocate vertex buffer");
-		}
-		else
-		{
-			std::cout << "Allocated buffer successfully" << std::endl;
 		}
 		vkBindBufferMemory(*logicalDevice, buffer, bufferMemory, 0);
 	}
@@ -184,10 +172,13 @@ namespace RetuEngine
 	}
 
 
-	void Buffer::CleanUpBuffer(const VkDevice* logicalDevice, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	void Buffer::CleanUpBuffer()
 	{
-		vkDestroyBuffer(*logicalDevice, buffer, nullptr);
-		vkFreeMemory(*logicalDevice, bufferMemory, nullptr);
+		if (buffer != nullptr)
+		{
+			vkDestroyBuffer(renderer->logicalDevice, buffer, nullptr);
+			vkFreeMemory(renderer->logicalDevice, bufferMemory, nullptr);
+		}
 	}
 
 	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)

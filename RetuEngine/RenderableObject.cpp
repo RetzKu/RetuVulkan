@@ -23,7 +23,7 @@ namespace RetuEngine
 	{
 		vertexBuffer->CleanUp(device);
 		indexBuffer->CleanUp(device);
-		uniformBuffer->CleanUp(device);
+		uniformBuffer->CleanUp();
 	}
 
 	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer)
@@ -53,9 +53,9 @@ namespace RetuEngine
 		if (vertexBuffer == nullptr) { throw std::runtime_error("Failed to create Vertex Buffer"); return false; }
 		else { return true; }
 	}
-	bool RenderableObject::CreateUniformBuffer(RenderInterface * renderer, Camera * camera)
+	bool RenderableObject::CreateUniformBuffer(RenderInterface * renderer)
 	{
-		uniformBuffer = new UniformBuffer(renderer, camera);
+		uniformBuffer = new UniformBuffer(renderer);
 		if (uniformBuffer == nullptr) { throw std::runtime_error("Failed to create Uniform Buffer"); return false; }
 		else { return true; }
 	}

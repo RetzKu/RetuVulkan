@@ -18,31 +18,22 @@ namespace RetuEngine
 		float fieldOfView = 90;
 		float nearView = 0.1f;
 		float farView = 1000;
+		glm::mat4 view;
+		glm::mat4 proj;
 	};
 
 	class UniformBuffer : public Buffer
 	{
 	public:
-		struct UniformBufferObject
-		{
-			glm::mat4 Model;
-			glm::mat4 view;
-			glm::mat4 proj;
-		};
-
-		UniformBuffer(RenderInterface* renderer, Camera* camera);
+		UniformBuffer(RenderInterface* renderer);
 		~UniformBuffer();
 
-		UniformBufferObject ubo = {  };
+		glm::mat4 modelMatrix = {};
 
-		/*Getters*/
-		VkDeviceSize GetUniformBufferSize() { return sizeof(UniformBufferObject);}
-
-		void Create(RenderInterface* renderer);
-		void CleanUp(const VkDevice* logicalDevice);
-		void Update(const VkDevice* logicalDevice, const VkExtent2D &swapChainExtent);
-
-		Camera* camera;
+		void Create();
+		void CleanUp();
+		void Update();
+		RenderInterface* renderer;
 	};
 
 }

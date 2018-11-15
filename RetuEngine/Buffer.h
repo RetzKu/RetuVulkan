@@ -15,6 +15,13 @@ namespace RetuEngine
 	public:
 		Buffer(RenderInterface* renderer) { this->renderer = renderer; };
 		Buffer() {};
+		~Buffer() 
+		{ 
+			if (renderer != nullptr) 
+			{ 
+				//CleanUpBuffer(); 
+			}
+		};
 		VkBuffer* GetBuffer() { return &buffer; }
 		VkDeviceMemory* GetBufferMemory() { return &bufferMemory; }
 		void CreateBuffer(const VkDevice* logicalDevice, const VkPhysicalDevice* physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
@@ -47,7 +54,7 @@ namespace RetuEngine
 		RenderInterface* renderer;
 
 	protected:
-		void CleanUpBuffer(const VkDevice* logicalDevice, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		void CleanUpBuffer();
 		void CopyBuffer(const VkDevice* logicalDevice, const VkCommandPool* commandPool, VkBuffer src, VkBuffer dst, VkDeviceSize size, const VkQueue* queue);
 
 	

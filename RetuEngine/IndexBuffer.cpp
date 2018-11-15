@@ -40,6 +40,6 @@ namespace RetuEngine
 
 	void IndexBuffer::CleanUp(const VkDevice* logicalDevice)
 	{
-		CleanUpBuffer(logicalDevice, buffer, bufferMemory);
+		CleanUpBuffer();
 	}
 }

@@ -12,7 +12,7 @@ namespace RetuEngine
 
 		CreateVertexBuffer(renderer);
 		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer, camera);
+		CreateUniformBuffer(renderer);
 	}
 	Sprite::Sprite(RenderInterface* renderer, Camera* camera, std::vector<Vertex> vertices, Texture* texture)
 	{
@@ -21,6 +21,6 @@ namespace RetuEngine
 
 		CreateVertexBuffer(renderer, vertices);
 		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer, camera);
+		CreateUniformBuffer(renderer);
 	}
 }

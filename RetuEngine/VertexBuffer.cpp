@@ -44,6 +44,6 @@ namespace RetuEngine
 
 	void VertexBuffer::CleanUp(const VkDevice* logicalDevice)
 	{
-		CleanUpBuffer(logicalDevice,buffer,bufferMemory);
+		CleanUpBuffer();
 	}
 }

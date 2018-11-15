@@ -29,6 +29,7 @@ namespace RetuEngine
 		//}
 		delete camera;
 		delete inputManager;
+		delete defaultTexture;
 	}
 
 	void Engine::InitVulkan()
@@ -69,10 +70,9 @@ namespace RetuEngine
 			//renderables.push_back(Sprite(renderer, camera, vertices, textures.Get("Weeb")));
 		}
 
-		//renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
-		
-		renderables.push_back(Model(renderer, camera, "Bunny.obj", textures.Get("chalet")));
+		//renderables.push_back(Model(renderer, camera, "Bunny.obj", glm::vec3(100, 0, 0), glm::vec4(1, 0, 0, 1)));
 
+		renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
 		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
 		//delete model;
 		createTextureSampler();
@@ -133,7 +133,7 @@ namespace RetuEngine
 			glfwPollEvents();
 			for (RenderableObject var : renderables)
 			{
-				var.UpdateUniform(&renderer->logicalDevice, *swapChain->GetExtent());
+				var.UpdateUniform();
 			}
 			UpdateUniformBuffers();
 			DrawFrame();
@@ -196,6 +196,8 @@ namespace RetuEngine
 
 	void Engine::LoadTextures()
 	{
+		defaultTexture = new Texture("default.bmp", renderer);
+
 		Texture tempTexture("chalet.jpg",renderer);	//Textures for the house;
 		textures.Push("chalet", tempTexture);
 
@@ -420,10 +422,6 @@ namespace RetuEngine
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
-
-
-		//VkDescriptorBufferInfo
-
 		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -442,27 +440,14 @@ namespace RetuEngine
 
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBinding = {};
 
-		{
-			// create descriptor for storage buffer for light culling results
-			//VkDescriptorSetLayoutBinding lb = {};
-			//lb.binding = 0;
-			//lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			//lb.descriptorCount = 1;
-			//lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-			//lb.pImmutableSamplers = nullptr;
-			//setLayoutBinding.push_back(lb);
-		}
-
-		{
-			// uniform buffer for point lights
-			VkDescriptorSetLayoutBinding lb = {};
-			lb.binding = 0;
-			lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // FIXME: change back to uniform
-			lb.descriptorCount = 1;  // maybe we can use this for different types of lights
-			lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT| VK_SHADER_STAGE_FRAGMENT_BIT;
-			lb.pImmutableSamplers = nullptr;
-			setLayoutBinding.push_back(lb);
-		}
+		// uniform buffer for point lights
+		VkDescriptorSetLayoutBinding lb = {};
+		lb.binding = 0;
+		lb.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; // FIXME: change back to uniform
+		lb.descriptorCount = 1;  // maybe we can use this for different types of lights
+		lb.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT| VK_SHADER_STAGE_FRAGMENT_BIT;
+		lb.pImmutableSamplers = nullptr;
+		setLayoutBinding.push_back(lb);
 
 		VkDescriptorSetLayoutCreateInfo lightInfo = {};
 		lightInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -478,19 +463,25 @@ namespace RetuEngine
 		}
 
 
-		VkDescriptorSetLayoutBinding cameraLayoutBinding = {};
-		cameraLayoutBinding.binding = 0;
-		cameraLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; //kerrotaan että bindattava on texshader
-		cameraLayoutBinding.descriptorCount = 1;
-		cameraLayoutBinding.pImmutableSamplers = nullptr;
-		cameraLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
+		VkDescriptorSetLayoutBinding cameraLayoutBinding[2] = {};
+		cameraLayoutBinding[0].binding = 0;
+		cameraLayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; //kerrotaan että bindattava on texshader
+		cameraLayoutBinding[0].descriptorCount = 1;
+		cameraLayoutBinding[0].pImmutableSamplers = nullptr;
+		cameraLayoutBinding[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
+
+		cameraLayoutBinding[1].binding = 1;
+		cameraLayoutBinding[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; //kerrotaan että bindattava on texshader
+		cameraLayoutBinding[1].descriptorCount = 1;
+		cameraLayoutBinding[1].pImmutableSamplers = nullptr;
+		cameraLayoutBinding[1].stageFlags = VK_SHADER_STAGE_VERTEX_BIT; //fragment shaderille
 
 		VkDescriptorSetLayoutCreateInfo cameraLayoutInfo = {};
 		cameraLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		cameraLayoutInfo.pNext = NULL;
 		cameraLayoutInfo.flags = 0;
-		cameraLayoutInfo.bindingCount = 1;
-		cameraLayoutInfo.pBindings = &cameraLayoutBinding;
+		cameraLayoutInfo.bindingCount = 2;
+		cameraLayoutInfo.pBindings = cameraLayoutBinding;
 
 		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &cameraLayoutInfo, nullptr, &cameraSetLayout) != VK_SUCCESS)
 		{
@@ -513,13 +504,10 @@ namespace RetuEngine
 		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(int);
 
 		pointLightBuffer = Buffer(renderer);
-
-#if 1
 		pointLightBuffer.StartMapping(size);
 		pointLightBuffer.Map(&lightnum, sizeof(int));
 		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
 		pointLightBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-#endif
 
 	}
 
@@ -527,9 +515,9 @@ namespace RetuEngine
 	{
 		std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount = 1 + renderables.size();
+		poolSizes[0].descriptorCount = 3 + renderables.size();
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[1].descriptorCount = renderables.size();
+		poolSizes[1].descriptorCount = 2 + renderables.size();
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		poolSizes[2].descriptorCount = 100;
 
@@ -598,6 +586,7 @@ namespace RetuEngine
 	void Engine::CreateCameraDescriptorSets()
 	{
 
+
 			VkDescriptorSetAllocateInfo allocInfo = {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 			allocInfo.descriptorPool = descriptorPool;
@@ -615,6 +604,7 @@ namespace RetuEngine
 				std::cout << "Allocated descriptor succesfully" << std::endl;
 			}
 
+			//for cameraposition at frag
 			cameraBuffer = Buffer(renderer);
 			cameraBuffer.StartMapping(sizeof(glm::vec3));
 			cameraBuffer.Map(&camera->cameraPos, sizeof(glm::vec3));
@@ -625,6 +615,23 @@ namespace RetuEngine
 			cameraBufferInfo.offset = 0;
 			cameraBufferInfo.range = cameraBuffer.bufferSize;
 
+			camera->view = glm::lookAt(camera->cameraPos,  camera->cameraPos + camera->cameraFront, camera->cameraUp);
+			camera->proj = glm::perspective(glm::radians(90.0f), swapChain->GetExtent()->width / (float)swapChain->GetExtent()->height, 0.1f, 10000.0f);
+			camera->proj[1][1] *= -1; //flipping y coordinate?
+
+			//for cameraViewMatrix at vert
+			cameraViewBuffer = Buffer(renderer);
+			cameraViewBuffer.StartMapping(sizeof(glm::mat4) * 2);
+			cameraViewBuffer.Map(&camera->view,sizeof(glm::mat4));
+			cameraViewBuffer.Map(&camera->proj,sizeof(glm::mat4));
+			cameraViewBuffer.StopMapping(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+			VkDescriptorBufferInfo cameraViewBufferInfo = {};
+			cameraViewBufferInfo.buffer = cameraViewBuffer.buffer;
+			cameraViewBufferInfo.offset = 0;
+			cameraViewBufferInfo.range = cameraViewBuffer.bufferSize;
+
+			std::vector<VkWriteDescriptorSet> camerawrites;
 			VkWriteDescriptorSet cameraWriteSet = {};
 			cameraWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			cameraWriteSet.dstSet = cameraSet;
@@ -633,12 +640,24 @@ namespace RetuEngine
 			cameraWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			cameraWriteSet.descriptorCount = 1;
 			cameraWriteSet.pBufferInfo = &cameraBufferInfo;
+			camerawrites.push_back(cameraWriteSet);
 
-			vkUpdateDescriptorSets(renderer->logicalDevice,1, &cameraWriteSet, 0, nullptr);
+			VkWriteDescriptorSet cameraDescriptorWriteSet = {};
+			cameraDescriptorWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			cameraDescriptorWriteSet.dstSet = cameraSet;
+			cameraDescriptorWriteSet.dstBinding = 1;
+			cameraDescriptorWriteSet.dstArrayElement = 0;
+			cameraDescriptorWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			cameraDescriptorWriteSet.descriptorCount = 1;
+			cameraDescriptorWriteSet.pBufferInfo = &cameraViewBufferInfo;
+			camerawrites.push_back(cameraDescriptorWriteSet);
+
+			vkUpdateDescriptorSets(renderer->logicalDevice,	camerawrites.size(), camerawrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateDescriptorSets()
 	{
+
 		for (int i = 0; i < renderables.size(); i++)
 		{
 			VkDescriptorSetLayout layouts[] = { descriptorSetlayout };
@@ -676,7 +695,14 @@ namespace RetuEngine
 
 			VkDescriptorImageInfo imageInfo = {};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = renderables[i].texture->imageView;
+			if (renderables[i].texture != nullptr)
+			{
+				imageInfo.imageView = renderables[i].texture->imageView;
+			}
+			else
+			{
+				imageInfo.imageView = defaultTexture->imageView;
+			}
 			imageInfo.sampler = defaultSampler;
 
 			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -686,8 +712,6 @@ namespace RetuEngine
 			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			descriptorWrites[1].descriptorCount = 1;
 			descriptorWrites[1].pImageInfo = &imageInfo;
-
-
 
 			vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
@@ -1025,5 +1049,15 @@ namespace RetuEngine
 		cameraBuffer.StartUpdate();
 		cameraBuffer.UpdateMap(&camera->cameraPos, sizeof(glm::vec3));
 		cameraBuffer.StopUpdate(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+		camera->view = glm::lookAt(camera->cameraPos,  camera->cameraPos + camera->cameraFront, camera->cameraUp);
+		camera->proj = glm::perspective(glm::radians(90.0f), swapChain->GetExtent()->width / (float)swapChain->GetExtent()->height, 0.1f, 10000.0f);
+		camera->proj[1][1] *= -1; //flipping y coordinate?
+
+		//for cameraViewMatrix at vert
+		cameraViewBuffer.StartUpdate();
+		cameraViewBuffer.UpdateMap(&camera->view,sizeof(glm::mat4));
+		cameraViewBuffer.UpdateMap(&camera->proj,sizeof(glm::mat4));
+		cameraViewBuffer.StopUpdate(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 	}
 }
