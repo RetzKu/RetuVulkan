@@ -4,56 +4,41 @@
 
 namespace RetuEngine
 {
-	//RenderableObject::RenderableObject(RenderInterface* renderer,Camera* camera,const char* file)
-	//{
-	//	texture = new Texture(file, renderer);
-	//	CreateVertexBuffer(renderer);
-	//	CreateIndexBuffer(renderer);
-	//	CreateUniformBuffer(renderer,camera);
-	//}
-	//RenderableObject::RenderableObject(RenderInterface* renderer, Camera* camera, std::vector<Vertex> vertices,const char* file)
-	//{
-	//	texture = new Texture(file, renderer);
-	//	CreateVertexBuffer(renderer,vertices);
-	//	CreateIndexBuffer(renderer);
-	//	CreateUniformBuffer(renderer,camera);
-	//}
-
-	void RenderableObject::CleanUp(VkDevice* device)
+	void RenderableObject::CleanUp()
 	{
-		vertexBuffer->CleanUp(device);
-		indexBuffer->CleanUp(device);
-		uniformBuffer->CleanUp();
+		vertexBuffer->CleanUpBuffer();
+		indexBuffer->CleanUpBuffer();
+		uniformBuffer->CleanUpBuffer();
 	}
 
-	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer)
+	bool RenderableObject::CreateIndexBuffer()
 	{
 		indexBuffer = new IndexBuffer(renderer);
 		if (indexBuffer == nullptr) { throw std::runtime_error("Failed to create Index Buffer"); return false; }
 		else { return true; }
 	}
 
-	bool RenderableObject::CreateIndexBuffer(RenderInterface* renderer, std::vector<uint32_t> indices)
+	bool RenderableObject::CreateIndexBuffer(std::vector<uint32_t> indices)
 	{
 		indexBuffer = new IndexBuffer(renderer, indices);
 		if (indexBuffer == nullptr) { throw std::runtime_error("Failed to create Index Buffer"); return false; }
 		else { return true; }
 	}
 
-	bool RenderableObject::CreateVertexBuffer(RenderInterface* renderer,std::vector<Vertex> vertices)
+	bool RenderableObject::CreateVertexBuffer(std::vector<Vertex> vertices)
 	{
 		vertexBuffer = new VertexBuffer(renderer,vertices);
 		if (vertexBuffer == nullptr) { throw std::runtime_error("Failed to create Vertex Buffer"); return false; }
 		else { return true; }
 	}
 
-	bool RenderableObject::CreateVertexBuffer(RenderInterface* renderer)
+	bool RenderableObject::CreateVertexBuffer()
 	{
 		vertexBuffer = new VertexBuffer(renderer);
 		if (vertexBuffer == nullptr) { throw std::runtime_error("Failed to create Vertex Buffer"); return false; }
 		else { return true; }
 	}
-	bool RenderableObject::CreateUniformBuffer(RenderInterface * renderer)
+	bool RenderableObject::CreateUniformBuffer()
 	{
 		uniformBuffer = new UniformBuffer(renderer);
 		if (uniformBuffer == nullptr) { throw std::runtime_error("Failed to create Uniform Buffer"); return false; }

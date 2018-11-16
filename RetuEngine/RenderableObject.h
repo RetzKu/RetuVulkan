@@ -16,11 +16,12 @@ namespace RetuEngine
 	class RenderableObject
 	{
 	public:
+		RenderableObject(RenderInterface* renderer) : renderer(renderer){};
 		RenderableObject() {};
 		//RenderableObject(RenderInterface* renderer,Camera* camera,const char* file);
 		//RenderableObject(RenderInterface* renderer,Camera* camera,std::vector<Vertex> vertices, const char* file);
 
-		void CleanUp(VkDevice* device);
+		void CleanUp();
 		VkBuffer* GetVertexBuffer() { return vertexBuffer->GetBuffer(); }
 		VkBuffer* GetIndexBuffer() { return indexBuffer->GetBuffer(); }
 		VkBuffer* GetUniformBuffer() { return uniformBuffer->GetBuffer(); }
@@ -32,11 +33,11 @@ namespace RetuEngine
 
 		Texture* texture;
 
-		bool CreateVertexBuffer(RenderInterface* renderer);
-		bool CreateVertexBuffer(RenderInterface* renderer,std::vector<Vertex> vertices);
-		bool CreateUniformBuffer(RenderInterface* renderer);
-		bool CreateIndexBuffer(RenderInterface* renderer);
-		bool CreateIndexBuffer(RenderInterface* renderer, std::vector<uint32_t> indices);
+		bool CreateVertexBuffer();
+		bool CreateVertexBuffer(std::vector<Vertex> vertices);
+		bool CreateUniformBuffer();
+		bool CreateIndexBuffer();
+		bool CreateIndexBuffer(std::vector<uint32_t> indices);
 
 	/*Private Variables*/
 		ObjectType objectType;
@@ -44,6 +45,7 @@ namespace RetuEngine
 		IndexBuffer* indexBuffer;
 		UniformBuffer* uniformBuffer;
 		VkDescriptorSet descriptorSet;
+		RenderInterface* renderer;
 	};
 
 }

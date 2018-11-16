@@ -4,23 +4,21 @@
 
 namespace RetuEngine
 {
-	Sprite::Sprite(RenderInterface* renderer, Camera* camera, Texture* texture)
+	Sprite::Sprite(RenderInterface* renderer, Texture* texture) : RenderableObject(renderer)
 	{
-		//TODO: kehitä object type toimivaksi
-		objectType = OBJECT_TYPE_SPRITE;
 		this->texture = texture;
 
-		CreateVertexBuffer(renderer);
-		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer);
+		CreateVertexBuffer(this->vertices);
+		CreateIndexBuffer();
+		CreateUniformBuffer();
 	}
-	Sprite::Sprite(RenderInterface* renderer, Camera* camera, std::vector<Vertex> vertices, Texture* texture)
+	Sprite::Sprite(RenderInterface* renderer, std::vector<Vertex> vertices, Texture* texture) : RenderableObject(renderer)
 	{
-		objectType = OBJECT_TYPE_SPRITE;
 		this->texture = texture;
+		this->vertices = vertices;
 
-		CreateVertexBuffer(renderer, vertices);
-		CreateIndexBuffer(renderer);
-		CreateUniformBuffer(renderer);
+		CreateVertexBuffer(vertices);
+		CreateIndexBuffer();
+		CreateUniformBuffer();
 	}
 }

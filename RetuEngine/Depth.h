@@ -10,7 +10,12 @@ namespace RetuEngine
 	{
 	public:
 		Depth(RenderInterface* renderer,VkExtent2D extent);
-		~Depth();
+		void CleanUp()
+		{
+			CleanUpView();
+			CleanUpImage();
+			vkFreeMemory(renderer->logicalDevice, depthImageMemory, nullptr);
+		};
 
 	private: //Private funcitons
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
@@ -21,6 +26,8 @@ namespace RetuEngine
 		VkCommandBuffer beginSingleCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void CleanUpView() { vkDestroyImageView(renderer->logicalDevice,depthImageView,nullptr); };
+		void CleanUpImage() { vkDestroyImage(renderer->logicalDevice, depthImage, nullptr); }
 
 	public: //Public variables
 		VkFormat depthFormat;

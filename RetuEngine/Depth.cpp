@@ -13,10 +13,6 @@ namespace RetuEngine
 		TransitionImageLayout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 	}
 
-	Depth::~Depth()
-	{
-	}
-
 	VkCommandBuffer Depth::beginSingleCommands()
 	{
 		VkCommandBufferAllocateInfo allocInfo = {};

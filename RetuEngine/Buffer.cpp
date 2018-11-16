@@ -127,12 +127,19 @@ namespace RetuEngine
 		vkBindBufferMemory(*logicalDevice, buffer, bufferMemory, 0);
 	}
 
-	void Buffer::StartMapping(VkDeviceSize bufferSize)
+	void Buffer::StartMapping(VkDeviceSize bufferSize,VkBufferUsageFlags usage)
 	{
 		this->bufferSize = bufferSize;
-		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-		vkMapMemory(renderer->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-		currentOffset = 0;
+		this->currentOffset = 0;
+		this->usage = usage;
+		if (useStaging)
+		{
+			CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+			vkMapMemory(renderer->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+			return;
+		}
+		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, bufferMemory);
+		vkMapMemory(renderer->logicalDevice, bufferMemory, 0, bufferSize, 0, &data);
 	}
 
 	void Buffer::Map(void* newData, VkDeviceSize size)
@@ -141,20 +148,30 @@ namespace RetuEngine
 		currentOffset += size;
 	}
 
-	void Buffer::StopMapping(VkBufferUsageFlags usage)
+	void Buffer::StopMapping()
 	{
-		vkUnmapMemory(renderer->logicalDevice, stagingBufferMemory);
-		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, bufferMemory);
-		CopyBuffer(&renderer->logicalDevice, renderer->GetCommandPool(), stagingBuffer, buffer, bufferSize, &renderer->displayQueue);
-		vkDestroyBuffer(renderer->logicalDevice, stagingBuffer, nullptr);
-		vkFreeMemory(renderer->logicalDevice, stagingBufferMemory, nullptr);
+		if (useStaging)
+		{
+			vkUnmapMemory(renderer->logicalDevice, stagingBufferMemory);
+			CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, buffer, bufferMemory);
+			CopyBuffer(&renderer->logicalDevice, renderer->GetCommandPool(), stagingBuffer, buffer, bufferSize, &renderer->displayQueue);
+			vkDestroyBuffer(renderer->logicalDevice, stagingBuffer, nullptr);
+			vkFreeMemory(renderer->logicalDevice, stagingBufferMemory, nullptr);
+			return;
+		}
+		vkUnmapMemory(renderer->logicalDevice, bufferMemory);
 	}
 
 	void Buffer::StartUpdate()
 	{
-		CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-		vkMapMemory(renderer->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
-		currentOffset = 0;
+		this->currentOffset = 0;
+		if(useStaging)
+		{
+			CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+			vkMapMemory(renderer->logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+			return;
+		}
+		vkMapMemory(renderer->logicalDevice, bufferMemory, 0, bufferSize, 0, &data);
 	}
 
 	void Buffer::UpdateMap(void* newData, VkDeviceSize size)
@@ -165,20 +182,22 @@ namespace RetuEngine
 
 	void Buffer::StopUpdate(VkBufferUsageFlags usage)
 	{
-		vkUnmapMemory(renderer->logicalDevice, stagingBufferMemory);
-		CopyBuffer(&renderer->logicalDevice, renderer->GetCommandPool(), stagingBuffer, buffer, bufferSize, &renderer->displayQueue);
-		vkDestroyBuffer(renderer->logicalDevice, stagingBuffer, nullptr);
-		vkFreeMemory(renderer->logicalDevice, stagingBufferMemory, nullptr);
+		if (useStaging)
+		{
+			vkUnmapMemory(renderer->logicalDevice, stagingBufferMemory);
+			CopyBuffer(&renderer->logicalDevice, renderer->GetCommandPool(), stagingBuffer, buffer, bufferSize, &renderer->displayQueue);
+			vkDestroyBuffer(renderer->logicalDevice, stagingBuffer, nullptr);
+			vkFreeMemory(renderer->logicalDevice, stagingBufferMemory, nullptr);
+			return;
+		}
+		vkUnmapMemory(renderer->logicalDevice, bufferMemory);
 	}
 
 
 	void Buffer::CleanUpBuffer()
 	{
-		if (buffer != nullptr)
-		{
-			vkDestroyBuffer(renderer->logicalDevice, buffer, nullptr);
-			vkFreeMemory(renderer->logicalDevice, bufferMemory, nullptr);
-		}
+		vkDestroyBuffer(renderer->logicalDevice, buffer, nullptr);
+		vkFreeMemory(renderer->logicalDevice, bufferMemory, nullptr);
 	}
 
 	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)

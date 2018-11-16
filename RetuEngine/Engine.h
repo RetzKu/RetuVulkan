@@ -50,9 +50,7 @@ namespace RetuEngine
 	class Engine
 	{
 	public:
-		Engine() 
-		{
-		};
+		Engine(){};
 		~Engine();
 
 		void InitVulkan();
@@ -160,11 +158,9 @@ namespace RetuEngine
 		VkDescriptorSet cameraMatrixSet;
 		Buffer cameraViewBuffer;
 
-		VkDescriptorSet lightDescriptor;
-		Buffer lightsStagingBuffer;
-		Buffer lightBuffer;
-		Buffer pointLightBuffer;
 		std::vector<Pointlight> pointLights;
+		VkDescriptorSet lightDescriptor;
+		Buffer pointLightBuffer;
 
 		VkDescriptorSetLayout cameraSetLayout;
 		VkDescriptorSet cameraSet;

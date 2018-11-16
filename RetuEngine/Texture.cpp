@@ -4,16 +4,6 @@
 
 namespace RetuEngine
 {
-	Texture::Texture(const char* file, RenderInterface* renderer)
-	{
-		this->renderer = renderer;
-		CreateTextureImage(file);
-	}
-
-	Texture::~Texture()
-	{
-	}
-
 	void Texture::CreateTextureImage(const char* file)
 	{
 		int width;
@@ -27,21 +17,23 @@ namespace RetuEngine
 		{
 			throw std::runtime_error("failed to load texture");
 		}
-		Buffer stagingBuffer;
-		stagingBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-		void* data;
-		vkMapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
-		memcpy(data, pix, static_cast<size_t>(imageSize));
-		vkUnmapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory());
+		imageBuffer.StartMapping(imageSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+		imageBuffer.Map(pix, static_cast<size_t>(imageSize));
+		imageBuffer.StopMapping();
+		
+		//stagingBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		//void* data;
+		//vkMapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
+		//memcpy(data, pix, static_cast<size_t>(imageSize));
+		//vkUnmapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory());
 
 		stbi_image_free(pix);
-		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,image, imageMemory);
+		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,image, imageBuffer.GetBufferMemory());
 		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		CopyBufferToImage(*stagingBuffer.GetBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+		CopyBufferToImage(imageBuffer.GetBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 		TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		vkDestroyBuffer(renderer->logicalDevice, *stagingBuffer.GetBuffer(), nullptr);
-		vkFreeMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), nullptr);
 
 		VkImageViewCreateInfo imageViewInfo = {};
 		imageViewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -60,7 +52,7 @@ namespace RetuEngine
 			throw std::runtime_error("failed to create test view");
 		}
 	}
-	void Texture::CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+	void Texture::CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory* imageMemory)
 	{
 		VkImageCreateInfo imageInfo = {};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -90,11 +82,11 @@ namespace RetuEngine
 		allocInfo.allocationSize = memRequirements.size;
 		allocInfo.memoryTypeIndex = findMemoryType(renderer->physicalDevice, memRequirements.memoryTypeBits, properties);
 		
-		if (vkAllocateMemory(renderer->logicalDevice,&allocInfo,nullptr,&imageMemory) != VK_SUCCESS)
+		if (vkAllocateMemory(renderer->logicalDevice,&allocInfo,nullptr, imageMemory) != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to allocate image memory");
 		}
-		vkBindImageMemory(renderer->logicalDevice, image, imageMemory, 0);
+		vkBindImageMemory(renderer->logicalDevice, image, *imageMemory, 0);
 	}
 	VkCommandBuffer Texture::beginSingleCommands()
 	{
@@ -168,7 +160,7 @@ namespace RetuEngine
 
 		endSingleTimeCommands(commandBuffer);
 	}
-	void Texture::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+	void Texture::CopyBufferToImage(VkBuffer* buffer, VkImage image, uint32_t width, uint32_t height)
 	{
 		VkCommandBuffer commandBuffer = beginSingleCommands();
 
@@ -183,7 +175,7 @@ namespace RetuEngine
 		region.imageOffset = { 0,0,0 };
 		region.imageExtent = { width,height,1 };
 
-		vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+		vkCmdCopyBufferToImage(commandBuffer, *buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 		endSingleTimeCommands(commandBuffer);
 	}
 }

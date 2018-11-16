@@ -69,6 +69,7 @@ namespace RetuEngine
 		{
 			vkDestroyImageView(*device, swapChainImageViews[i], VK_NULL_HANDLE);
 		}
+		depth->CleanUp();
 		vkDestroySwapchainKHR(*device,swapChain,VK_NULL_HANDLE);
 	}
 

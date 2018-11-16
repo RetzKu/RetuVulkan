@@ -46,35 +46,15 @@ namespace RetuEngine
 		LoadTextures();
 		swapChain->CreateFrameBuffers(&renderPass); 
 
-		std::vector<Vertex> vertices =
-		{
-			//{ { 0.0f, 0.0f,1.5f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
-			//{ { 1.0f, 0.0f,1.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{1.0f,1.0f,0.0f}},
-			//{ { 1.0f, 1.0f,1.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{1.0f,1.0f,0.0f}},
-			//{ { 0.0f, 1.0f,1.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{1.0f,1.0f,0.0f}}
-			{ { -1.0f, 0.0f,-1.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
-			{ { 1.0f, 0.0f,-1.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f } ,{0.0f,1.0f,0.0f}},
-			{ { 1.0f, 0.0f,1.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f } ,{0.0f,1.0f,0.0f}},
-			{ { -1.0f, 0.0f,1.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 1.0f } ,{0.0f,1.0f,0.0f}}
-		};
-
 		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
 		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
 
-		for (int i = 0; i < 1; i++)
-		{
-			vertices[0].pos.x += 1;
-			vertices[1].pos.x += 1;
-			vertices[2].pos.x += 1;
-			vertices[3].pos.x += 1;
-			//renderables.push_back(Sprite(renderer, camera, vertices, textures.Get("Weeb")));
-		}
+		//renderables.push_back(Sprite(renderer, textures.Get("Weeb")));
 
-		//renderables.push_back(Model(renderer, camera, "Bunny.obj", glm::vec3(100, 0, 0), glm::vec4(1, 0, 0, 1)));
+		//renderables.push_back(Model(renderer, "Bunny.obj", glm::vec4(1, 0, 0, 1)));
 
-		renderables.push_back(Model(renderer, camera, "chalet.obj", textures.Get("chalet")));
-		//Model* model = new Model(renderer, 600, 800, "chalet.obj");
-		//delete model;
+		renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
+
 		createTextureSampler();
 		CreateDescriptorPool();
 
@@ -94,18 +74,28 @@ namespace RetuEngine
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
+		defaultTexture->CleanUp();
 		textures.CleanUp();
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
+
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, descriptorSetlayout, nullptr);
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, lightDescriptorSetlayout, nullptr);
-		for (RenderableObject rend : renderables)
+		vkDestroyDescriptorSetLayout(renderer->logicalDevice, cameraSetLayout, nullptr);
+
+		for (int i = 0; i < renderables.size(); i++)
 		{
-			rend.CleanUp(&renderer->logicalDevice);
+			renderables[i].CleanUp();
 		}
+		cameraBuffer.CleanUpBuffer();
+		cameraViewBuffer.CleanUpBuffer();
+		pointLightBuffer.CleanUpBuffer();
+
+
 		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
 		renderer->CleanCommandPools();
+
 		vkDestroyDevice(renderer->logicalDevice, VK_NULL_HANDLE);
 		DestoyDebugReportCallbackEXT(instance, callback, VK_NULL_HANDLE);
 		vkDestroySurfaceKHR(instance, renderer->surface, VK_NULL_HANDLE);
@@ -198,11 +188,8 @@ namespace RetuEngine
 	{
 		defaultTexture = new Texture("default.bmp", renderer);
 
-		Texture tempTexture("chalet.jpg",renderer);	//Textures for the house;
-		textures.Push("chalet", tempTexture);
-
-		tempTexture = Texture("Weeb.bmp", renderer); //Texture for weeb sprite;
-		textures.Push("Weeb", tempTexture);
+		textures.Push("chalet", Texture("chalet.jpg",renderer));
+		textures.Push("Weeb", Texture("Weeb.bmp",renderer));
 	}
 
 	void Engine::AddRenderable(glm::vec3 position, RenderableObject renderable)
@@ -504,10 +491,10 @@ namespace RetuEngine
 		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(int);
 
 		pointLightBuffer = Buffer(renderer);
-		pointLightBuffer.StartMapping(size);
+		pointLightBuffer.StartMapping(size,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		pointLightBuffer.Map(&lightnum, sizeof(int));
 		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
-		pointLightBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		pointLightBuffer.StopMapping();
 
 	}
 
@@ -606,12 +593,12 @@ namespace RetuEngine
 
 			//for cameraposition at frag
 			cameraBuffer = Buffer(renderer);
-			cameraBuffer.StartMapping(sizeof(glm::vec3));
+			cameraBuffer.StartMapping(sizeof(glm::vec3),VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 			cameraBuffer.Map(&camera->cameraPos, sizeof(glm::vec3));
-			cameraBuffer.StopMapping(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			cameraBuffer.StopMapping();
 
 			VkDescriptorBufferInfo cameraBufferInfo = {};
-			cameraBufferInfo.buffer = cameraBuffer.buffer;
+			cameraBufferInfo.buffer = *cameraBuffer.GetBuffer();
 			cameraBufferInfo.offset = 0;
 			cameraBufferInfo.range = cameraBuffer.bufferSize;
 
@@ -621,13 +608,13 @@ namespace RetuEngine
 
 			//for cameraViewMatrix at vert
 			cameraViewBuffer = Buffer(renderer);
-			cameraViewBuffer.StartMapping(sizeof(glm::mat4) * 2);
+			cameraViewBuffer.StartMapping(sizeof(glm::mat4) * 2,VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 			cameraViewBuffer.Map(&camera->view,sizeof(glm::mat4));
 			cameraViewBuffer.Map(&camera->proj,sizeof(glm::mat4));
-			cameraViewBuffer.StopMapping(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			cameraViewBuffer.StopMapping();
 
 			VkDescriptorBufferInfo cameraViewBufferInfo = {};
-			cameraViewBufferInfo.buffer = cameraViewBuffer.buffer;
+			cameraViewBufferInfo.buffer = *cameraViewBuffer.GetBuffer();
 			cameraViewBufferInfo.offset = 0;
 			cameraViewBufferInfo.range = cameraViewBuffer.bufferSize;
 

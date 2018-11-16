@@ -21,44 +21,38 @@ namespace std {
 
 namespace RetuEngine
 {
-	Model::Model(RenderInterface * renderer,Camera* camera, const char * filepath, glm::vec3 offset)
+	Model::Model(RenderInterface * renderer, const char * filepath) : RenderableObject(renderer)
 	{
-		this->renderer = renderer;
 		LoadModel(filepath);
-		for(int i = 0; i < vertices.size(); i++)
-		{
-			vertices[i].pos += offset;
-		}
-		CreateVertexBuffer(renderer,vertices);
-		CreateIndexBuffer(renderer,indices);
-		CreateUniformBuffer(renderer);
+
+		this->color = glm::vec4(1, 1, 1, 1);
+		this->texture = nullptr;
+
+		CreateVertexBuffer(vertices);
+		CreateIndexBuffer(indices);
+		CreateUniformBuffer();
 	}
 
-	Model::Model(RenderInterface * renderer,Camera* camera, const char * filepath, Texture* texture)
+	Model::Model(RenderInterface * renderer, const char * filepath, Texture* texture) : RenderableObject(renderer)
 	{
-		this->renderer = renderer;
 		LoadModel(filepath);
+
 		this->texture = texture;
-		CreateVertexBuffer(renderer,vertices);
-		CreateIndexBuffer(renderer,indices);
-		CreateUniformBuffer(renderer);
+		CreateVertexBuffer(vertices);
+		CreateIndexBuffer(indices);
+		CreateUniformBuffer();
 	}
 
-	Model::Model(RenderInterface * renderer, Camera* camera, const char * filepath,glm::vec3 offset, glm::vec3 color)
+	Model::Model(RenderInterface * renderer, const char * filepath, glm::vec3 color) : RenderableObject(renderer)
 	{
-		this->renderer = renderer;
-		this->position = offset;
+		LoadModel(filepath);
+
 		this->color = glm::vec4(color,1);
 		this->texture = nullptr;
-		LoadModel(filepath);
-		CreateVertexBuffer(renderer,vertices);
-		CreateIndexBuffer(renderer,indices);
-		CreateUniformBuffer(renderer);
-	}
 
-	Model::~Model()
-	{
-
+		CreateVertexBuffer(vertices);
+		CreateIndexBuffer(indices);
+		CreateUniformBuffer();
 	}
 
 	void ReadFilePath(const char* filepath, std::string* result)

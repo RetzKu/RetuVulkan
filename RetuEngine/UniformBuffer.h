@@ -25,15 +25,11 @@ namespace RetuEngine
 	class UniformBuffer : public Buffer
 	{
 	public:
-		UniformBuffer(RenderInterface* renderer);
-		~UniformBuffer();
+		UniformBuffer(RenderInterface* renderer) : Buffer(renderer) { Create(); };
 
 		glm::mat4 modelMatrix = {};
 
 		void Create();
-		void CleanUp();
 		void Update();
-		RenderInterface* renderer;
 	};
-
 }
