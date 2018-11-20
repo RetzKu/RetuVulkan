@@ -12,7 +12,7 @@ namespace RetuEngine
 
 		void Create(RenderInterface* renderer);
 
-		uint32_t GetIndicesSize() { return indices.size(); }
+		uint32_t GetIndicesSize() { return (uint32_t)indices.size(); }
 	protected:
 		std::vector<uint32_t> indices =
 		{

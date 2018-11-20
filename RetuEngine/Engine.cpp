@@ -23,10 +23,10 @@ namespace RetuEngine
 	{
 		delete renderer;
 		delete swapChain;
-		//for (int i = 0; i < renderables.size(); i++)
-		//{
-		//	delete renderables[i];
-		//}
+		for (int i = 0; i < renderables.size(); i++)
+		{
+			//delete renderables[i];
+		}
 		delete camera;
 		delete inputManager;
 		delete defaultTexture;
@@ -53,7 +53,8 @@ namespace RetuEngine
 
 		//renderables.push_back(Model(renderer, "Bunny.obj", glm::vec4(1, 0, 0, 1)));
 
-		renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
+		//renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
+		renderables.push_back(Model(renderer, "Hill.obj", textures.Get("MapText")));
 
 		createTextureSampler();
 		CreateDescriptorPool();
@@ -76,6 +77,10 @@ namespace RetuEngine
 		CleanUpSwapChain();
 		defaultTexture->CleanUp();
 		textures.CleanUp();
+		for (int i = 0; i < renderables.size(); i++)
+		{
+			renderables[i].CleanUp();
+		}
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
 
@@ -83,14 +88,9 @@ namespace RetuEngine
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, lightDescriptorSetlayout, nullptr);
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, cameraSetLayout, nullptr);
 
-		for (int i = 0; i < renderables.size(); i++)
-		{
-			renderables[i].CleanUp();
-		}
 		cameraBuffer.CleanUpBuffer();
 		cameraViewBuffer.CleanUpBuffer();
 		pointLightBuffer.CleanUpBuffer();
-
 
 		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
@@ -186,10 +186,11 @@ namespace RetuEngine
 
 	void Engine::LoadTextures()
 	{
-		defaultTexture = new Texture("default.bmp", renderer);
+		defaultTexture = new Texture("default.png", renderer);
+		textures.Push("MapText", Texture("MapText.png", renderer));
 
-		textures.Push("chalet", Texture("chalet.jpg",renderer));
-		textures.Push("Weeb", Texture("Weeb.bmp",renderer));
+		//textures.Push("chalet", Texture("chalet.jpg",renderer));
+		//textures.Push("Weeb", Texture("Weeb.bmp",renderer));
 	}
 
 	void Engine::AddRenderable(glm::vec3 position, RenderableObject renderable)

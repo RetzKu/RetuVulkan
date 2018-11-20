@@ -47,13 +47,13 @@
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
-    <IntDir>$(SolutionDir)Intermediate\Engine</IntDir>
+    <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
-    <IntDir>$(SolutionDir)Intermediate\Engine</IntDir>
+    <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

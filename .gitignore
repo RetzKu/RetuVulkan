@@ -330,3 +330,5 @@ ASALocalRun/
 Intermediate/
 GameOutput/
 RetuEngine/Output/RetuEngine.lib
+*.rt
+*.rm

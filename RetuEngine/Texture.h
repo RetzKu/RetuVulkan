@@ -15,6 +15,7 @@ namespace RetuEngine
 		void CleanUp() 
 		{ 
 			imageBuffer.CleanUpBuffer();
+			vkFreeMemory(renderer->logicalDevice, imageMemory,nullptr);
 			CleanUpView();
 			CleanUpImage();
 		};
@@ -37,6 +38,7 @@ namespace RetuEngine
 	private: //Private Variables
 		RenderInterface* renderer;
 		Buffer imageBuffer;
+		VkDeviceMemory imageMemory;
 	};
 
 	class TextureVector
