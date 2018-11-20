@@ -51,9 +51,9 @@ namespace RetuEngine
 
 		//renderables.push_back(Sprite(renderer, textures.Get("Weeb")));
 
-		//renderables.push_back(Model(renderer, "Bunny.obj", glm::vec4(1, 0, 0, 1)));
+		renderables.push_back(Model(renderer, "Bunny.obj", glm::vec4(1, 0, 0, 1)));
 
-		//renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
+		renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
 		renderables.push_back(Model(renderer, "Hill.obj", textures.Get("MapText")));
 
 		createTextureSampler();
@@ -188,9 +188,8 @@ namespace RetuEngine
 	{
 		defaultTexture = new Texture("default.png", renderer);
 		textures.Push("MapText", Texture("MapText.png", renderer));
-
-		//textures.Push("chalet", Texture("chalet.jpg",renderer));
-		//textures.Push("Weeb", Texture("Weeb.bmp",renderer));
+		textures.Push("chalet", Texture("chalet.jpg",renderer));
+		textures.Push("Weeb", Texture("Weeb.bmp",renderer));
 	}
 
 	void Engine::AddRenderable(glm::vec3 position, RenderableObject renderable)
