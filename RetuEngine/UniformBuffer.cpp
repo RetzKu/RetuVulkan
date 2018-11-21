@@ -12,10 +12,11 @@ namespace RetuEngine
 		StopMapping();
 	}
 
-	void UniformBuffer::Update()
+	void UniformBuffer::Update(glm::mat4 objectTransform)
 	{
+		glm::mat4 temp = modelMatrix * objectTransform;
 		StartUpdate();
-		UpdateMap(&modelMatrix, sizeof(glm::mat4));
+		UpdateMap(&temp, sizeof(glm::mat4));
 		StopUpdate(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 	}
 }

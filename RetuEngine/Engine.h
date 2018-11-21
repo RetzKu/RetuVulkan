@@ -99,7 +99,9 @@ namespace RetuEngine
 		void CreateSemaphores();
 		void DrawFrame();
 		void createTextureSampler();
+		void LoadModels();
 		void UpdateUniformBuffers();
+		void CreateRenderable(const char* name, const char* model, const char* texture);
 
 		VkResult CreateDebugReportReportCallbackEXT(
 			VkInstance istance,
@@ -147,7 +149,10 @@ namespace RetuEngine
 		std::vector<VkCommandBuffer> commandBuffers;
 		VkSemaphore imageAvailableSemaphore;
 		VkSemaphore renderFinishedSemaphore;
-		std::vector<RenderableObject> renderables;
+
+		//std::vector<RenderableObject> renderables;
+		RenderableVector renderables;
+		ModelVector models;
 
 		Camera* camera;
 

@@ -30,6 +30,6 @@ namespace RetuEngine
 		glm::mat4 modelMatrix = {};
 
 		void Create();
-		void Update();
+		void Update(glm::mat4 objectTransform);
 	};
 }

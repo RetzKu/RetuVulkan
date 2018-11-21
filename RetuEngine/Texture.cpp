@@ -4,86 +4,24 @@
 
 namespace RetuEngine
 {
-	void ReadTexturePath(const char* filepath, std::string* result)
-	{
-		std::string search = filepath;
-
-		for (char character : search)
-		{
-			if (character == '.')
-			{
-				break;
-			}
-			*result += character;
-		}
-		*result += ".rt";
-	}
 	void Texture::CreateTextureImage(const char* file)
 	{
 		int width;
 		int height;
 		int channels;
 
-		stbi_uc* pix = nullptr;
-		VkDeviceSize imageSize = 0; //4 because red/green/blue/alpha
+		stbi_uc* pix = stbi_load(file,&width,&height,&channels,STBI_rgb_alpha);
 
-		FILE* filesystem;
-		std::string filename;
-		ReadTexturePath(file, &filename);
+		VkDeviceSize imageSize = width*height*channels; //4 because red/green/blue/alpha
 
-		std::vector<char> tex;
-		fopen_s(&filesystem, filename.c_str(), "rb");
-		if (filesystem != nullptr)
+		if (!pix)
 		{
-			fread(&width, sizeof(int), 1, filesystem);
-			fread(&height, sizeof(int), 1, filesystem);
-			fread(&channels, sizeof(int), 1, filesystem);
-			imageSize = width*height*channels;
-			tex = std::vector<char>(imageSize);
-			fread(&tex[0], static_cast<size_t>(imageSize), 1, filesystem);
+			throw std::runtime_error("failed to load texture");
 		}
-		else
-		{
-			fopen_s(&filesystem, filename.c_str(), "wb");
-			pix = stbi_load(file, &width, &height, &channels, STBI_rgb_alpha);
-			imageSize = width*height*channels;
-			fwrite(&width, sizeof(int), 1, filesystem);
-			fwrite(&height, sizeof(int), 1, filesystem);
-			fwrite(&channels, sizeof(int), 1, filesystem);
-			fwrite(pix, static_cast<size_t>(imageSize), 1, filesystem);
-		}
-		fclose(filesystem);
-
-		//fopen_s(&filesystem, "new.rt" , "rb");
-		//fread(pix, static_cast<size_t>(imageSize),1,filesystem);
-		//fclose(filesystem);
-		
-
-
-		//if (!pix)
-		//{
-		//	throw std::runtime_error("failed to load texture");
-		//}
 
 		imageBuffer.StartMapping(imageSize,VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-		if (tex.size() == 0)
-		{
-			imageBuffer.Map(pix, static_cast<size_t>(imageSize));
-		}
-		else
-		{
-			imageBuffer.Map(tex.data(), sizeof(char)*imageSize);
-
-		}
-
+		imageBuffer.Map(pix, static_cast<size_t>(imageSize));
 		imageBuffer.StopMapping();
-		
-		//stagingBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-		//void* data;
-		//vkMapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory(), 0, imageSize, 0, &data);
-		//memcpy(data, pix, static_cast<size_t>(imageSize));
-		//vkUnmapMemory(renderer->logicalDevice, *stagingBuffer.GetBufferMemory());
 
 		stbi_image_free(pix);
 		CreateImage(width, height, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,image, &imageMemory);

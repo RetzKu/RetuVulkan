@@ -1,9 +1,9 @@
 #pragma once
 #include <vulkan\vulkan.h>
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
+
 #include "UniformBuffer.h"
 #include "Texture.h"
+#include "Model.h"
 
 namespace RetuEngine
 {
@@ -18,6 +18,7 @@ namespace RetuEngine
 	public:
 		RenderableObject(RenderInterface* renderer) : renderer(renderer){};
 		RenderableObject() {};
+		RenderableObject(RenderInterface* renderer, Model* model, Texture* texture);
 		//RenderableObject(RenderInterface* renderer,Camera* camera,const char* file);
 		//RenderableObject(RenderInterface* renderer,Camera* camera,std::vector<Vertex> vertices, const char* file);
 
@@ -26,20 +27,23 @@ namespace RetuEngine
 		VkBuffer* GetIndexBuffer() { return indexBuffer->GetBuffer(); }
 		VkBuffer* GetUniformBuffer() { return uniformBuffer->GetBuffer(); }
 		VkDescriptorSet* GetDescriptorSet() { return &descriptorSet; }
-
 		uint32_t GetIndicesSize() { return indexBuffer->GetIndicesSize(); }
-		VkDeviceSize GetUniformBufferSize() { return sizeof(glm::mat4); }
-		void UpdateUniform() { uniformBuffer->Update(); }
 
+		void UpdateUniform() { uniformBuffer->Update(Transform); }
+
+		Model* model;
 		Texture* texture;
 
-		bool CreateVertexBuffer();
-		bool CreateVertexBuffer(std::vector<Vertex> vertices);
-		bool CreateUniformBuffer();
-		bool CreateIndexBuffer();
-		bool CreateIndexBuffer(std::vector<uint32_t> indices);
+		glm::mat4 Transform;
+
+		//bool CreateVertexBuffer();
+		//bool CreateVertexBuffer(std::vector<Vertex> vertices);
+		//bool CreateUniformBuffer();
+		//bool CreateIndexBuffer();
+		//bool CreateIndexBuffer(std::vector<uint32_t> indices);
 
 	/*Private Variables*/
+
 		ObjectType objectType;
 		VertexBuffer* vertexBuffer;
 		IndexBuffer* indexBuffer;
@@ -48,4 +52,68 @@ namespace RetuEngine
 		RenderInterface* renderer;
 	};
 
+	class RenderableVector 
+	{
+	public:
+		RenderableVector() {};
+
+		void CleanUp()
+		{
+			for (RenderableObject* var : models)
+			{
+				var->CleanUp();
+			}
+			for (RenderableObject* var : models)
+			{
+				delete var;
+			}
+			models.clear();
+		}
+
+		void Push(const char* name, RenderableObject model)
+		{
+			bool taken = false;
+			for (std::string var : names)
+			{
+				if(strcmp(var.c_str(),name) == 0)
+				{
+					std::cout << "Name taken: " << name << std::endl;
+					taken = true;
+					break;
+				}
+			}
+			if (!taken)
+			{
+				models.push_back(new RenderableObject(model));
+				names.push_back(name);
+			}
+		}
+
+		RenderableObject* Get(int indx)
+		{
+			return models[indx];
+		}
+
+		RenderableObject* Get(std::string name)
+		{
+			int index = 0;
+			for (std::string var : names)
+			{
+				if (strcmp(name.c_str(), var.c_str()) == 0)
+				{
+					return models[index];
+				}
+				index++;
+			}
+			return nullptr;
+		}
+
+		RenderableObject* operator[](int index) { return models[index]; }
+		uint16_t size() { return models.size(); }
+		
+	private:
+		std::vector<RenderableObject*> models;
+		std::vector<std::string> names;
+		std::vector<int> freeSlots;
+	};
 }

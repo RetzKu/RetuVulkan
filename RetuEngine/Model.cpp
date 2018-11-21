@@ -21,39 +21,55 @@ namespace std {
 
 namespace RetuEngine
 {
-	Model::Model(RenderInterface * renderer, const char * filepath) : RenderableObject(renderer)
+	//Model::Model(RenderInterface * renderer, const char * filepath) : RenderableObject(renderer)
+	//{
+	//	LoadModel(filepath);
+
+	//	this->color = glm::vec4(1, 1, 1, 1);
+	//	this->texture = nullptr;
+
+	//	CreateVertexBuffer(vertices);
+	//	CreateIndexBuffer(indices);
+	//	CreateUniformBuffer();
+	//}
+
+	Model::Model(RenderInterface* renderer, const char* filepath)
 	{
 		LoadModel(filepath);
 
-		this->color = glm::vec4(1, 1, 1, 1);
-		this->texture = nullptr;
-
-		CreateVertexBuffer(vertices);
-		CreateIndexBuffer(indices);
-		CreateUniformBuffer();
+		vertexBuffer = new VertexBuffer(renderer, vertices);
+		indexBuffer = new IndexBuffer(renderer, indices);
+		//uniformBuffer = new UniformBuffer(renderer);
 	}
-
-	Model::Model(RenderInterface * renderer, const char * filepath, Texture* texture) : RenderableObject(renderer)
+	
+	void Model::Delete()
 	{
-		LoadModel(filepath);
-
-		this->texture = texture;
-		CreateVertexBuffer(vertices);
-		CreateIndexBuffer(indices);
-		CreateUniformBuffer();
+		vertexBuffer->CleanUpBuffer();
+		indexBuffer->CleanUpBuffer();
+		//uniformBuffer->CleanUpBuffer();
 	}
 
-	Model::Model(RenderInterface * renderer, const char * filepath, glm::vec3 color) : RenderableObject(renderer)
-	{
-		LoadModel(filepath);
+	//Model::Model(RenderInterface * renderer, const char * filepath, Texture* texture) : RenderableObject(renderer)
+	//{
+	//	LoadModel(filepath);
 
-		this->color = glm::vec4(color,1);
-		this->texture = nullptr;
+	//	this->texture = texture;
+	//	CreateVertexBuffer(vertices);
+	//	CreateIndexBuffer(indices);
+	//	CreateUniformBuffer();
+	//}
 
-		CreateVertexBuffer(vertices);
-		CreateIndexBuffer(indices);
-		CreateUniformBuffer();
-	}
+	//Model::Model(RenderInterface * renderer, const char * filepath, glm::vec3 color) : RenderableObject(renderer)
+	//{
+	//	LoadModel(filepath);
+
+	//	this->color = glm::vec4(color,1);
+	//	this->texture = nullptr;
+
+	//	CreateVertexBuffer(vertices);
+	//	CreateIndexBuffer(indices);
+	//	CreateUniformBuffer();
+	//}
 
 	void ReadFilePath(const char* filepath, std::string* result)
 	{
@@ -141,7 +157,7 @@ namespace RetuEngine
 					1.0f - attributes.texcoords[2 * index.texcoord_index + 1]
 				};
 
-				vertex.color = this->color;
+				vertex.color = { 1,1,1 };
 
 				if (uniqueVertices.count(vertex) == 0)
 				{

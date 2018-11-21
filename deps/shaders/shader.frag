@@ -34,7 +34,7 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	float ambientSTR = 0.4;
+	float ambientSTR = 0.9;
 	float specularSTR = 1;
 	vec3 lightCol = vec3(1,1,1) * ambientSTR;
 	vec3 ambient = lightCol*ambientSTR;

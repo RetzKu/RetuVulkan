@@ -7,6 +7,15 @@
 
 namespace RetuEngine
 {
+	struct pixel
+	{
+		uint8_t r = 0;
+		uint8_t g = 0;
+		uint8_t b = 0;
+		uint8_t a = 0;
+		uint64_t times = 0;
+	};
+
 	class Texture
 	{
 	public:

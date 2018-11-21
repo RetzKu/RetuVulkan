@@ -23,13 +23,12 @@ namespace RetuEngine
 	{
 		delete renderer;
 		delete swapChain;
-		for (int i = 0; i < renderables.size(); i++)
-		{
-			//delete renderables[i];
-		}
 		delete camera;
 		delete inputManager;
 		delete defaultTexture;
+		models.CleanUp();
+		renderables.CleanUp();
+		textures.CleanUp();
 	}
 
 	void Engine::InitVulkan()
@@ -44,21 +43,14 @@ namespace RetuEngine
 		CreateDescriptorSetlayout();
 		CreateGraphicsPipeline();
 		LoadTextures();
+		LoadModels();
 		swapChain->CreateFrameBuffers(&renderPass); 
-
-		//renderables.push_back(new RenderableObject(renderer, camera,vertices,"Weeb.bmp"));
-		//renderables.push_back(new RenderableObject(renderer, camera,"Pekka.bmp"));
-
-		//renderables.push_back(Sprite(renderer, textures.Get("Weeb")));
-
-		renderables.push_back(Model(renderer, "Bunny.obj", glm::vec4(1, 0, 0, 1)));
-
-		renderables.push_back(Model(renderer, "chalet.obj", textures.Get("chalet")));
-		renderables.push_back(Model(renderer, "Hill.obj", textures.Get("MapText")));
-
 		createTextureSampler();
-		CreateDescriptorPool();
 
+		CreateRenderable("talo", "chalet", "chalet");
+		CreateRenderable("hill", "hill", "hill");
+
+		CreateDescriptorPool();
 		CreateDescriptorSets(); //for objects
 
 		CreateLights();
@@ -76,11 +68,11 @@ namespace RetuEngine
 	{
 		CleanUpSwapChain();
 		defaultTexture->CleanUp();
+
 		textures.CleanUp();
-		for (int i = 0; i < renderables.size(); i++)
-		{
-			renderables[i].CleanUp();
-		}
+		models.CleanUp();
+		renderables.CleanUp();
+
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
 
@@ -88,9 +80,12 @@ namespace RetuEngine
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, lightDescriptorSetlayout, nullptr);
 		vkDestroyDescriptorSetLayout(renderer->logicalDevice, cameraSetLayout, nullptr);
 
-		cameraBuffer.CleanUpBuffer();
-		cameraViewBuffer.CleanUpBuffer();
-		pointLightBuffer.CleanUpBuffer();
+		if (renderables.size() != 0)
+		{
+			cameraBuffer.CleanUpBuffer();
+			cameraViewBuffer.CleanUpBuffer();
+			pointLightBuffer.CleanUpBuffer();
+		}
 
 		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
@@ -121,10 +116,6 @@ namespace RetuEngine
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
 			glfwPollEvents();
-			for (RenderableObject var : renderables)
-			{
-				var.UpdateUniform();
-			}
 			UpdateUniformBuffers();
 			DrawFrame();
 
@@ -168,6 +159,10 @@ namespace RetuEngine
 				glfwDestroyWindow(windowObj.window);
 				glfwTerminate();
 			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_F) == GLFW_PRESS)
+			{
+				renderables.Get("talo")->Transform *= glm::translate(glm::mat4(), glm::vec3(0, 0.1f, 0));
+			}
 		}
 		vkDeviceWaitIdle(renderer->logicalDevice);
 		CleanUpVulkan();
@@ -186,15 +181,17 @@ namespace RetuEngine
 
 	void Engine::LoadTextures()
 	{
+		textures.Push("hill", Texture("MapText.jpg", renderer));
 		defaultTexture = new Texture("default.png", renderer);
-		textures.Push("MapText", Texture("MapText.png", renderer));
 		textures.Push("chalet", Texture("chalet.jpg",renderer));
 		textures.Push("Weeb", Texture("Weeb.bmp",renderer));
 	}
 
-	void Engine::AddRenderable(glm::vec3 position, RenderableObject renderable)
+	void Engine::LoadModels()
 	{
-		renderables.push_back(renderable);
+		models.Push("hill"	, Model(renderer, "Hill.rm"));
+		models.Push("chalet", Model(renderer, "chalet.rm"));
+		models.Push("bunny"	, Model(renderer, "Bunny.rm"));
 	}
 
 	void Engine::ReCreateSwapChain()
@@ -573,6 +570,7 @@ namespace RetuEngine
 	void Engine::CreateCameraDescriptorSets()
 	{
 
+		if (renderables.size() == 0) return;
 
 			VkDescriptorSetAllocateInfo allocInfo = {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -655,7 +653,7 @@ namespace RetuEngine
 			allocInfo.descriptorSetCount = 1;
 			allocInfo.pSetLayouts = layouts;
 
-			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, renderables[i].GetDescriptorSet());
+			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, renderables.Get(i)->GetDescriptorSet());
 			if (result != VK_SUCCESS) 
 			{
 				throw std::runtime_error("Failed to allocate descriptorset"); 
@@ -668,12 +666,12 @@ namespace RetuEngine
 			std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
 
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = *renderables[i].GetUniformBuffer();
+			bufferInfo.buffer = *renderables.Get(i)->GetUniformBuffer();
 			bufferInfo.offset = 0;
-			bufferInfo.range = renderables[i].GetUniformBufferSize();
+			bufferInfo.range = sizeof(glm::mat4);
 
 			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[0].dstSet = *renderables[i].GetDescriptorSet();
+			descriptorWrites[0].dstSet = *renderables.Get(i)->GetDescriptorSet();
 			descriptorWrites[0].dstBinding = 0;
 			descriptorWrites[0].dstArrayElement = 0;
 			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -682,9 +680,9 @@ namespace RetuEngine
 
 			VkDescriptorImageInfo imageInfo = {};
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			if (renderables[i].texture != nullptr)
+			if (renderables.Get(i)->texture != nullptr)
 			{
-				imageInfo.imageView = renderables[i].texture->imageView;
+				imageInfo.imageView = renderables.Get(i)->texture->imageView;
 			}
 			else
 			{
@@ -693,7 +691,7 @@ namespace RetuEngine
 			imageInfo.sampler = defaultSampler;
 
 			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[1].dstSet = *renderables[i].GetDescriptorSet();
+			descriptorWrites[1].dstSet = *renderables.Get(i)->GetDescriptorSet();
 			descriptorWrites[1].dstBinding = 1;
 			descriptorWrites[1].dstArrayElement = 0;
 			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -782,10 +780,10 @@ namespace RetuEngine
 		colorBlendAttachment.blendEnable = VK_FALSE;
 
 		VkPipelineColorBlendStateCreateInfo colorBlending = {};
+		colorBlending.pAttachments = &colorBlendAttachment;
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = VK_FALSE;
 		colorBlending.attachmentCount = 1;
-		colorBlending.pAttachments = &colorBlendAttachment;
 
 		VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT,VK_DYNAMIC_STATE_LINE_WIDTH };
 
@@ -920,17 +918,17 @@ namespace RetuEngine
 
 			for (int j = 0; j < renderables.size(); j++)
 			{
-				VkBuffer vertexBuffers[] = { *renderables[j].GetVertexBuffer() };
+				VkBuffer vertexBuffers[] = { *renderables[j]->GetVertexBuffer() };
 				VkDeviceSize offsets[] = { 0 };
 				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				VkBuffer indexBuffer = *renderables[j].GetIndexBuffer();
+				VkBuffer indexBuffer = *renderables[j]->GetIndexBuffer();
 				VkDeviceSize indexOffsets[] = { 0 };
 				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				std::array<VkDescriptorSet, 3> descriptor_sets = { *renderables[j].GetDescriptorSet(), lightDescriptor, cameraSet };
+				std::array<VkDescriptorSet, 3> descriptor_sets = { *renderables[j]->GetDescriptorSet(), lightDescriptor, cameraSet };
 				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptor_sets.size(), descriptor_sets.data(), 0, nullptr);
 
 				//TODO: broken function. descriptor is empty
-				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j].GetIndicesSize()), 1, 0, 0, 0);
+				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j]->GetIndicesSize()), 1, 0, 0, 0);
 			}
 			vkCmdEndRenderPass(commandBuffers[i]);
 
@@ -1018,20 +1016,15 @@ namespace RetuEngine
 		}
 	}
 
+	void Engine::CreateRenderable(const char* name, const char* model, const char* texture)
+	{
+		renderables.Push(name, RenderableObject(renderer, models.Get(model), textures.Get(texture)));
+		std::cout << "test";
+	}
+
 	void Engine::UpdateUniformBuffers()
 	{
-		//Light ubo
-		//int light_num = pointLights.size();
-		//VkDeviceSize bufferSize = sizeof(Pointlight) * MAX_LIGHT_COUNT + sizeof(glm::vec4);
-
-		//void* data;
-		//vkMapMemory(renderer->logicalDevice, lightBuffer.stagingBufferMemory, 0, lightBuffer.bufferSize, 0, &data);
-		//memcpy(data, &light_num, sizeof(int));
-		//memcpy((char*)data + sizeof(glm::vec4), pointLights.data(), bufferSize);
-		//vkUnmapMemory(renderer->logicalDevice, lightBuffer.stagingBufferMemory);
-		//lightBuffer.SwapStage(&renderer->logicalDevice, renderer->GetCommandPool(), &renderer->transferQueue);
-
-
+		if (renderables.size() == 0) return;
 		//std::cout << camera->cameraPos.x << " " << camera->cameraPos.y << " " << camera->cameraPos.z << std::endl;
 		cameraBuffer.StartUpdate();
 		cameraBuffer.UpdateMap(&camera->cameraPos, sizeof(glm::vec3));
@@ -1046,5 +1039,10 @@ namespace RetuEngine
 		cameraViewBuffer.UpdateMap(&camera->view,sizeof(glm::mat4));
 		cameraViewBuffer.UpdateMap(&camera->proj,sizeof(glm::mat4));
 		cameraViewBuffer.StopUpdate(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+		for (int i = 0; i < renderables.size(); i++)
+		{
+			renderables[i]->UpdateUniform();
+		}
 	}
 }
