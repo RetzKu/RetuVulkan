@@ -12,7 +12,7 @@ namespace RetuEngine
 
 		stbi_uc* pix = stbi_load(file,&width,&height,&channels,STBI_rgb_alpha);
 
-		VkDeviceSize imageSize = width*height*channels; //4 because red/green/blue/alpha
+		VkDeviceSize imageSize = width*height*4; //4 because red/green/blue/alpha
 
 		if (!pix)
 		{

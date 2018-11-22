@@ -71,7 +71,6 @@ namespace RetuEngine
 
 		textures.CleanUp();
 		models.CleanUp();
-		renderables.CleanUp();
 
 		vkDestroySampler(renderer->logicalDevice, defaultSampler, nullptr);
 		vkDestroyDescriptorPool(renderer->logicalDevice, descriptorPool, nullptr);
@@ -86,6 +85,7 @@ namespace RetuEngine
 			cameraViewBuffer.CleanUpBuffer();
 			pointLightBuffer.CleanUpBuffer();
 		}
+		renderables.CleanUp();
 
 		vkDestroySemaphore(renderer->logicalDevice,renderFinishedSemaphore,VK_NULL_HANDLE);
 		vkDestroySemaphore(renderer->logicalDevice,imageAvailableSemaphore,VK_NULL_HANDLE);
@@ -113,17 +113,21 @@ namespace RetuEngine
 
 	void Engine::GameLoop()
 	{
+		float cameraSpeed = 0.005f; // adjust accordingly
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
 			glfwPollEvents();
 			UpdateUniformBuffers();
 			DrawFrame();
 
-			float cameraSpeed = 0.005f; // adjust accordingly
 			if (glfwGetKey(windowObj.window, GLFW_KEY_W) == GLFW_PRESS)
 				inputManager->camera->cameraPos += cameraSpeed * inputManager->camera->cameraFront;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_S) == GLFW_PRESS)
 				inputManager->camera->cameraPos -= cameraSpeed * inputManager->camera->cameraFront;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_E) == GLFW_PRESS)
+				cameraSpeed += 0.005f;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_Q) == GLFW_PRESS)
+				cameraSpeed -= 0.005f;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_A) == GLFW_PRESS)
 			{
 				glm::vec3 cross = glm::cross(inputManager->camera->cameraFront, inputManager->camera->cameraUp);
@@ -189,9 +193,9 @@ namespace RetuEngine
 
 	void Engine::LoadModels()
 	{
-		models.Push("hill"	, Model(renderer, "Hill.rm"));
-		models.Push("chalet", Model(renderer, "chalet.rm"));
-		models.Push("bunny"	, Model(renderer, "Bunny.rm"));
+		models.Push("hill"	, Model(renderer, "Hill.obj"));
+		models.Push("chalet", Model(renderer, "chalet.obj"));
+		models.Push("bunny"	, Model(renderer, "Bunny.obj"));
 	}
 
 	void Engine::ReCreateSwapChain()
