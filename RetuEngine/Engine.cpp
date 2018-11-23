@@ -116,8 +116,8 @@ namespace RetuEngine
 		float cameraSpeed = 0.005f; // adjust accordingly
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
-			glfwPollEvents();
 			UpdateUniformBuffers();
+			glfwPollEvents();
 			DrawFrame();
 
 			if (glfwGetKey(windowObj.window, GLFW_KEY_W) == GLFW_PRESS)
@@ -481,19 +481,18 @@ namespace RetuEngine
 	void Engine::CreateLights()
 	{
 		for (int i = 0; i < 1; i++) {
-			glm::vec3 color = glm::vec3(1.0, 1.0, 1.0);
 			// do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
 			
-			pointLights.emplace_back(glm::linearRand(glm::vec3(0,0.5,0), glm::vec3(0,0.5,0)), 10, glm::vec3(10,10,10));
+			pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,0), glm::vec3(1,1,0)), 10, glm::vec3(10,10,10),glm::vec4(1,0,0,1));
 		}
 
 		int lightnum = pointLights.size();
 
-		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(int);
+		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(uint32_t);
 
 		pointLightBuffer = Buffer(renderer);
 		pointLightBuffer.StartMapping(size,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-		pointLightBuffer.Map(&lightnum, sizeof(int));
+		pointLightBuffer.Map(&lightnum, sizeof(uint32_t));
 		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
 		pointLightBuffer.StopMapping();
 
@@ -507,7 +506,7 @@ namespace RetuEngine
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount = 2 + renderables.size();
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		poolSizes[2].descriptorCount = 100;
+		poolSizes[2].descriptorCount = 100 + 200;
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -931,7 +930,6 @@ namespace RetuEngine
 				std::array<VkDescriptorSet, 3> descriptor_sets = { *renderables[j]->GetDescriptorSet(), lightDescriptor, cameraSet };
 				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, descriptor_sets.size(), descriptor_sets.data(), 0, nullptr);
 
-				//TODO: broken function. descriptor is empty
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j]->GetIndicesSize()), 1, 0, 0, 0);
 			}
 			vkCmdEndRenderPass(commandBuffers[i]);
@@ -1043,6 +1041,16 @@ namespace RetuEngine
 		cameraViewBuffer.UpdateMap(&camera->view,sizeof(glm::mat4));
 		cameraViewBuffer.UpdateMap(&camera->proj,sizeof(glm::mat4));
 		cameraViewBuffer.StopUpdate(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+		//Light updates
+		pointLightBuffer.StartUpdate();
+		uint32_t pointLightSize = pointLights.size();
+		pointLightBuffer.UpdateMap(&pointLightSize,sizeof(uint32_t));
+		pointLightBuffer.UpdateMap(pointLights.data(), sizeof(Pointlight)*pointLightSize);
+		pointLightBuffer.StopUpdate(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+		//pointLights[0].pos.x += 0.1f;
+		//pointLights[0].pos.y += 0.1f;
 
 		for (int i = 0; i < renderables.size(); i++)
 		{
