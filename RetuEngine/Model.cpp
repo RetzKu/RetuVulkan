@@ -120,7 +120,8 @@ namespace RetuEngine
 
 		if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &err, filepath))
 		{
-			throw std::runtime_error("Failed to load model");
+			std::cout << "Failed to open Model: " << filepath << std::endl;
+			return;
 		}
 
 		std::unordered_map<Vertex, uint32_t> uniqueVertices;

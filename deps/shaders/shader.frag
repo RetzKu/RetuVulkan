@@ -15,8 +15,8 @@ layout(set = 0, binding = 1) uniform sampler2D texSampler;
 
 layout(std140, set = 1, binding = 0) buffer pointlights
 {
-    int lightNum;
-	PointLight pointlight[1];
+	int lightNum;
+	PointLight pointlight[200];
 };
 
 layout(std140, set = 2, binding = 0) buffer cameraPos
@@ -42,31 +42,32 @@ void main()
 
 	outColor = vec4(0,0,0,0);
 
-		vec4 realOut = vec4(0);
-	for(int i = 0; i < lightNum ; i++)
+	vec4 realOut = vec4(0);
+	for(int i = 0; i < 1 ; i++)
 	{
 		//vec3 lightCol = vec3(pointlight[i].color) * ambientSTR;
 		vec3 lightDir = normalize(vec3(pointlight[i].pos) - FragPos);
 		vec3 viewDir = normalize(cameraPosition - FragPos);
 		vec3 reflectDir = reflect(-lightDir,norm);
 
-		float spec = pow(max(dot(viewDir,reflectDir),0.0),32);
+		float spec = pow(max(dot(viewDir,reflectDir),0.0),16);
 		float diff = max(dot(norm,lightDir),0.0);
-//		vec3 specular = specularSTR * spec * vec3(pointlight[0].color);
-//		vec3 diffuse = ambientSTR * diff * vec3(pointlight[0].color) * ambientSTR;
-		vec3 specular = specularSTR * spec * vec3(1,1,1);
-		vec3 diffuse = ambientSTR * diff * vec3(1,1,1) * ambientSTR;
 
-		int x = int(pointlight[0].pos.x);
-		int y = int(pointlight[0].pos.y);
-		int z = int(pointlight[0].pos.z);
-
+		vec3 specular = specularSTR * spec * vec3(pointlight[i].color);
+		vec3 diffuse = ambientSTR * diff * vec3(pointlight[1].color) * ambientSTR;
+//		vec3 specular = specularSTR * spec * vec3(1,1,1);
+//		vec3 diffuse = ambientSTR * diff * vec3(1,1,1) * ambientSTR;
+//
+//		int x = int(pointlight[0].pos.x);
+//		int y = int(pointlight[0].pos.y);
+//		int z = int(pointlight[0].pos.z);
+//
 
 //		if(pointlight[0].pos.y != 0 || pointlight[0].pos.z != 0 || pointlight[0].pos.x != 0)
-		if (x != 0 ) {realOut += vec4(1,0,0,1); }
-		if (y != 0 ) {realOut += vec4(0,1,0,1); }
-		if (z != 0 ) {realOut += vec4(0,0,1,1); }
-//
+//		if (x != 0 ) {realOut += vec4(1,0,0,1); }
+//		if (y != 0 ) {realOut += vec4(0,1,0,1); }
+//		if (z != 0 ) {realOut += vec4(0,0,1,1); }
+////
 //		if(y != 0 || z != 0 || x != 0)
 //		{
 //			vec3 specular = specularSTR * spec * vec3(1,0,0);
@@ -75,13 +76,13 @@ void main()
 //			//return ;
 //		}
 
-//		result += (ambient + diff)* col * vec3(pointlight[i].color.x, 1, 0.0);
+//		result += (ambient + diff)* col;
 
 //		result += (ambient + diff)* col * vec3(pointlight[i].color);
-//		result += (diffuse + specular)* col;
+		result += (diffuse + specular)* col;
 //		result += ((pointlight[i].color*ambientSTR) + diffuse)* col;
 	}
 //	result = col * ambientSTR;
 //	outColor = vec4(result,1.0) * 0.01 + realOut;
-	outColor = realOut;
+	outColor = vec4(result,1);
 }

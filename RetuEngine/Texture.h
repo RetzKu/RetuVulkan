@@ -34,11 +34,12 @@ namespace RetuEngine
 		void CleanUpImage() { vkDestroyImage(renderer->logicalDevice, image, nullptr); }
 
 		void CreateTextureImage(const char* file);
-		void CreateImage(int width, int height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory* imageMemory);
-		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void CreateImage(int width, int height,uint32_t mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory* imageMemory);
+		void TransitionImageLayout(VkImage image,uint32_t mipLevels, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VkBuffer* buffer, VkImage image, uint32_t width, uint32_t height);
 		VkCommandBuffer beginSingleCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+		void GenerateMipLevels(VkImage image, uint32_t width, uint32_t height, uint32_t miplevels);
 
 	public: //Public Variables
 		VkImageView imageView;

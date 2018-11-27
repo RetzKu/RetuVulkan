@@ -47,8 +47,9 @@ namespace RetuEngine
 		swapChain->CreateFrameBuffers(&renderPass); 
 		createTextureSampler();
 
-		CreateRenderable("talo", "chalet", "chalet");
-		CreateRenderable("hill", "hill", "hill");
+		//CreateRenderable("talo", "chalet", "chalet");
+		CreateRenderable("hill", "hill", "grass");
+		//CreateRenderable("cube", "cube", "weeb");
 
 		CreateDescriptorPool();
 		CreateDescriptorSets(); //for objects
@@ -185,10 +186,11 @@ namespace RetuEngine
 
 	void Engine::LoadTextures()
 	{
-		textures.Push("hill", Texture("MapText.jpg", renderer));
 		defaultTexture = new Texture("default.png", renderer);
+		//textures.Push("hill", Texture("MapText.jpg", renderer));
 		textures.Push("chalet", Texture("chalet.jpg",renderer));
-		textures.Push("Weeb", Texture("Weeb.bmp",renderer));
+		textures.Push("weeb", Texture("Weeb.bmp",renderer));
+		textures.Push("grass", Texture("grasstex.jpg",renderer));
 	}
 
 	void Engine::LoadModels()
@@ -196,6 +198,7 @@ namespace RetuEngine
 		models.Push("hill"	, Model(renderer, "Hill.obj"));
 		models.Push("chalet", Model(renderer, "chalet.obj"));
 		models.Push("bunny"	, Model(renderer, "Bunny.obj"));
+		models.Push("cube"	, Model(renderer, "Cube.obj"));
 	}
 
 	void Engine::ReCreateSwapChain()
@@ -488,11 +491,11 @@ namespace RetuEngine
 
 		int lightnum = pointLights.size();
 
-		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(uint32_t);
+		VkDeviceSize size = sizeof(Pointlight) * lightnum + sizeof(glm::vec4);
 
 		pointLightBuffer = Buffer(renderer);
 		pointLightBuffer.StartMapping(size,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-		pointLightBuffer.Map(&lightnum, sizeof(uint32_t));
+		pointLightBuffer.Map(&lightnum, sizeof(glm::vec4));
 		pointLightBuffer.Map(pointLights.data(), sizeof(Pointlight)*pointLights.size());
 		pointLightBuffer.StopMapping();
 
@@ -1007,7 +1010,7 @@ namespace RetuEngine
 		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.anisotropyEnable = VK_FALSE;
 		samplerInfo.maxAnisotropy = 16;
-		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		samplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK;
 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 		samplerInfo.compareEnable = VK_FALSE;
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
@@ -1036,6 +1039,8 @@ namespace RetuEngine
 		camera->proj = glm::perspective(glm::radians(90.0f), swapChain->GetExtent()->width / (float)swapChain->GetExtent()->height, 0.1f, 10000.0f);
 		camera->proj[1][1] *= -1; //flipping y coordinate?
 
+		//std::cout << camera->cameraPos.x << " " << camera->cameraPos.y << " " << camera->cameraPos.z << std::endl;
+
 		//for cameraViewMatrix at vert
 		cameraViewBuffer.StartUpdate();
 		cameraViewBuffer.UpdateMap(&camera->view,sizeof(glm::mat4));
@@ -1044,13 +1049,18 @@ namespace RetuEngine
 
 		//Light updates
 		pointLightBuffer.StartUpdate();
-		uint32_t pointLightSize = pointLights.size();
-		pointLightBuffer.UpdateMap(&pointLightSize,sizeof(uint32_t));
+		int pointLightSize = pointLights.size();
+		pointLightBuffer.UpdateMap(&pointLightSize,sizeof(glm::vec4));
 		pointLightBuffer.UpdateMap(pointLights.data(), sizeof(Pointlight)*pointLightSize);
 		pointLightBuffer.StopUpdate(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-		//pointLights[0].pos.x += 0.1f;
-		//pointLights[0].pos.y += 0.1f;
+		pointLights[0].color.x = 1;
+		pointLights[0].color.y = 1;
+		pointLights[0].color.z = 1;
+
+		pointLights[0].pos = glm::vec4(camera->cameraPos,1);
+
+		//renderables.Get("cube")->Transform = glm::translate(glm::mat4(), glm::vec3(camera->cameraPos.x,camera->cameraPos.y,camera->cameraPos.z));
 
 		for (int i = 0; i < renderables.size(); i++)
 		{
