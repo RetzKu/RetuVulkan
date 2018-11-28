@@ -126,9 +126,9 @@ namespace RetuEngine
 			if (glfwGetKey(windowObj.window, GLFW_KEY_S) == GLFW_PRESS)
 				inputManager->camera->cameraPos -= cameraSpeed * inputManager->camera->cameraFront;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_E) == GLFW_PRESS)
-				cameraSpeed += 0.005f;
+				cameraSpeed += 0.001f;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_Q) == GLFW_PRESS)
-				cameraSpeed -= 0.005f;
+				cameraSpeed -= 0.001f;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_A) == GLFW_PRESS)
 			{
 				glm::vec3 cross = glm::cross(inputManager->camera->cameraFront, inputManager->camera->cameraUp);
@@ -166,7 +166,7 @@ namespace RetuEngine
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_F) == GLFW_PRESS)
 			{
-				renderables.Get("talo")->Transform *= glm::translate(glm::mat4(), glm::vec3(0, 0.1f, 0));
+
 			}
 		}
 		vkDeviceWaitIdle(renderer->logicalDevice);
@@ -710,9 +710,11 @@ namespace RetuEngine
 
 	void Engine::CreateGraphicsPipeline()
 	{
-		auto fragShaderCode = ReadFile("shaders/frag.spv");
-		auto vertShaderCode = ReadFile("shaders/vert.spv");
-
+		//auto fragShaderCode = ReadFile("shaders/frag.spv");
+		//auto vertShaderCode = ReadFile("shaders/vert.spv");
+		auto fragShaderCode = CompileGLSL("shaders/shader.frag");
+		auto vertShaderCode = CompileGLSL("shaders/shader.vert");
+		
 		VkShaderModule vertShaderModule;
 		VkShaderModule fragShaderModule;
 
@@ -874,6 +876,28 @@ namespace RetuEngine
 		return shaderModule;
 	}
 
+	VkShaderModule Engine::CreateShaderModule(const std::vector<unsigned int>& code)
+	{
+		VkShaderModuleCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		createInfo.codeSize = code.size();
+
+		std::vector<uint32_t> codeAligned(code.size() / sizeof(uint32_t) + 1);
+		memcpy(codeAligned.data(), code.data(), code.size());
+		createInfo.pCode = codeAligned.data();
+
+		VkShaderModule shaderModule;
+		if (vkCreateShaderModule(renderer->logicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create shader module");
+		}
+		else
+		{
+			std::cout << "Shader module created successfully" << std::endl;
+		}
+		return shaderModule;
+	}
+	
 	void Engine::LightVisibilityBuffer()
 	{
 
@@ -1000,7 +1024,8 @@ namespace RetuEngine
 		vkQueuePresentKHR(renderer->displayQueue, &presentInfo);
 	}
 
-	void Engine::createTextureSampler() {
+	void Engine::createTextureSampler() 
+	{
 		VkSamplerCreateInfo samplerInfo = {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -1015,6 +1040,9 @@ namespace RetuEngine
 		samplerInfo.compareEnable = VK_FALSE;
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.minLod = 0;
+		samplerInfo.maxLod = 10;
+		samplerInfo.mipLodBias = 0;
 
 		if (vkCreateSampler(renderer->logicalDevice, &samplerInfo, nullptr, &defaultSampler) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create texture sampler!");

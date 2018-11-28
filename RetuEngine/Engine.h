@@ -7,6 +7,7 @@
 #include <fstream>
 #include <vector>
 #include <cstring>
+
 /*Graphics Related Headeds*/
 #include "RenderInterface.h"
 #include "Window.h"
@@ -27,6 +28,8 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Pointlight.h"
+
+
 
 namespace RetuEngine 
 {
@@ -95,6 +98,7 @@ namespace RetuEngine
 		void CreateCameraDescriptorSets();
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+		VkShaderModule CreateShaderModule(const std::vector<unsigned int>& code);
 		void CreateCommandBuffers();
 		void CreateSemaphores();
 		void DrawFrame();

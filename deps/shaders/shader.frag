@@ -43,7 +43,7 @@ void main()
 	outColor = vec4(0,0,0,0);
 
 	vec4 realOut = vec4(0);
-	for(int i = 0; i < 1 ; i++)
+	for(int i = 0; i < lightNum ; i++)
 	{
 		//vec3 lightCol = vec3(pointlight[i].color) * ambientSTR;
 		vec3 lightDir = normalize(vec3(pointlight[i].pos) - FragPos);
@@ -54,7 +54,7 @@ void main()
 		float diff = max(dot(norm,lightDir),0.0);
 
 		vec3 specular = specularSTR * spec * vec3(pointlight[i].color);
-		vec3 diffuse = ambientSTR * diff * vec3(pointlight[1].color) * ambientSTR;
+		vec3 diffuse = ambientSTR * diff * vec3(pointlight[i].color) * ambientSTR;
 //		vec3 specular = specularSTR * spec * vec3(1,1,1);
 //		vec3 diffuse = ambientSTR * diff * vec3(1,1,1) * ambientSTR;
 //

@@ -46,13 +46,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\MikaKau\Documents\RetuVulkan\deps\include\glslang\glslang;C:\Users\MikaKau\Documents\RetuVulkan\deps\include\SPIRV;$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\MikaKau\Documents\RetuVulkan\deps\include\glslang\glslang;C:\Users\MikaKau\Documents\RetuVulkan\deps\include\SPIRV;$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -76,6 +76,10 @@
       <Command>
       </Command>
     </PreLinkEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -102,6 +106,10 @@
     <PostBuildEvent>
       <Command>$(SolutionDir)deps/shaders/compile.bat</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
