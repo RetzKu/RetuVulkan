@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E1D32543-E19A-34CC-B497-F5AF0FAC4F00}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\GNUInstallDirs.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\cmake\setup_build.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPythonInterp.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageMessage.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\GNUInstallDirs.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\cmake\setup_build.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPythonInterp.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageMessage.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\GNUInstallDirs.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\cmake\setup_build.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPythonInterp.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageMessage.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;C:\Program Files\CMake\share\cmake-3.10\Modules\GNUInstallDirs.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\cmake\setup_build.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPythonInterp.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.10\Modules\FindPackageMessage.cmake;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\ZERO_CHECK.vcxproj">
+      <Project>{D458E115-C1C2-3F80-B6D8-98E95D8710F2}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\SPIRV-Tools.vcxproj">
+      <Project>{B1D23B77-DAC8-3E4A-A148-F52DCCEBB4F0}</Project>
+      <Name>SPIRV-Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\link\SPIRV-Tools-link.vcxproj">
+      <Project>{45EA03D3-668C-32C8-9473-2E11F0AC44A3}</Project>
+      <Name>SPIRV-Tools-link</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\SPIRV-Tools-opt.vcxproj">
+      <Project>{05A27B39-4A60-3054-9212-88AE8339EC94}</Project>
+      <Name>SPIRV-Tools-opt</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\SPIRV-Tools-shared.vcxproj">
+      <Project>{CF6514DF-6FAA-3882-8B9C-554B5BD307E8}</Project>
+      <Name>SPIRV-Tools-shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-as.vcxproj">
+      <Project>{1DFE3A15-F3B3-3114-8A86-DC6191EDA332}</Project>
+      <Name>spirv-as</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-cfg.vcxproj">
+      <Project>{A903CEC3-BE24-322B-9BE1-5CE907814516}</Project>
+      <Name>spirv-cfg</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-dis.vcxproj">
+      <Project>{92815228-DF4F-3DCA-8025-5B6AE6E89067}</Project>
+      <Name>spirv-dis</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-link.vcxproj">
+      <Project>{EA4C21A5-614C-36D7-87A9-715CD50EA69A}</Project>
+      <Name>spirv-link</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-opt.vcxproj">
+      <Project>{88B6C351-D273-39B3-9C05-97CD7D39D6D0}</Project>
+      <Name>spirv-opt</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-stats.vcxproj">
+      <Project>{39E1CAE2-5150-33DA-80AF-BA5747774E77}</Project>
+      <Name>spirv-stats</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\examples\cpp-interface\spirv-tools-cpp-example.vcxproj">
+      <Project>{A2475C3A-B1E5-31AF-9ACB-4693692DB93E}</Project>
+      <Name>spirv-tools-cpp-example</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spirv-tools-pkg-config.vcxproj">
+      <Project>{144545E4-0F50-3687-B1CD-19A3FF763A80}</Project>
+      <Name>spirv-tools-pkg-config</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spirv-tools-shared-pkg-config.vcxproj">
+      <Project>{2CEDB496-D0FC-365F-80B2-7EADF84561CC}</Project>
+      <Name>spirv-tools-shared-pkg-config</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\spirv-val.vcxproj">
+      <Project>{F4ED7F31-2056-3A3E-9D9F-50E939D2CFF8}</Project>
+      <Name>spirv-val</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

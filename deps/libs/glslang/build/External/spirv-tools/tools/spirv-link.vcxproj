@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EA4C21A5-614C-36D7-87A9-715CD50EA69A}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>spirv-link</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">spirv-link.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">spirv-link</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">spirv-link.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">spirv-link</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">spirv-link.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">spirv-link</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">spirv-link.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">spirv-link</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\source\link\Debug\SPIRV-Tools-linkd.lib;..\source\Debug\SPIRV-Toolsd.lib;..\source\opt\Debug\SPIRV-Tools-optd.lib;..\source\Debug\SPIRV-Toolsd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/Debug/spirv-link.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/Debug/spirv-link.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\source\link\Release\SPIRV-Tools-link.lib;..\source\Release\SPIRV-Tools.lib;..\source\opt\Release\SPIRV-Tools-opt.lib;..\source\Release\SPIRV-Tools.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/Release/spirv-link.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/Release/spirv-link.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\source\link\MinSizeRel\SPIRV-Tools-link.lib;..\source\MinSizeRel\SPIRV-Tools.lib;..\source\opt\MinSizeRel\SPIRV-Tools-opt.lib;..\source\MinSizeRel\SPIRV-Tools.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/MinSizeRel/spirv-link.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/MinSizeRel/spirv-link.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>..\source\link\RelWithDebInfo\SPIRV-Tools-link.lib;..\source\RelWithDebInfo\SPIRV-Tools.lib;..\source\opt\RelWithDebInfo\SPIRV-Tools-opt.lib;..\source\RelWithDebInfo\SPIRV-Tools.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/RelWithDebInfo/spirv-link.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/RelWithDebInfo/spirv-link.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/tools/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/tools/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\tools\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\link\linker.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\ZERO_CHECK.vcxproj">
+      <Project>{D458E115-C1C2-3F80-B6D8-98E95D8710F2}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\SPIRV-Tools.vcxproj">
+      <Project>{B1D23B77-DAC8-3E4A-A148-F52DCCEBB4F0}</Project>
+      <Name>SPIRV-Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\link\SPIRV-Tools-link.vcxproj">
+      <Project>{45EA03D3-668C-32C8-9473-2E11F0AC44A3}</Project>
+      <Name>SPIRV-Tools-link</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\SPIRV-Tools-opt.vcxproj">
+      <Project>{05A27B39-4A60-3054-9212-88AE8339EC94}</Project>
+      <Name>SPIRV-Tools-opt</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

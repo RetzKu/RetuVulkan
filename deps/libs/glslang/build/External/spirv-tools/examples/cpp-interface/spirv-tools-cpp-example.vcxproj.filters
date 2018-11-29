@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\examples\cpp-interface\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\examples\cpp-interface\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AAD33D0D-CD73-3B88-9C62-548D0D0192F7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
