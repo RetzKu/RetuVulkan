@@ -94,6 +94,11 @@ namespace RetuEngine
 			return models[indx];
 		}
 
+		std::string GetName(int index)
+		{
+			return names[index];
+		}
+
 		RenderableObject* Get(std::string name)
 		{
 			int index = 0;
@@ -115,5 +120,29 @@ namespace RetuEngine
 		std::vector<RenderableObject*> models;
 		std::vector<std::string> names;
 		std::vector<int> freeSlots;
+	};
+
+	struct SaveStructure
+	{
+		glm::mat4 transformation;
+		std::string model;
+		std::string texture;
+	};
+
+	class RenderableSaveSystem
+	{
+	public:
+		RenderableSaveSystem(const char* path);
+		RenderableSaveSystem() {};
+
+		void StopAndSave();
+		void AppendToSaveFile(const char* name, RenderableObject* object);
+		void LoadAll();
+		void SaveAll(RenderableVector listOfObjects);
+
+	private:
+		std::vector<SaveStructure> saveData;
+		std::string path;
+		FILE* file;
 	};
 }

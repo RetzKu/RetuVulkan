@@ -66,7 +66,8 @@
       <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>$(SolutionDir)deps/shaders/compile.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -104,7 +105,8 @@
       </Command>
     </PreLinkEvent>
     <PostBuildEvent>
-      <Command>$(SolutionDir)deps/shaders/compile.bat</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <Lib>
       <AdditionalLibraryDirectories>

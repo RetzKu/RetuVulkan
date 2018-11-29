@@ -32,5 +32,5 @@ void main()
 	fragColor = inColor;
 	fragTexCoord = inTexCoord;
 	FragPos = vec3(model * vec4(inPosition,1.0));
-	Normal = aNormal;
+	Normal = mat3(transpose(inverse(model))) * aNormal;
 }

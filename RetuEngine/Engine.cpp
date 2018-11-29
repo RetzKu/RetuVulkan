@@ -46,9 +46,12 @@ namespace RetuEngine
 		LoadModels();
 		swapChain->CreateFrameBuffers(&renderPass); 
 		createTextureSampler();
-
-		//CreateRenderable("talo", "chalet", "chalet");
+		//RSS = RenderableSaveSystem("default.sav");
+		CreateRenderable("talo", "chalet", "chalet");
 		CreateRenderable("hill", "hill", "grass");
+
+		RSS.AppendToSaveFile("talo", renderables.Get("talo"));
+		RSS.LoadAll();
 		//CreateRenderable("cube", "cube", "weeb");
 
 		CreateDescriptorPool();
@@ -68,6 +71,7 @@ namespace RetuEngine
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
+		RSS.StopAndSave();
 		defaultTexture->CleanUp();
 
 		textures.CleanUp();
@@ -129,6 +133,12 @@ namespace RetuEngine
 				cameraSpeed += 0.001f;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_Q) == GLFW_PRESS)
 				cameraSpeed -= 0.001f;
+
+			if (glfwGetKey(windowObj.window, GLFW_KEY_O) == GLFW_PRESS)
+			{
+				system("%cd%/../deps/shaders/compile.bat");
+				ReCreateSwapChain();
+			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_A) == GLFW_PRESS)
 			{
 				glm::vec3 cross = glm::cross(inputManager->camera->cameraFront, inputManager->camera->cameraUp);
@@ -157,6 +167,11 @@ namespace RetuEngine
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_SPACE) == GLFW_PRESS)
 				inputManager->camera->cameraPos.y += cameraSpeed;
+			if (glfwGetKey(windowObj.window, GLFW_KEY_T) == GLFW_PRESS)
+			{
+				RSS.SaveAll(renderables);
+				//TODO: overwrite all savedata
+			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				inputManager->camera->cameraPos.y -= cameraSpeed;
 			if (glfwGetKey(windowObj.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -710,10 +725,10 @@ namespace RetuEngine
 
 	void Engine::CreateGraphicsPipeline()
 	{
-		//auto fragShaderCode = ReadFile("shaders/frag.spv");
-		//auto vertShaderCode = ReadFile("shaders/vert.spv");
-		auto fragShaderCode = CompileGLSL("shaders/shader.frag");
-		auto vertShaderCode = CompileGLSL("shaders/shader.vert");
+		auto fragShaderCode = ReadFile("shaders/frag.spv");
+		auto vertShaderCode = ReadFile("shaders/vert.spv");
+		//auto fragShaderCode = CompileGLSL("shaders/shader.frag");
+		//auto vertShaderCode = CompileGLSL("shaders/shader.vert");
 		
 		VkShaderModule vertShaderModule;
 		VkShaderModule fragShaderModule;

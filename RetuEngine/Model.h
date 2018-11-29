@@ -28,6 +28,7 @@ namespace RetuEngine
 		VertexBuffer* GetVertexBuffer() { return vertexBuffer; }
 		//UniformBuffer* GetUniformBuffer() { return uniformBuffer; }
 
+		std::string name;
 	private:
 		void LoadModel(const char* filepath);
 
@@ -79,6 +80,7 @@ namespace RetuEngine
 			}
 			if (!taken)
 			{
+				model.name = name;
 				models.push_back(new Model(model));
 				names.push_back(name);
 			}

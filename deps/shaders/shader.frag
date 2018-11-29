@@ -33,8 +33,8 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	float ambientSTR = 1;
-	float specularSTR = 1;
+	float ambientSTR = 0.4;
+	float specularSTR = 0.5;
 	vec3 col = texture(texSampler,fragTexCoord).rgb;
 	vec3 norm = normalize(Normal);
 	
@@ -42,7 +42,10 @@ void main()
 
 	outColor = vec4(0,0,0,0);
 
-	vec4 realOut = vec4(0);
+	float lConst = 1.0;
+	float lLinear = 0.04;
+	float lQuadratic = 0.0003;
+
 	for(int i = 0; i < lightNum ; i++)
 	{
 		//vec3 lightCol = vec3(pointlight[i].color) * ambientSTR;
@@ -50,14 +53,16 @@ void main()
 		vec3 viewDir = normalize(cameraPosition - FragPos);
 		vec3 reflectDir = reflect(-lightDir,norm);
 
-		float spec = pow(max(dot(viewDir,reflectDir),0.0),16);
+		float spec = pow(max(dot(viewDir,reflectDir),0.0),128);
 		float diff = max(dot(norm,lightDir),0.0);
 
-		vec3 specular = specularSTR * spec * vec3(pointlight[i].color);
-		vec3 diffuse = ambientSTR * diff * vec3(pointlight[i].color) * ambientSTR;
-//		vec3 specular = specularSTR * spec * vec3(1,1,1);
-//		vec3 diffuse = ambientSTR * diff * vec3(1,1,1) * ambientSTR;
-//
+		float lightDistance = length(pointlight[i].pos.rgb - FragPos);
+		float attentuation = 1.0/ (lConst + lLinear * lightDistance + lQuadratic*(lightDistance*lightDistance));
+
+		vec3 ambient = ambientSTR * pointlight[i].color.rgb * attentuation;
+		vec3 diffuse = ambientSTR * diff * pointlight[i].color.rgb * attentuation;
+		vec3 specular = specularSTR * spec * pointlight[i].color.rgb * attentuation;
+
 //		int x = int(pointlight[0].pos.x);
 //		int y = int(pointlight[0].pos.y);
 //		int z = int(pointlight[0].pos.z);
@@ -79,7 +84,7 @@ void main()
 //		result += (ambient + diff)* col;
 
 //		result += (ambient + diff)* col * vec3(pointlight[i].color);
-		result += (diffuse + specular)* col;
+		result += (diffuse + specular + ambient)* col;
 //		result += ((pointlight[i].color*ambientSTR) + diffuse)* col;
 	}
 //	result = col * ambientSTR;

@@ -44,6 +44,7 @@ namespace RetuEngine
 	public: //Public Variables
 		VkImageView imageView;
 		VkImage image;
+		std::string name;
 
 	private: //Private Variables
 		RenderInterface* renderer;
@@ -83,6 +84,7 @@ namespace RetuEngine
 			}
 			if (!taken)
 			{
+				texture.name = name;
 				textures.push_back(new Texture(texture));
 				names.push_back(name);
 			}

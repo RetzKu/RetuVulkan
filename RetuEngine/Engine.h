@@ -156,6 +156,7 @@ namespace RetuEngine
 
 		//std::vector<RenderableObject> renderables;
 		RenderableVector renderables;
+		RenderableSaveSystem RSS = RenderableSaveSystem("default.sav");
 		ModelVector models;
 
 		Camera* camera;

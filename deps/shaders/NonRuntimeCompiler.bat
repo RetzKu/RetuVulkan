@@ -1,0 +1,2 @@
+C:\VulkanSDK\1.1.85.0\Bin\glslangValidator.exe -V %cd%/../deps/shaders/shader.vert -o %cd%/../deps/shaders/vert.spv
+C:\VulkanSDK\1.1.85.0\Bin\glslangValidator.exe -V %cd%/../deps/shaders/shader.frag -o %cd%/../deps/shaders/frag.spv
