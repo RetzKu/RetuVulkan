@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\stats\stats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\stats\stats_analyzer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\stats\spirv_stats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\stats\stats_analyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\stats\spirv_stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\tools\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{AAD33D0D-CD73-3B88-9C62-548D0D0192F7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{601EF456-8CA7-351C-BF66-FDC4B3E80970}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

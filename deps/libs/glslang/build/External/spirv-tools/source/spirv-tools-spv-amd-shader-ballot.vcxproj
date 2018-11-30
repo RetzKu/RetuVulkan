@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{175B07B0-DC60-35D5-A686-3811DFBBAFEF}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>spirv-tools-spv-amd-shader-ballot</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\build\CMakeFiles\d5291db9fedbd665c4f336041406799c\spv-amd-shader-ballot.insts.inc.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generate extended instruction tables for spv-amd-shader-ballot.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+C:\Users\Loyalisti\AppData\Local\Programs\Python\Python37-32\python.exe C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/utils/generate_grammar_tables.py --extinst-vendor-grammar=C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/extinst.spv-amd-shader-ballot.grammar.json --vendor-insts-output=C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/spv-amd-shader-ballot.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/d5291db9fedbd665c4f336041406799c/spv-amd-shader-ballot.insts.inc.rule;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\utils\generate_grammar_tables.py;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\extinst.spv-amd-shader-ballot.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generate extended instruction tables for spv-amd-shader-ballot.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+C:\Users\Loyalisti\AppData\Local\Programs\Python\Python37-32\python.exe C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/utils/generate_grammar_tables.py --extinst-vendor-grammar=C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/extinst.spv-amd-shader-ballot.grammar.json --vendor-insts-output=C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/spv-amd-shader-ballot.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/d5291db9fedbd665c4f336041406799c/spv-amd-shader-ballot.insts.inc.rule;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\utils\generate_grammar_tables.py;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\extinst.spv-amd-shader-ballot.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Generate extended instruction tables for spv-amd-shader-ballot.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+C:\Users\Loyalisti\AppData\Local\Programs\Python\Python37-32\python.exe C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/utils/generate_grammar_tables.py --extinst-vendor-grammar=C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/extinst.spv-amd-shader-ballot.grammar.json --vendor-insts-output=C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/spv-amd-shader-ballot.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/d5291db9fedbd665c4f336041406799c/spv-amd-shader-ballot.insts.inc.rule;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\utils\generate_grammar_tables.py;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\extinst.spv-amd-shader-ballot.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Generate extended instruction tables for spv-amd-shader-ballot.</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+C:\Users\Loyalisti\AppData\Local\Programs\Python\Python37-32\python.exe C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/utils/generate_grammar_tables.py --extinst-vendor-grammar=C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/extinst.spv-amd-shader-ballot.grammar.json --vendor-insts-output=C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/spv-amd-shader-ballot.insts.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/d5291db9fedbd665c4f336041406799c/spv-amd-shader-ballot.insts.inc.rule;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\utils\generate_grammar_tables.py;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\extinst.spv-amd-shader-ballot.grammar.json;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\build\CMakeFiles\b3b15080781fa02b2ffa09ad4b67cf7f\spirv-tools-spv-amd-shader-ballot.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/b3b15080781fa02b2ffa09ad4b67cf7f/spirv-tools-spv-amd-shader-ballot.rule;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-spv-amd-shader-ballot</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/b3b15080781fa02b2ffa09ad4b67cf7f/spirv-tools-spv-amd-shader-ballot.rule;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-spv-amd-shader-ballot</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/b3b15080781fa02b2ffa09ad4b67cf7f/spirv-tools-spv-amd-shader-ballot.rule;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-spv-amd-shader-ballot</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/build/CMakeFiles/b3b15080781fa02b2ffa09ad4b67cf7f/spirv-tools-spv-amd-shader-ballot.rule;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\spv-amd-shader-ballot.insts.inc;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-spv-amd-shader-ballot</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-spv-amd-shader-ballot" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\ZERO_CHECK.vcxproj">
+      <Project>{D458E115-C1C2-3F80-B6D8-98E95D8710F2}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\CMakeLists.txt" />
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\build\CMakeFiles\d5291db9fedbd665c4f336041406799c\DebugInfo.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\build\CMakeFiles\b3b15080781fa02b2ffa09ad4b67cf7f\spirv-tools-header-DebugInfo.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\CMakeFiles\spirv-tools-header-DebugInfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F5D9DE4D-EABE-35D1-8BA3-C162D056F605}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

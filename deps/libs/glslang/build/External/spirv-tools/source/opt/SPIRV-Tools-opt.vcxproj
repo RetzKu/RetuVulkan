@@ -1,0 +1,458 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{05A27B39-4A60-3054-9212-88AE8339EC94}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>SPIRV-Tools-opt</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">SPIRV-Tools-opt.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">SPIRV-Tools-optd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">SPIRV-Tools-opt.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">SPIRV-Tools-opt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">SPIRV-Tools-opt.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">SPIRV-Tools-opt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">SPIRV-Tools-opt.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">SPIRV-Tools-opt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) -w</AdditionalOptions>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;AMD_EXTENSIONS;NV_EXTENSIONS;ENABLE_HLSL;GLSLANG_OSINCLUDE_WIN32;SPIRV_WINDOWS;SPIRV_COLOR_TERMINAL;SPIRV_CHECK_CONTEXT;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\include;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\external\SPIRV-Headers\include;C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/opt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/opt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/opt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/VulkanSDK/1.1.85.0/glslang -BC:/VulkanSDK/1.1.85.0/glslang/build --check-stamp-file C:/VulkanSDK/1.1.85.0/glslang/build/External/spirv-tools/source/opt/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/VulkanSDK/1.1.85.0/glslang/External/spirv-tools/source/opt/CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\opt\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\aggressive_dead_code_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\basic_block.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\block_merge_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\build_module.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ccp_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\cfg_cleanup_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\cfg.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\combine_access_chains.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\common_uniform_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\compact_ids_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\composite.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\const_folding_rules.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\constants.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\copy_prop_arrays.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_branch_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_insert_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_variable_elimination.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\decoration_manager.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\def_use_manager.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dominator_analysis.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dominator_tree.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\eliminate_dead_constant_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\eliminate_dead_functions_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\feature_manager.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\flatten_decoration_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\fold.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\folding_rules.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\fold_spec_constant_op_and_composite_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\freeze_spec_constant_value_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\function.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\if_conversion.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_exhaustive_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_opaque_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\instruction.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\instruction_list.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ir_builder.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ir_context.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ir_loader.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\licm_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_access_chain_convert_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_redundancy_elimination.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_single_block_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_single_store_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_ssa_elim_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\log.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_dependence.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_descriptor.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fission.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fusion.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fusion_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_peeling.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_unroller.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_utils.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_unswitch_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\mem_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\merge_return_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\module.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\null_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\passes.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\pass_manager.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\private_to_local_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\propagator.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\reduce_load_size.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\redundancy_elimination.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\reflect.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\register_pressure.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\remove_duplicates_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\replace_invalid_opc.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_analysis.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_analysis_nodes.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_replacement_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\set_spec_constant_default_value_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\simplification_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ssa_rewrite_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strength_reduction_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strip_debug_info_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strip_reflect_info_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\struct_cfg_analysis.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\tree_iterator.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\type_manager.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\types.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\unify_const_pass.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\value_number_table.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\vector_dce.h" />
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\workaround1209.h" />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\aggressive_dead_code_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\basic_block.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\block_merge_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\build_module.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ccp_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\cfg_cleanup_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\cfg.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\combine_access_chains.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\common_uniform_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\compact_ids_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\composite.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\const_folding_rules.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\constants.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\copy_prop_arrays.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_branch_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_insert_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dead_variable_elimination.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\decoration_manager.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\def_use_manager.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dominator_analysis.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\dominator_tree.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\eliminate_dead_constant_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\eliminate_dead_functions_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\feature_manager.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\flatten_decoration_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\fold.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\folding_rules.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\fold_spec_constant_op_and_composite_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\freeze_spec_constant_value_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\function.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\if_conversion.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_exhaustive_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_opaque_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\inline_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\instruction.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\instruction_list.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ir_context.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ir_loader.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\licm_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_access_chain_convert_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_redundancy_elimination.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_single_block_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_single_store_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\local_ssa_elim_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_dependence.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_dependence_helpers.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_descriptor.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fission.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fusion.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_fusion_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_peeling.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_utils.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_unroller.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\loop_unswitch_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\mem_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\merge_return_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\module.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\optimizer.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\pass_manager.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\private_to_local_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\propagator.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\reduce_load_size.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\redundancy_elimination.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\register_pressure.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\remove_duplicates_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\replace_invalid_opc.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_analysis.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_analysis_simplification.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\scalar_replacement_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\set_spec_constant_default_value_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\simplification_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\ssa_rewrite_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strength_reduction_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strip_debug_info_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\strip_reflect_info_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\struct_cfg_analysis.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\type_manager.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\types.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\unify_const_pass.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\value_number_table.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\vector_dce.cpp"  />
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\External\spirv-tools\source\opt\workaround1209.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\ZERO_CHECK.vcxproj">
+      <Project>{D458E115-C1C2-3F80-B6D8-98E95D8710F2}</Project>
+      <Name>ZERO_CHECK</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\VulkanSDK\1.1.85.0\glslang\build\External\spirv-tools\source\SPIRV-Tools.vcxproj">
+      <Project>{B1D23B77-DAC8-3E4A-A148-F52DCCEBB4F0}</Project>
+      <Name>SPIRV-Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

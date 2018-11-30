@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\glslang_tab.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\attribute.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Constant.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\iomapper.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\InfoSink.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Initialize.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\IntermTraverse.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Intermediate.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\ParseContextBase.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\ParseHelper.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\PoolAlloc.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\RemoveTree.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Scan.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\ShaderLang.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\SymbolTable.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Versions.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\intermOut.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\limits.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\linkValidate.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\parseConst.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\reflection.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\Pp.cpp">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpAtom.cpp">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpContext.cpp">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpScanner.cpp">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpTokens.cpp">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\propagateNoContraction.cpp">
+      <Filter>MachineIndependent</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\GenericCodeGen\CodeGen.cpp">
+      <Filter>GenericCodeGen</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\GenericCodeGen\Link.cpp">
+      <Filter>GenericCodeGen</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Public\ShaderLang.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\arrays.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\BaseTypes.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\Common.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\ConstantUnion.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\InfoSink.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\InitializeGlobals.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\intermediate.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\PoolAlloc.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\ResourceLimits.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\revision.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\ShHandle.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\Include\Types.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\attribute.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\glslang_tab.cpp.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\gl_types.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Initialize.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\iomapper.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\LiveTraverser.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\localintermediate.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\ParseHelper.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\reflection.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\RemoveTree.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Scan.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\ScanContext.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\SymbolTable.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\Versions.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\parseVersions.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\propagateNoContraction.h">
+      <Filter>MachineIndependent</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpContext.h">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\preprocessor\PpTokens.h">
+      <Filter>MachineIndependent\Preprocessor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\VulkanSDK\1.1.85.0\glslang\glslang\MachineIndependent\glslang.y">
+      <Filter>MachineIndependent</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Public">
+      <UniqueIdentifier>{6FC2E04B-12AE-38FE-9BB2-E272CEB5F435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MachineIndependent">
+      <UniqueIdentifier>{3E93C492-B519-3133-8D9C-7CF1791ED899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{CEDA87DB-1DAC-3D6C-AB2F-5F120D7B80AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GenericCodeGen">
+      <UniqueIdentifier>{4F837D24-E0AA-3ADF-B0E6-B91F215264C3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MachineIndependent\Preprocessor">
+      <UniqueIdentifier>{CE97E270-1386-33E2-A0C8-C4B2C21196BF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
