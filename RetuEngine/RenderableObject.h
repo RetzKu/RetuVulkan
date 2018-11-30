@@ -124,6 +124,10 @@ namespace RetuEngine
 
 	struct SaveStructure
 	{
+		SaveStructure() {};
+		SaveStructure(std::string name, glm::mat4 transformation, std::string mode, std::string texture) { this->name = name; this->transformation = transformation; this->model = mode; this->texture = texture; }
+
+		std::string name;
 		glm::mat4 transformation;
 		std::string model;
 		std::string texture;
@@ -140,8 +144,8 @@ namespace RetuEngine
 		void LoadAll();
 		void SaveAll(RenderableVector listOfObjects);
 
-	private:
 		std::vector<SaveStructure> saveData;
+	private:
 		std::string path;
 		FILE* file;
 	};

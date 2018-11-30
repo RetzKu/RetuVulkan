@@ -106,6 +106,7 @@ namespace RetuEngine
 		void LoadModels();
 		void UpdateUniformBuffers();
 		void CreateRenderable(const char* name, const char* model, const char* texture);
+		void CheckRSS();
 
 		VkResult CreateDebugReportReportCallbackEXT(
 			VkInstance istance,

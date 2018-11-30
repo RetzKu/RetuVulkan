@@ -33,7 +33,7 @@ layout(location = 0) out vec4 outColor;
 
 void main()
 {
-	float ambientSTR = 0.4;
+	float ambientSTR = 1;
 	float specularSTR = 0.5;
 	vec3 col = texture(texSampler,fragTexCoord).rgb;
 	vec3 norm = normalize(Normal);
@@ -42,12 +42,12 @@ void main()
 
 	outColor = vec4(0,0,0,0);
 
-	float lConst = 1.0;
-	float lLinear = 0.04;
-	float lQuadratic = 0.0003;
 
 	for(int i = 0; i < lightNum ; i++)
 	{
+		float lConst = 1.0;
+		float lLinear = 0.04 * (pointlight[i].intensity[0]*pointlight[i].intensity[0]);
+		float lQuadratic = 0.0003 * (pointlight[i].radius[0] * pointlight[i].radius[0]);
 		//vec3 lightCol = vec3(pointlight[i].color) * ambientSTR;
 		vec3 lightDir = normalize(vec3(pointlight[i].pos) - FragPos);
 		vec3 viewDir = normalize(cameraPosition - FragPos);

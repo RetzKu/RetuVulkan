@@ -48,10 +48,13 @@ namespace RetuEngine
 		createTextureSampler();
 		//RSS = RenderableSaveSystem("default.sav");
 		CreateRenderable("talo", "chalet", "chalet");
-		CreateRenderable("hill", "hill", "grass");
+		//CreateRenderable("hill", "hill", "grass");
+		CreateRenderable("valley", "valley", "grass");
 
-		RSS.AppendToSaveFile("talo", renderables.Get("talo"));
-		RSS.LoadAll();
+		//RSS.AppendToSaveFile("talo", renderables.Get("talo"));
+		//RSS.AppendToSaveFile("nibbers", renderables.Get("hill"));
+		//RSS.LoadAll();
+		//CheckRSS();
 		//CreateRenderable("cube", "cube", "weeb");
 
 		CreateDescriptorPool();
@@ -71,7 +74,6 @@ namespace RetuEngine
 	void Engine::CleanUpVulkan()
 	{
 		CleanUpSwapChain();
-		RSS.StopAndSave();
 		defaultTexture->CleanUp();
 
 		textures.CleanUp();
@@ -170,18 +172,39 @@ namespace RetuEngine
 			if (glfwGetKey(windowObj.window, GLFW_KEY_T) == GLFW_PRESS)
 			{
 				RSS.SaveAll(renderables);
+				std::cout << "Scene saved" << std::endl;
 				//TODO: overwrite all savedata
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				inputManager->camera->cameraPos.y -= cameraSpeed;
-			if (glfwGetKey(windowObj.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			if (glfwGetKey(windowObj.window, GLFW_KEY_P) == GLFW_PRESS)
 			{
 				glfwDestroyWindow(windowObj.window);
 				glfwTerminate();
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_F) == GLFW_PRESS)
 			{
-
+				renderables.Get("talo")->Transform *= glm::translate(glm::mat4(), glm::vec3(0, 0.1f, 0));
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_K) == GLFW_PRESS)
+			{
+				pointLights[0].intensity += 0.01f;
+				std::cout << pointLights[0].intensity[0] << std::endl;
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_J) == GLFW_PRESS)
+			{
+				pointLights[0].intensity -= 0.01f; 
+				std::cout << pointLights[0].intensity[0] << std::endl;
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_N) == GLFW_PRESS)
+			{
+				pointLights[0].radius -= 0.01f; 
+				std::cout << pointLights[0].radius[0] << std::endl;
+			}
+			if (glfwGetKey(windowObj.window, GLFW_KEY_M) == GLFW_PRESS)
+			{
+				pointLights[0].radius += 0.01f; 
+				std::cout << pointLights[0].radius[0] << std::endl;
 			}
 		}
 		vkDeviceWaitIdle(renderer->logicalDevice);
@@ -214,6 +237,7 @@ namespace RetuEngine
 		models.Push("chalet", Model(renderer, "chalet.obj"));
 		models.Push("bunny"	, Model(renderer, "Bunny.obj"));
 		models.Push("cube"	, Model(renderer, "Cube.obj"));
+		models.Push("valley", Model(renderer, "Valley.obj"));
 	}
 
 	void Engine::ReCreateSwapChain()
@@ -501,7 +525,7 @@ namespace RetuEngine
 		for (int i = 0; i < 1; i++) {
 			// do { color = { glm::linearRand(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)) }; } while (color.length() < 0.8f);
 			
-			pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,0), glm::vec3(1,1,0)), 10, glm::vec3(10,10,10),glm::vec4(1,0,0,1));
+			pointLights.emplace_back(glm::linearRand(glm::vec3(1,1,0), glm::vec3(1,1,0)), 7.5, -1.5,glm::vec4(1,1,1,1));
 		}
 
 		int lightnum = pointLights.size();
@@ -1097,10 +1121,6 @@ namespace RetuEngine
 		pointLightBuffer.UpdateMap(pointLights.data(), sizeof(Pointlight)*pointLightSize);
 		pointLightBuffer.StopUpdate(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-		pointLights[0].color.x = 1;
-		pointLights[0].color.y = 1;
-		pointLights[0].color.z = 1;
-
 		pointLights[0].pos = glm::vec4(camera->cameraPos,1);
 
 		//renderables.Get("cube")->Transform = glm::translate(glm::mat4(), glm::vec3(camera->cameraPos.x,camera->cameraPos.y,camera->cameraPos.z));
@@ -1108,6 +1128,15 @@ namespace RetuEngine
 		for (int i = 0; i < renderables.size(); i++)
 		{
 			renderables[i]->UpdateUniform();
+		}
+	}
+
+	void Engine::CheckRSS()
+	{
+		for (SaveStructure var : RSS.saveData)
+		{
+			CreateRenderable(var.name.c_str(), var.model.c_str(), var.texture.c_str());
+			renderables.Get(var.name.c_str())->Transform = var.transformation;
 		}
 	}
 }

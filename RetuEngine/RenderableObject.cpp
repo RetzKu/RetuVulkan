@@ -46,16 +46,20 @@ namespace RetuEngine
 		for (int i = 0; i < saveDataSize; i++)
 		{
 			SaveStructure temp;
+			uint16_t sizeOfName = 0;
 			uint16_t sizeOfModel = 0;
 			uint16_t sizeOfTexture = 0;
 
 			fread(&temp.transformation, sizeof(glm::mat4), 1, file);
+			fread(&sizeOfName, sizeof(uint16_t), 1, file);
 			fread(&sizeOfModel, sizeof(uint16_t), 1, file);
 			fread(&sizeOfTexture, sizeof(uint16_t), 1, file);
 
+			temp.name = std::string(sizeOfName, '\0');
 			temp.model = std::string(sizeOfModel, '\0');
 			temp.texture = std::string(sizeOfTexture, '\0');
 
+			fread(&temp.name[0], sizeof(char),sizeOfName, file);
 			fread(&temp.model[0], sizeof(char),sizeOfModel, file);
 			fread(&temp.texture[0], sizeof(char), sizeOfTexture, file);
 			saveData[i] = temp;
@@ -86,16 +90,21 @@ namespace RetuEngine
 		for (int i = 0; i < saveDataSize; i++)
 		{
 			SaveStructure temp;
+			uint16_t sizeOfName = 0;
 			uint16_t sizeOfModel = 0;
 			uint16_t sizeOfTexture = 0;
 
 			fread(&temp.transformation, sizeof(glm::mat4), 1, file);
+
+			fread(&sizeOfName, sizeof(uint16_t), 1, file);
 			fread(&sizeOfModel, sizeof(uint16_t), 1, file);
 			fread(&sizeOfTexture, sizeof(uint16_t), 1, file);
 
+			temp.name = std::string(sizeOfName, '\0');
 			temp.model = std::string(sizeOfModel, '\0');
 			temp.texture = std::string(sizeOfTexture, '\0');
 
+			fread(&temp.name[0], sizeof(char),sizeOfName, file);
 			fread(&temp.model[0], sizeof(char),sizeOfModel, file);
 			fread(&temp.texture[0], sizeof(char), sizeOfTexture, file);
 			saveData[i] = temp;
@@ -117,10 +126,16 @@ namespace RetuEngine
 		for (SaveStructure var : saveData)
 		{
 			fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
+
+			uint16_t sizeOfName = var.name.size();
 			uint16_t sizeOfModel = var.model.size();
 			uint16_t sizeOfTexture = var.texture.size();
-			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file),
-			fwrite(&sizeOfTexture, sizeof(uint16_t), 1, file),
+
+			fwrite(&sizeOfName, sizeof(uint16_t), 1, file);
+			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file);
+			fwrite(&sizeOfTexture, sizeof(uint16_t), 1, file);
+
+			fwrite(&var.name[0], sizeof(char), sizeOfModel, file);
 			fwrite(&var.model[0], sizeof(char), sizeOfModel, file);
 			fwrite(&var.texture[0], sizeof(char), sizeOfTexture, file);
 		}
@@ -129,32 +144,7 @@ namespace RetuEngine
 
 	void RenderableSaveSystem::AppendToSaveFile(const char* name, RenderableObject* object)
 	{
-		fopen_s(&file, path.c_str(), "wb");
-		if (file == nullptr) { std::cout << "Failed to save renderableobject data" << std::endl; return; }
-
-		uint16_t saveDataSize = saveData.size();
-		saveDataSize++;
-
-		fwrite(&saveDataSize, sizeof(uint16_t), 1, file);
-		fclose(file);
-
-		fopen_s(&file, path.c_str(), "rb+");
-		fseek(file, SEEK_END, 0);
-
-		SaveStructure var; 
-		var.transformation = object->Transform;
-		var.model = object->model->name;
-		var.texture = object->texture->name;
-
-		fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
-		uint16_t sizeOfModel = var.model.size();
-		uint16_t sizeOfTexture = var.texture.size();
-		fwrite(&sizeOfModel,sizeof(uint16_t),1,file),
-		fwrite(&sizeOfTexture,sizeof(uint16_t),1,file),
-		fwrite(&var.model[0], sizeof(char), sizeOfModel, file);
-		fwrite(&var.texture[0], sizeof(char), sizeOfTexture, file);
-
-		fclose(file);
+		this->saveData.emplace_back(name,object->Transform, object->model->name, object->texture->name);
 	}
 
 	void RenderableSaveSystem::SaveAll(RenderableVector listOfObjects)
@@ -171,14 +161,21 @@ namespace RetuEngine
 			SaveStructure var;
 
 			var.transformation = object->Transform;
+			var.name = listOfObjects.GetName(i);
 			var.model = object->model->name;
 			var.texture = object->texture->name;
 
 			fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
+
+			uint16_t sizeOfName = var.name.size();
 			uint16_t sizeOfModel = var.model.size();
 			uint16_t sizeOfTexture = var.texture.size();
-			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file),
-			fwrite(&sizeOfTexture, sizeof(uint16_t), 1, file),
+
+			fwrite(&sizeOfName, sizeof(uint16_t), 1, file);
+			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file);
+			fwrite(&sizeOfTexture, sizeof(uint16_t), 1, file);
+
+			fwrite(&var.name[0], sizeof(char), sizeOfName, file);
 			fwrite(&var.model[0], sizeof(char), sizeOfModel, file);
 			fwrite(&var.texture[0], sizeof(char), sizeOfTexture, file);
 		}
