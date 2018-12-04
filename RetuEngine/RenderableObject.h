@@ -19,6 +19,7 @@ namespace RetuEngine
 		RenderableObject(RenderInterface* renderer) : renderer(renderer){};
 		RenderableObject() {};
 		RenderableObject(RenderInterface* renderer, Model* model, Texture* texture);
+		RenderableObject(RenderInterface* renderer, Model* model, std::vector<Texture*> textures);
 		//RenderableObject(RenderInterface* renderer,Camera* camera,const char* file);
 		//RenderableObject(RenderInterface* renderer,Camera* camera,std::vector<Vertex> vertices, const char* file);
 
@@ -32,7 +33,7 @@ namespace RetuEngine
 		void UpdateUniform() { uniformBuffer->Update(Transform); }
 
 		Model* model;
-		Texture* texture;
+		std::vector<Texture*> textures;
 
 		glm::mat4 Transform;
 

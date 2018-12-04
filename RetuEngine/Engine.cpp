@@ -47,9 +47,10 @@ namespace RetuEngine
 		swapChain->CreateFrameBuffers(&renderPass); 
 		createTextureSampler();
 		//RSS = RenderableSaveSystem("default.sav");
-		CreateRenderable("talo", "chalet", "chalet");
+		//CreateRenderable("talo", "chalet", "chalet");
 		//CreateRenderable("hill", "hill", "grass");
-		CreateRenderable("valley", "valley", "grass");
+		//CreateRenderable("valley", "valley", "grass");
+		CreateRenderable("cube", "cube", {"weeb","cube-uv"});
 
 		//RSS.AppendToSaveFile("talo", renderables.Get("talo"));
 		//RSS.AppendToSaveFile("nibbers", renderables.Get("hill"));
@@ -184,7 +185,7 @@ namespace RetuEngine
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_F) == GLFW_PRESS)
 			{
-				renderables.Get("talo")->Transform *= glm::translate(glm::mat4(), glm::vec3(0, 0.1f, 0));
+				//renderables.Get("talo")->Transform *= glm::translate(glm::mat4(), glm::vec3(0, 0.1f, 0));
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_K) == GLFW_PRESS)
 			{
@@ -229,14 +230,15 @@ namespace RetuEngine
 		textures.Push("chalet", Texture("chalet.jpg",renderer));
 		textures.Push("weeb", Texture("Weeb.bmp",renderer));
 		textures.Push("grass", Texture("grasstex.jpg",renderer));
+		textures.Push("cube-uv", Texture("CubeUV.png",renderer,true));
 	}
 
 	void Engine::LoadModels()
 	{
+		models.Push("cube"	, Model(renderer, "Cube.obj"));
 		models.Push("hill"	, Model(renderer, "Hill.obj"));
 		models.Push("chalet", Model(renderer, "chalet.obj"));
 		models.Push("bunny"	, Model(renderer, "Bunny.obj"));
-		models.Push("cube"	, Model(renderer, "Cube.obj"));
 		models.Push("valley", Model(renderer, "Valley.obj"));
 	}
 
@@ -448,7 +450,7 @@ namespace RetuEngine
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = 1;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //kerrotaan että bindattava on texshader
-		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorCount = 2;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
@@ -723,27 +725,53 @@ namespace RetuEngine
 			descriptorWrites[0].descriptorCount = 1;
 			descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-			VkDescriptorImageInfo imageInfo = {};
-			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			if (renderables.Get(i)->texture != nullptr)
+			/*Update descriptors for frag shader Sampler2D*/
+			if (renderables.Get(i)->textures.size() == 0)
 			{
-				imageInfo.imageView = renderables.Get(i)->texture->imageView;
+				VkDescriptorImageInfo imageInfo = { };
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = defaultTexture->imageView;
+				imageInfo.sampler = defaultSampler;
+
+				descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrites[1].dstSet = *renderables.Get(i)->GetDescriptorSet();
+				descriptorWrites[1].dstBinding = 1;
+				descriptorWrites[1].dstArrayElement = 0;
+				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrites[1].descriptorCount = 1;
+				descriptorWrites[1].pImageInfo = &imageInfo;
+
+				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
+				return;
 			}
 			else
 			{
-				imageInfo.imageView = defaultTexture->imageView;
+				std::vector<VkDescriptorImageInfo> imageInfos;
+
+				for (Texture* var : renderables.Get(i)->textures)
+				{
+					VkDescriptorImageInfo tmp; 
+					tmp.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					tmp.imageView = var->imageView;
+					tmp.sampler = defaultSampler;
+					imageInfos.push_back(tmp);
+				}
+
+				descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrites[1].dstSet = *renderables.Get(i)->GetDescriptorSet();
+				descriptorWrites[1].dstBinding = 1;
+				descriptorWrites[1].dstArrayElement = 0;
+				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrites[1].descriptorCount = 2;
+				descriptorWrites[1].pImageInfo = imageInfos.data();
+
+				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
+				return;
 			}
-			imageInfo.sampler = defaultSampler;
 
-			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[1].dstSet = *renderables.Get(i)->GetDescriptorSet();
-			descriptorWrites[1].dstBinding = 1;
-			descriptorWrites[1].dstArrayElement = 0;
-			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorWrites[1].descriptorCount = 1;
-			descriptorWrites[1].pImageInfo = &imageInfo;
 
-			vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
 	}
 
@@ -824,7 +852,13 @@ namespace RetuEngine
 
 		VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
+		colorBlendAttachment.blendEnable = VK_TRUE;
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 		VkPipelineColorBlendStateCreateInfo colorBlending = {};
 		colorBlending.pAttachments = &colorBlendAttachment;
@@ -1091,6 +1125,18 @@ namespace RetuEngine
 	void Engine::CreateRenderable(const char* name, const char* model, const char* texture)
 	{
 		renderables.Push(name, RenderableObject(renderer, models.Get(model), textures.Get(texture)));
+		std::cout << "test";
+	}
+
+	void Engine::CreateRenderable(const char* name, const char* model, std::vector<const char*> texture)
+	{
+		std::vector<Texture*> tmpTexVec;
+		for(int i = 0; i < texture.size(); i++)
+		{
+			tmpTexVec.push_back(textures.Get(texture[i]));
+		}
+
+		renderables.Push(name, RenderableObject(renderer, models.Get(model), tmpTexVec));
 		std::cout << "test";
 	}
 

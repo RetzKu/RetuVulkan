@@ -12,7 +12,18 @@ namespace RetuEngine
 		//this->uniformBuffer = model->GetUniformBuffer();
 
 		this->model = model;
-		this->texture = texture;
+		this->textures.push_back(texture);
+		this->renderer = renderer;
+	}
+
+	RenderableObject::RenderableObject(RenderInterface* renderer, Model* model, std::vector<Texture*> textures)
+	{
+		this->indexBuffer = model->GetIndexBuffer();
+		this->vertexBuffer = model->GetVertexBuffer();
+		this->uniformBuffer = new UniformBuffer(renderer);
+
+		this->model = model;
+		this->textures = textures;
 		this->renderer = renderer;
 	}
 
@@ -144,7 +155,8 @@ namespace RetuEngine
 
 	void RenderableSaveSystem::AppendToSaveFile(const char* name, RenderableObject* object)
 	{
-		this->saveData.emplace_back(name,object->Transform, object->model->name, object->texture->name);
+		//TODO: korjaa savetus usealle textuurille;
+		this->saveData.emplace_back(name,object->Transform, object->model->name, "temp");
 	}
 
 	void RenderableSaveSystem::SaveAll(RenderableVector listOfObjects)
@@ -163,7 +175,7 @@ namespace RetuEngine
 			var.transformation = object->Transform;
 			var.name = listOfObjects.GetName(i);
 			var.model = object->model->name;
-			var.texture = object->texture->name;
+			var.texture = "temp"; //TODO: korjaa savetus usealle textuurille;
 
 			fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
 

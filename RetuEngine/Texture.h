@@ -19,7 +19,7 @@ namespace RetuEngine
 	class Texture
 	{
 	public:
-		Texture(const char* file, RenderInterface* renderer) : imageBuffer(renderer), renderer(renderer) { CreateTextureImage(file); };
+		Texture(const char* file, RenderInterface* renderer, bool blendMap = false) : imageBuffer(renderer), blendMap(blendMap), renderer(renderer) { CreateTextureImage(file); };
 
 		void CleanUp() 
 		{ 
@@ -45,6 +45,7 @@ namespace RetuEngine
 		VkImageView imageView;
 		VkImage image;
 		std::string name;
+		bool blendMap = false;
 
 	private: //Private Variables
 		RenderInterface* renderer;

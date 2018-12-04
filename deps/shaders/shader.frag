@@ -9,8 +9,21 @@ struct PointLight {
 	vec4 color; //16     
 };
 
+struct BlendStruct
+{
+	sampler2D blendMap;
+	sampler2D blendTexR;
+	sampler2D blendTexG;
+	sampler2D blendTexB;
+};
 
-layout(set = 0, binding = 1) uniform sampler2D texSampler;
+
+layout(set = 0, binding = 1) uniform sampler2D texSampler[12];
+
+layout(set = 3, binding = 0) uniform blendSet 
+{
+	BlendStruct x;
+};
 
 
 layout(std140, set = 1, binding = 0) buffer pointlights
@@ -35,13 +48,16 @@ void main()
 {
 	float ambientSTR = 1;
 	float specularSTR = 0.5;
-	vec3 col = texture(texSampler,fragTexCoord).rgb;
+
+
+	vec3 col = texture(texSampler[0],fragTexCoord).rgb;
+	//vec4 blendMap = texture(texSampler[1],fragTexCoord);
+
+	//col = col * blendMap.r;
+
 	vec3 norm = normalize(Normal);
-	
 	vec3 result = vec3(0,0,0);
-
 	outColor = vec4(0,0,0,0);
-
 
 	for(int i = 0; i < lightNum ; i++)
 	{
@@ -63,31 +79,8 @@ void main()
 		vec3 diffuse = ambientSTR * diff * pointlight[i].color.rgb * attentuation;
 		vec3 specular = specularSTR * spec * pointlight[i].color.rgb * attentuation;
 
-//		int x = int(pointlight[0].pos.x);
-//		int y = int(pointlight[0].pos.y);
-//		int z = int(pointlight[0].pos.z);
-//
-
-//		if(pointlight[0].pos.y != 0 || pointlight[0].pos.z != 0 || pointlight[0].pos.x != 0)
-//		if (x != 0 ) {realOut += vec4(1,0,0,1); }
-//		if (y != 0 ) {realOut += vec4(0,1,0,1); }
-//		if (z != 0 ) {realOut += vec4(0,0,1,1); }
-////
-//		if(y != 0 || z != 0 || x != 0)
-//		{
-//			vec3 specular = specularSTR * spec * vec3(1,0,0);
-//			vec3 diffuse = ambientSTR * diff * vec3(1,0,0) * ambientSTR;
-//			//outColor =  vec4(1,1,1,1); 
-//			//return ;
-//		}
-
-//		result += (ambient + diff)* col;
-
-//		result += (ambient + diff)* col * vec3(pointlight[i].color);
 		result += (diffuse + specular + ambient)* col;
-//		result += ((pointlight[i].color*ambientSTR) + diffuse)* col;
+		//result *= blendResult;
 	}
-//	result = col * ambientSTR;
-//	outColor = vec4(result,1.0) * 0.01 + realOut;
 	outColor = vec4(result,1);
 }
