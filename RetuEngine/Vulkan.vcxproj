@@ -46,13 +46,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\MikaKau\Documents\RetuVulkan\deps\include\glslang\glslang;C:\Users\MikaKau\Documents\RetuVulkan\deps\include\SPIRV;$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\deps\include\glslang\glslang;$(SolutionDir)\deps\include\SPIRV;$(SolutionDir)\deps\libs;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Output\</OutDir>
     <IncludePath>$(SolutionDir)deps\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\MikaKau\Documents\RetuVulkan\deps\include\glslang\glslang;C:\Users\MikaKau\Documents\RetuVulkan\deps\include\SPIRV;$(SolutionDir)deps\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\deps\include\glslang\glslang;$(SolutionDir)\deps\include\SPIRV;$(SolutionDir)\deps\libs;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Intermediate\Engine\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,6 +125,7 @@
     <ClCompile Include="RenderableObject.cpp" />
     <ClCompile Include="RenderInterface.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="UniformBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="RenderableObject.h" />
     <ClInclude Include="RenderInterface.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UniformBuffer.h" />
     <ClInclude Include="Vertex.h" />

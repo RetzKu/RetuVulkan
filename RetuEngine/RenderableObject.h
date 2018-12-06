@@ -1,6 +1,5 @@
 #pragma once
-#include <vulkan\vulkan.h>
-
+#include <vulkan\vulkan.h> 
 #include "UniformBuffer.h"
 #include "Texture.h"
 #include "Model.h"

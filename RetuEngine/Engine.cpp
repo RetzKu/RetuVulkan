@@ -40,17 +40,23 @@ namespace RetuEngine
 		swapChain = new SwapChain(); 
 		swapChain->Create(renderer);
 		CreateRenderPass();
+
 		CreateDescriptorSetlayout();
+		CreateTerrainDescriptorSetlayout();
+
 		CreateGraphicsPipeline();
+		CreateTerrainPipeline();
+
 		LoadTextures();
 		LoadModels();
 		swapChain->CreateFrameBuffers(&renderPass); 
 		createTextureSampler();
 		//RSS = RenderableSaveSystem("default.sav");
+		CreateTerrain("terrain", "cube", { "weeb","cube-uv" });
 		//CreateRenderable("talo", "chalet", "chalet");
 		//CreateRenderable("hill", "hill", "grass");
 		//CreateRenderable("valley", "valley", "grass");
-		CreateRenderable("cube", "cube", {"weeb","cube-uv"});
+		//CreateRenderable("cube", "cube", {"weeb","cube-uv"});
 
 		//RSS.AppendToSaveFile("talo", renderables.Get("talo"));
 		//RSS.AppendToSaveFile("nibbers", renderables.Get("hill"));
@@ -59,12 +65,14 @@ namespace RetuEngine
 		//CreateRenderable("cube", "cube", "weeb");
 
 		CreateDescriptorPool();
-		CreateDescriptorSets(); //for objects
+		CreateDescriptorSets(); //for objects //set 0
 
 		CreateLights();
-		CreateLightDescriptorSets();  
+		CreateLightDescriptorSets();   //set 1
 
-		CreateCameraDescriptorSets();
+		CreateCameraDescriptorSets(); //set 2
+
+		CreateTerrainDescriptorSets(); //set 3
 
 		LightVisibilityBuffer();
 		CreateCommandBuffers();
@@ -124,8 +132,8 @@ namespace RetuEngine
 		float cameraSpeed = 0.005f; // adjust accordingly
 		while (!glfwWindowShouldClose(windowObj.window))
 		{
-			UpdateUniformBuffers();
 			glfwPollEvents();
+			UpdateUniformBuffers();
 			DrawFrame();
 
 			if (glfwGetKey(windowObj.window, GLFW_KEY_W) == GLFW_PRESS)
@@ -182,6 +190,9 @@ namespace RetuEngine
 			{
 				glfwDestroyWindow(windowObj.window);
 				glfwTerminate();
+				vkDeviceWaitIdle(renderer->logicalDevice);
+				CleanUpVulkan();
+				return;
 			}
 			if (glfwGetKey(windowObj.window, GLFW_KEY_F) == GLFW_PRESS)
 			{
@@ -299,6 +310,157 @@ namespace RetuEngine
 		{
 			std::cout << "Vulkan instance created successfully" << std::endl;
 		}
+	}
+
+	void Engine::CreateTerrainPipeline()
+	{
+		auto fragShaderCode = ReadFile("shaders/terrainfrag.spv");
+		auto vertShaderCode = ReadFile("shaders/terrainvert.spv");
+
+		VkShaderModule vertShaderModule;
+		VkShaderModule fragShaderModule;
+
+		vertShaderModule = CreateShaderModule(vertShaderCode);
+		fragShaderModule = CreateShaderModule(fragShaderCode);
+
+		VkPipelineShaderStageCreateInfo vertShaderCreateInfo = {  };
+		vertShaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertShaderCreateInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertShaderCreateInfo.module = vertShaderModule;
+		vertShaderCreateInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo fragShaderCreateInfo = {  };
+		fragShaderCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragShaderCreateInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		fragShaderCreateInfo.module = fragShaderModule;
+		fragShaderCreateInfo.pName = "main";
+
+		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderCreateInfo,fragShaderCreateInfo };
+
+		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		auto bindingDescription = Vertex::getBindingDescription();
+		auto attributeDescription = Vertex::getAttributeDescription();
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescription.size());
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
+
+		VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.primitiveRestartEnable = false;
+
+		VkViewport viewport = {  };
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = (float)swapChain->GetExtent()->width;
+		viewport.height = (float)swapChain->GetExtent()->height;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		VkRect2D scissor = {};
+		scissor.offset = { 0,0 };
+		scissor.extent = *swapChain->GetExtent();
+
+		VkPipelineViewportStateCreateInfo viewportCreateInfo = { };
+		viewportCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportCreateInfo.viewportCount = 1;
+		viewportCreateInfo.pViewports = &viewport;
+		viewportCreateInfo.scissorCount = 1;
+		viewportCreateInfo.pScissors = &scissor;
+
+		VkPipelineRasterizationStateCreateInfo rasterizer = {};
+		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizer.depthClampEnable = VK_FALSE;
+		rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		rasterizer.lineWidth = 1.0f;
+		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rasterizer.depthBiasEnable = VK_FALSE;
+		
+		VkPipelineMultisampleStateCreateInfo multisampling = {};
+		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampling.sampleShadingEnable = VK_FALSE;
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		colorBlendAttachment.blendEnable = VK_TRUE;
+		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+		VkPipelineColorBlendStateCreateInfo colorBlending = {};
+		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		colorBlending.logicOpEnable = VK_FALSE;
+		colorBlending.attachmentCount = 1;
+
+		VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT,VK_DYNAMIC_STATE_LINE_WIDTH };
+
+		VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo = {};
+		dynamicStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamicStateCreateInfo.dynamicStateCount = 2;
+		dynamicStateCreateInfo.pDynamicStates = dynamicStates;
+
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		std::array<VkDescriptorSetLayout, 3> setLayouts = { terrainDescriptorSetLayout,lightDescriptorSetlayout,cameraSetLayout };
+		pipelineLayoutInfo.setLayoutCount = static_cast<int>(setLayouts.size());
+		pipelineLayoutInfo.pSetLayouts = setLayouts.data();
+
+		VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f;
+		depthStencil.maxDepthBounds = 1.0f;
+		depthStencil.stencilTestEnable = VK_FALSE;
+		depthStencil.front = {};
+		depthStencil.back = {};
+
+		if (vkCreatePipelineLayout(renderer->logicalDevice, &pipelineLayoutInfo, nullptr, &terrainPipelineLayout) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create pipeline layout");
+		}
+		else
+		{
+			std::cout << "Created terrain pipelinelayout" << std::endl;
+		}
+
+		VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
+		pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineCreateInfo.stageCount = 2;
+		pipelineCreateInfo.pStages = shaderStages;
+		pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
+		pipelineCreateInfo.pInputAssemblyState = &inputAssembly;
+		pipelineCreateInfo.pViewportState = &viewportCreateInfo;
+		pipelineCreateInfo.pRasterizationState = &rasterizer;
+		pipelineCreateInfo.pMultisampleState = &multisampling;
+		pipelineCreateInfo.pColorBlendState = &colorBlending;
+		pipelineCreateInfo.layout = pipelineLayout;
+		pipelineCreateInfo.renderPass = renderPass;
+		pipelineCreateInfo.pDepthStencilState = &depthStencil;
+		pipelineCreateInfo.subpass = 0;
+		
+		VkResult result = vkCreateGraphicsPipelines(renderer->logicalDevice, VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &terrainPipeline);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create graphicspipeline");
+		}
+		else
+		{
+			std::cout << "Created graphics pipeline successfully" << std::endl;
+		}
+		vkDestroyShaderModule(renderer->logicalDevice,vertShaderModule,VK_NULL_HANDLE);
+		vkDestroyShaderModule(renderer->logicalDevice,fragShaderModule,VK_NULL_HANDLE);
 	}
 
 	bool Engine::CheckValidationLayerSupport()
@@ -450,7 +612,7 @@ namespace RetuEngine
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = 1;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //kerrotaan että bindattava on texshader
-		samplerLayoutBinding.descriptorCount = 2;
+		samplerLayoutBinding.descriptorCount = 1;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
@@ -522,6 +684,38 @@ namespace RetuEngine
 
 	}
 
+	void Engine::CreateTerrainDescriptorSetlayout()
+	{
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = 0; 
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; //uniform buffer. Uniform lisätty shaderiin
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT; //vertex shaderille
+
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //kerrotaan että bindattava on texshader
+		samplerLayoutBinding.descriptorCount = 2;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
+
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
+
+		if (vkCreateDescriptorSetLayout(renderer->logicalDevice, &layoutInfo, nullptr, &terrainDescriptorSetLayout) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create DescriptorLayout");
+		}
+		else
+		{
+			std::cout << "Created Terrain DescriptorSetLayout" << std::endl;
+		}
+	}
+
 	void Engine::CreateLights()
 	{
 		for (int i = 0; i < 1; i++) {
@@ -546,9 +740,9 @@ namespace RetuEngine
 	{
 		std::array<VkDescriptorPoolSize, 3> poolSizes = {};
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount = 3 + renderables.size();
+		poolSizes[0].descriptorCount = 3 + renderables.size() + terrains.size();
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[1].descriptorCount = 2 + renderables.size();
+		poolSizes[1].descriptorCount = 2 + renderables.size() + terrains.size();
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		poolSizes[2].descriptorCount = 100 + 200;
 
@@ -556,7 +750,7 @@ namespace RetuEngine
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = static_cast<uint32_t>(renderables.size()*2 + 1);
+		poolInfo.maxSets = static_cast<uint32_t>(renderables.size()*2 + 1 + terrains.size() * 2);
 
 		if (vkCreateDescriptorPool(renderer->logicalDevice, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS)
 		{
@@ -582,21 +776,6 @@ namespace RetuEngine
 			throw std::runtime_error("Failed to create light descriptor set");
 		}
 
-		//int tileCountPerRow = swapChain->GetExtent()->width - 1 / 16 + 1;
-		//int tileCountPerCol = swapChain->GetExtent()->height - 1 / 16 + 1;
-
-		//VkDeviceSize lightBufferSize = sizeof(_Dummy_VisibleLightsForTile) * tileCountPerCol * tileCountPerRow;
-
-		//lightBuffer.CreateBuffer(&renderer->logicalDevice, &renderer->physicalDevice, &renderer->surface, lightBufferSize, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-		//VkBuffer testB;
-		//VkDeviceMemory bufferMem;
-
-		//VkDescriptorBufferInfo lightVisibilityBufferInfo = {};
-		//lightVisibilityBufferInfo.buffer = *lightBuffer.GetBuffer();
-		//lightVisibilityBufferInfo.offset = 0;
-		//lightVisibilityBufferInfo.range = lightBufferSize;
-
 		VkDescriptorBufferInfo pointLightBufferInfo = {};
 		pointLightBufferInfo.buffer = *pointLightBuffer.GetBuffer();
 		pointLightBufferInfo.offset = 0;
@@ -617,74 +796,72 @@ namespace RetuEngine
 	void Engine::CreateCameraDescriptorSets()
 	{
 
-		if (renderables.size() == 0) return;
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = descriptorPool;
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &cameraSetLayout;
 
-			VkDescriptorSetAllocateInfo allocInfo = {};
-			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-			allocInfo.descriptorPool = descriptorPool;
-			allocInfo.descriptorSetCount = 1;
-			allocInfo.pSetLayouts = &cameraSetLayout;
+		VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &cameraSet);
 
-			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, &cameraSet);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate descriptorset");
+		}
+		else
+		{
+			std::cout << "Allocated descriptor succesfully" << std::endl;
+		}
 
-			if (result != VK_SUCCESS)
-			{
-				throw std::runtime_error("Failed to allocate descriptorset");
-			}
-			else
-			{
-				std::cout << "Allocated descriptor succesfully" << std::endl;
-			}
+		//for cameraposition at frag
+		cameraBuffer = Buffer(renderer);
+		cameraBuffer.StartMapping(sizeof(glm::vec3),VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		cameraBuffer.Map(&camera->cameraPos, sizeof(glm::vec3));
+		cameraBuffer.StopMapping();
 
-			//for cameraposition at frag
-			cameraBuffer = Buffer(renderer);
-			cameraBuffer.StartMapping(sizeof(glm::vec3),VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-			cameraBuffer.Map(&camera->cameraPos, sizeof(glm::vec3));
-			cameraBuffer.StopMapping();
+		VkDescriptorBufferInfo cameraBufferInfo = {};
+		cameraBufferInfo.buffer = *cameraBuffer.GetBuffer();
+		cameraBufferInfo.offset = 0;
+		cameraBufferInfo.range = cameraBuffer.bufferSize;
 
-			VkDescriptorBufferInfo cameraBufferInfo = {};
-			cameraBufferInfo.buffer = *cameraBuffer.GetBuffer();
-			cameraBufferInfo.offset = 0;
-			cameraBufferInfo.range = cameraBuffer.bufferSize;
+		camera->view = glm::lookAt(camera->cameraPos,  camera->cameraPos + camera->cameraFront, camera->cameraUp);
+		camera->proj = glm::perspective(glm::radians(90.0f), swapChain->GetExtent()->width / (float)swapChain->GetExtent()->height, 0.1f, 10000.0f);
+		camera->proj[1][1] *= -1; //flipping y coordinate?
 
-			camera->view = glm::lookAt(camera->cameraPos,  camera->cameraPos + camera->cameraFront, camera->cameraUp);
-			camera->proj = glm::perspective(glm::radians(90.0f), swapChain->GetExtent()->width / (float)swapChain->GetExtent()->height, 0.1f, 10000.0f);
-			camera->proj[1][1] *= -1; //flipping y coordinate?
+		//for cameraViewMatrix at vert
+		cameraViewBuffer = Buffer(renderer);
+		cameraViewBuffer.StartMapping(sizeof(glm::mat4) * 2,VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		cameraViewBuffer.Map(&camera->view,sizeof(glm::mat4));
+		cameraViewBuffer.Map(&camera->proj,sizeof(glm::mat4));
+		cameraViewBuffer.StopMapping();
 
-			//for cameraViewMatrix at vert
-			cameraViewBuffer = Buffer(renderer);
-			cameraViewBuffer.StartMapping(sizeof(glm::mat4) * 2,VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-			cameraViewBuffer.Map(&camera->view,sizeof(glm::mat4));
-			cameraViewBuffer.Map(&camera->proj,sizeof(glm::mat4));
-			cameraViewBuffer.StopMapping();
+		VkDescriptorBufferInfo cameraViewBufferInfo = {};
+		cameraViewBufferInfo.buffer = *cameraViewBuffer.GetBuffer();
+		cameraViewBufferInfo.offset = 0;
+		cameraViewBufferInfo.range = cameraViewBuffer.bufferSize;
 
-			VkDescriptorBufferInfo cameraViewBufferInfo = {};
-			cameraViewBufferInfo.buffer = *cameraViewBuffer.GetBuffer();
-			cameraViewBufferInfo.offset = 0;
-			cameraViewBufferInfo.range = cameraViewBuffer.bufferSize;
+		std::vector<VkWriteDescriptorSet> camerawrites;
+		VkWriteDescriptorSet cameraWriteSet = {};
+		cameraWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		cameraWriteSet.dstSet = cameraSet;
+		cameraWriteSet.dstBinding = 0;
+		cameraWriteSet.dstArrayElement = 0;
+		cameraWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		cameraWriteSet.descriptorCount = 1;
+		cameraWriteSet.pBufferInfo = &cameraBufferInfo;
+		camerawrites.push_back(cameraWriteSet);
 
-			std::vector<VkWriteDescriptorSet> camerawrites;
-			VkWriteDescriptorSet cameraWriteSet = {};
-			cameraWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			cameraWriteSet.dstSet = cameraSet;
-			cameraWriteSet.dstBinding = 0;
-			cameraWriteSet.dstArrayElement = 0;
-			cameraWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-			cameraWriteSet.descriptorCount = 1;
-			cameraWriteSet.pBufferInfo = &cameraBufferInfo;
-			camerawrites.push_back(cameraWriteSet);
+		VkWriteDescriptorSet cameraDescriptorWriteSet = {};
+		cameraDescriptorWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		cameraDescriptorWriteSet.dstSet = cameraSet;
+		cameraDescriptorWriteSet.dstBinding = 1;
+		cameraDescriptorWriteSet.dstArrayElement = 0;
+		cameraDescriptorWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		cameraDescriptorWriteSet.descriptorCount = 1;
+		cameraDescriptorWriteSet.pBufferInfo = &cameraViewBufferInfo;
+		camerawrites.push_back(cameraDescriptorWriteSet);
 
-			VkWriteDescriptorSet cameraDescriptorWriteSet = {};
-			cameraDescriptorWriteSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			cameraDescriptorWriteSet.dstSet = cameraSet;
-			cameraDescriptorWriteSet.dstBinding = 1;
-			cameraDescriptorWriteSet.dstArrayElement = 0;
-			cameraDescriptorWriteSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			cameraDescriptorWriteSet.descriptorCount = 1;
-			cameraDescriptorWriteSet.pBufferInfo = &cameraViewBufferInfo;
-			camerawrites.push_back(cameraDescriptorWriteSet);
-
-			vkUpdateDescriptorSets(renderer->logicalDevice,	camerawrites.size(), camerawrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(renderer->logicalDevice,	camerawrites.size(), camerawrites.data(), 0, nullptr);
 	}
 
 	void Engine::CreateDescriptorSets()
@@ -763,7 +940,7 @@ namespace RetuEngine
 				descriptorWrites[1].dstBinding = 1;
 				descriptorWrites[1].dstArrayElement = 0;
 				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorWrites[1].descriptorCount = 2;
+				descriptorWrites[1].descriptorCount = 1;
 				descriptorWrites[1].pImageInfo = imageInfos.data();
 
 				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
@@ -772,6 +949,91 @@ namespace RetuEngine
 			}
 
 
+		}
+	}
+
+	void Engine::CreateTerrainDescriptorSets()
+	{
+		for (int i = 0; i < terrains.size(); i++)
+		{
+			VkDescriptorSetLayout layouts[] = { terrainDescriptorSetLayout };
+
+			VkDescriptorSetAllocateInfo allocInfo = {};
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = descriptorPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = layouts;
+
+			VkResult result = vkAllocateDescriptorSets(renderer->logicalDevice, &allocInfo, terrains[i].GetDescriptorSet());
+			if (result != VK_SUCCESS)
+			{
+				throw std::runtime_error("Failed to allocate descriptorset");
+			}
+			else
+			{
+				std::cout << "Allocated descriptor succesfully" << std::endl;
+			}
+
+			std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = *terrains[i].GetUniformBuffer();
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(glm::mat4);
+
+			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrites[0].dstSet = *terrains[i].GetDescriptorSet();
+			descriptorWrites[0].dstBinding = 0;
+			descriptorWrites[0].dstArrayElement = 0;
+			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrites[0].descriptorCount = 1;
+			descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+			/*Update descriptors for frag shader Sampler2D*/
+			if (terrains[i].textures.size() == 0)
+			{
+				VkDescriptorImageInfo imageInfo = {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = defaultTexture->imageView;
+				imageInfo.sampler = defaultSampler;
+
+				descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrites[1].dstSet = *terrains[i].GetDescriptorSet();
+				descriptorWrites[1].dstBinding = 1;
+				descriptorWrites[1].dstArrayElement = 0;
+				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrites[1].descriptorCount = 1;
+				descriptorWrites[1].pImageInfo = &imageInfo;
+
+				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
+				return;
+			}
+			else
+			{
+				std::vector<VkDescriptorImageInfo> imageInfos;
+
+				for (Texture* var : terrains[i].textures)
+				{
+					VkDescriptorImageInfo tmp;
+					tmp.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					tmp.imageView = var->imageView;
+					tmp.sampler = defaultSampler;
+					imageInfos.push_back(tmp);
+				}
+
+				descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrites[1].dstSet = *terrains[i].GetDescriptorSet();
+				descriptorWrites[1].dstBinding = 1;
+				descriptorWrites[1].dstArrayElement = 0;
+				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrites[1].descriptorCount = 1;
+				descriptorWrites[1].pImageInfo = imageInfos.data();
+
+				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
+				return;
+			}
 		}
 	}
 
@@ -1017,6 +1279,7 @@ namespace RetuEngine
 			renderPassInfo.pClearValues = clearValues.data();
 
 			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
 			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
 			for (int j = 0; j < renderables.size(); j++)
@@ -1032,6 +1295,24 @@ namespace RetuEngine
 
 				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(renderables[j]->GetIndicesSize()), 1, 0, 0, 0);
 			}
+
+			vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, terrainPipeline);
+
+			for (int j = 0; j < terrains.size(); j++)
+			{
+				VkBuffer vertexBuffer[] = { *terrains[j].GetVertexBuffer() };
+				VkDeviceSize offsets[] = { 0 };
+
+				VkBuffer indexBuffer = *terrains[j].GetIndexBuffer();
+				VkDescriptorSet descriptorSets[] = { *terrains[j].GetDescriptorSet() , lightDescriptor, cameraSet };
+
+				vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffer, offsets);
+				vkCmdBindIndexBuffer(commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+				vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, terrainPipelineLayout, 0, 3, descriptorSets, 0, nullptr);
+
+				vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(terrains[j].GetIndicesSize()), 1, 0, 0, 0);
+			}
+
 			vkCmdEndRenderPass(commandBuffers[i]);
 
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS)
@@ -1079,7 +1360,8 @@ namespace RetuEngine
 		submitInfo.commandBufferCount = 1;	
 		submitInfo.pCommandBuffers = &commandBuffers[imageIndex];	
 
-		if (vkQueueSubmit(renderer->displayQueue,1,&submitInfo,VK_NULL_HANDLE) != VK_SUCCESS)
+		VkResult result = vkQueueSubmit(renderer->displayQueue, 1, &submitInfo, VK_NULL_HANDLE);
+		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to submit");
 		}
@@ -1138,6 +1420,18 @@ namespace RetuEngine
 
 		renderables.Push(name, RenderableObject(renderer, models.Get(model), tmpTexVec));
 		std::cout << "test";
+	}
+
+	void Engine::CreateTerrain(const char* name, const char* model, std::vector <const char*> texture)
+	{
+		std::vector<Texture*> tmpTexVec;
+		for(int i = 0; i < texture.size(); i++)
+		{
+			tmpTexVec.push_back(textures.Get(texture[i]));
+		}
+
+		Terrain tmp(renderer, models.Get(model), tmpTexVec);
+		terrains.push_back(tmp);
 	}
 
 	void Engine::UpdateUniformBuffers()

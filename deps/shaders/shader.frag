@@ -9,22 +9,7 @@ struct PointLight {
 	vec4 color; //16     
 };
 
-struct BlendStruct
-{
-	sampler2D blendMap;
-	sampler2D blendTexR;
-	sampler2D blendTexG;
-	sampler2D blendTexB;
-};
-
-
 layout(set = 0, binding = 1) uniform sampler2D texSampler[12];
-
-layout(set = 3, binding = 0) uniform blendSet 
-{
-	BlendStruct x;
-};
-
 
 layout(std140, set = 1, binding = 0) buffer pointlights
 {

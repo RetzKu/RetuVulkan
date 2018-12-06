@@ -28,6 +28,7 @@
 #include "Model.h"
 #include "Sprite.h"
 #include "Pointlight.h"
+#include "Terrain.h"
 
 
 
@@ -62,7 +63,6 @@ namespace RetuEngine
 		Window windowObj;
 		Input* inputManager;
 
-		void AddRenderable(glm::vec3 position, RenderableObject renderable);
 		void LoadTextures();
 	private:
 		void InitWindow();
@@ -90,12 +90,15 @@ namespace RetuEngine
 		void SetupDebugCallback();
 		void CreateRenderPass();
 		void CreateDescriptorSetlayout();
+		void CreateTerrainDescriptorSetlayout();
 		void CreateDescriptorPool();
 		void CreateLights();
 		void CreateLightDescriptorSets();
 		void LightVisibilityBuffer();
 		void CreateDescriptorSets();
+		void CreateTerrainDescriptorSets();
 		void CreateCameraDescriptorSets();
+		void CreateTerrainPipeline();
 		void CreateGraphicsPipeline();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code);
 		VkShaderModule CreateShaderModule(const std::vector<unsigned int>& code);
@@ -107,6 +110,7 @@ namespace RetuEngine
 		void UpdateUniformBuffers();
 		void CreateRenderable(const char* name, const char* model, const char* texture);
 		void CreateRenderable(const char* name, const char* model, std::vector<const char*> texture);
+		void CreateTerrain(const char* name, const char* model, std::vector <const char*> texture);
 		void CheckRSS();
 
 		VkResult CreateDebugReportReportCallbackEXT(
@@ -147,9 +151,15 @@ namespace RetuEngine
 		SwapChain* swapChain;
 		VkRenderPass renderPass;
 		VkDescriptorSetLayout descriptorSetlayout;
+		VkDescriptorSetLayout terrainDescriptorSetLayout;
 		VkDescriptorSetLayout lightDescriptorSetlayout;
+
 		VkPipelineLayout pipelineLayout;
+		VkPipelineLayout terrainPipelineLayout;
+		
+		VkPipeline terrainPipeline;
 		VkPipeline graphicsPipeline;
+
 		VkDescriptorPool descriptorPool;
 
 		std::vector<VkCommandBuffer> commandBuffers;
@@ -157,6 +167,7 @@ namespace RetuEngine
 		VkSemaphore renderFinishedSemaphore;
 
 		//std::vector<RenderableObject> renderables;
+		std::vector<Terrain> terrains;
 		RenderableVector renderables;
 		RenderableSaveSystem RSS = RenderableSaveSystem("default.sav");
 		ModelVector models;
