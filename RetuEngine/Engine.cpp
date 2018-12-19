@@ -52,8 +52,9 @@ namespace RetuEngine
 		swapChain->CreateFrameBuffers(&renderPass); 
 		createTextureSampler();
 		//RSS = RenderableSaveSystem("default.sav");
-		CreateTerrain("terrain", "cube", { "weeb","cube-uv" });
-		//CreateRenderable("talo", "chalet", "chalet");
+		CreateRenderable("talo", "chalet", "chalet");
+		CreateTerrain("valley", "valley", { "grass","valley-blend","sand","rock","dirt" });
+		//CreateTerrain("terrain", "cube", { "weeb","cube-uv" });
 		//CreateRenderable("hill", "hill", "grass");
 		//CreateRenderable("valley", "valley", "grass");
 		//CreateRenderable("cube", "cube", {"weeb","cube-uv"});
@@ -122,6 +123,8 @@ namespace RetuEngine
 		vkFreeCommandBuffers(renderer->logicalDevice,*renderer->GetCommandPool(),static_cast<uint32_t>(commandBuffers.size()),commandBuffers.data());
 		vkDestroyPipeline(renderer->logicalDevice, graphicsPipeline, VK_NULL_HANDLE);
 		vkDestroyPipelineLayout(renderer->logicalDevice,pipelineLayout,VK_NULL_HANDLE);
+		vkDestroyPipeline(renderer->logicalDevice, terrainPipeline, VK_NULL_HANDLE);
+		vkDestroyPipelineLayout(renderer->logicalDevice,terrainPipelineLayout,VK_NULL_HANDLE);
 		vkDestroyRenderPass(renderer->logicalDevice,renderPass,VK_NULL_HANDLE);
 
 		swapChain->CleanUp();
@@ -242,6 +245,10 @@ namespace RetuEngine
 		textures.Push("weeb", Texture("Weeb.bmp",renderer));
 		textures.Push("grass", Texture("grasstex.jpg",renderer));
 		textures.Push("cube-uv", Texture("CubeUV.png",renderer,true));
+		textures.Push("sand", Texture("dirt.png", renderer));
+		textures.Push("dirt", Texture("dirt.png", renderer));
+		textures.Push("rock", Texture("rock.png", renderer));
+		textures.Push("valley-blend", Texture("valley-blend.png", renderer));
 	}
 
 	void Engine::LoadModels()
@@ -260,6 +267,7 @@ namespace RetuEngine
 		swapChain->Create(renderer);
 		CreateRenderPass();
 		CreateGraphicsPipeline();
+		CreateTerrainPipeline();
 		swapChain->CreateFrameBuffers(&renderPass);
 		CreateCommandBuffers();
 	}
@@ -316,6 +324,8 @@ namespace RetuEngine
 	{
 		auto fragShaderCode = ReadFile("shaders/terrainfrag.spv");
 		auto vertShaderCode = ReadFile("shaders/terrainvert.spv");
+		//auto fragShaderCode = ReadFile("shaders/frag.spv");
+		//auto vertShaderCode = ReadFile("shaders/vert.spv");
 
 		VkShaderModule vertShaderModule;
 		VkShaderModule fragShaderModule;
@@ -696,7 +706,7 @@ namespace RetuEngine
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
 		samplerLayoutBinding.binding = 1;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; //kerrotaan että bindattava on texshader
-		samplerLayoutBinding.descriptorCount = 2;
+		samplerLayoutBinding.descriptorCount = 4;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //fragment shaderille
 
@@ -1027,7 +1037,7 @@ namespace RetuEngine
 				descriptorWrites[1].dstBinding = 1;
 				descriptorWrites[1].dstArrayElement = 0;
 				descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorWrites[1].descriptorCount = 1;
+				descriptorWrites[1].descriptorCount = 4;
 				descriptorWrites[1].pImageInfo = imageInfos.data();
 
 				vkUpdateDescriptorSets(renderer->logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);

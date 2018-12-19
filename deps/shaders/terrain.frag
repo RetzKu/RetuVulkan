@@ -9,7 +9,7 @@ struct PointLight {
 	vec4 color; //16     
 };
 
-layout(set = 3, binding = 1) uniform sampler2D texSampler[12];
+layout(set = 0, binding = 1) uniform sampler2D texSampler[12];
 
 layout(std140, set = 1, binding = 0) buffer pointlights
 {
@@ -35,10 +35,17 @@ void main()
 	float specularSTR = 0.5;
 
 
-	vec3 col = texture(texSampler[0],fragTexCoord).rgb;
-	//vec4 blendMap = texture(texSampler[1],fragTexCoord);
+	vec4 blendMap = texture(texSampler[1],fragTexCoord);
+	float backgroundAmount = 1 - (blendMap.r + blendMap.g + blendMap.b);
+	vec4 backgroundtexture = texture(texSampler[0],fragTexCoord) * backgroundAmount;
 
-	//col = col * blendMap.r;
+	vec4 redBlend = texture(texSampler[2],fragTexCoord) * blendMap.r;
+	vec4 greenBlend = texture(texSampler[3],fragTexCoord) * blendMap.g;
+	vec4 blueBlend = texture(texSampler[4],fragTexCoord) * blendMap.b;
+	
+	vec4 col = backgroundtexture + redBlend + greenBlend + blueBlend;
+
+	//col = vec4(1,1,1,1);
 
 	vec3 norm = normalize(Normal);
 	vec3 result = vec3(0,0,0);
@@ -64,7 +71,7 @@ void main()
 		vec3 diffuse = ambientSTR * diff * pointlight[i].color.rgb * attentuation;
 		vec3 specular = specularSTR * spec * pointlight[i].color.rgb * attentuation;
 
-		result += (diffuse + specular + ambient)* col;
+		result += (diffuse + specular + ambient)* vec3(col);
 		//result *= blendResult;
 	}
 	outColor = vec4(result,1);
