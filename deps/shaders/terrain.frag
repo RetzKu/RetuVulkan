@@ -37,13 +37,14 @@ void main()
 
 	vec4 blendMap = texture(texSampler[1],fragTexCoord);
 	float backgroundAmount = 1 - (blendMap.r + blendMap.g + blendMap.b);
-	vec4 backgroundtexture = texture(texSampler[0],fragTexCoord) * backgroundAmount;
+	vec4 backgroundtexture = texture(texSampler[0],fragTexCoord*40) * backgroundAmount;
 
-	vec4 redBlend = texture(texSampler[2],fragTexCoord) * blendMap.r;
-	vec4 greenBlend = texture(texSampler[3],fragTexCoord) * blendMap.g;
-	vec4 blueBlend = texture(texSampler[4],fragTexCoord) * blendMap.b;
+	vec4 redBlend = texture(texSampler[2],fragTexCoord*40) * blendMap.r;
+	vec4 greenBlend = texture(texSampler[3],fragTexCoord*40) * blendMap.g;
+	vec4 blueBlend = texture(texSampler[4],fragTexCoord*40) * blendMap.b;
 	
 	vec4 col = backgroundtexture + redBlend + greenBlend + blueBlend;
+
 
 	//col = vec4(1,1,1,1);
 
