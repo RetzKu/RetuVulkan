@@ -7,12 +7,14 @@
 #define SuccessLog(x) std::cout << x << " created successfully" << std::endl;
 #define RunErr(x) throw std::runtime_error("Failed to create" + (std::string)x);
 
-namespace RetuEngine
+namespace Engine
 {
-	RenderInterface::RenderInterface(VkInstance instance, Window* window)
+	RenderInterface::RenderInterface(Window* window)
 	{
 		this->window = window;
-		CreateSurface(instance, window->window);
+		CreateVulkanInstance();
+		SetupDebugCallback();
+		CreateSurface(instance, window->Get());
 		GetPhysicalDevice(instance);
 		CreateLogicalDevice();
 		indices = FindQueueFamilies(&physicalDevice, &surface);
@@ -22,6 +24,64 @@ namespace RetuEngine
 
 	RenderInterface::~RenderInterface()
 	{
+	}
+
+	void RenderInterface::CreateVulkanInstance()
+	{
+		if (enableValidationLayers && !CheckValidationLayerSupport())
+		{
+			throw std::runtime_error("Validation layer requested but are not available");
+		}
+		VkApplicationInfo appInfo = {};
+		
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pNext = nullptr;
+		appInfo.pApplicationName = "VulkanApp";
+		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.pEngineName = "No Engine";
+		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+		appInfo.apiVersion = VK_API_VERSION_1_0;
+		
+		VkInstanceCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		createInfo.pNext = nullptr;
+		createInfo.flags = 0;
+		createInfo.pApplicationInfo = &appInfo;
+
+		if (enableValidationLayers)
+		{
+			createInfo.enabledLayerCount = validationLayers.size();
+			createInfo.ppEnabledLayerNames = validationLayers.data();
+		}
+		else
+		{
+			createInfo.enabledLayerCount = 0;
+			createInfo.ppEnabledLayerNames = nullptr;
+		}
+
+		auto extensions = GetRequiredExtensions();
+		createInfo.enabledExtensionCount = extensions.size();
+		createInfo.ppEnabledExtensionNames = extensions.data();
+
+		VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+		if (result)
+		{
+			throw std::runtime_error("Failed to create vulkan instance");
+		}
+		else
+		{
+			std::cout << "Vulkan instance created successfully" << std::endl;
+		}
+	}
+
+	void RenderInterface::CleanUp()
+	{
+		CleanCommandPools();
+
+		vkDestroyDevice(logicalDevice, VK_NULL_HANDLE);
+		DestoyDebugReportCallbackEXT(instance, callback, VK_NULL_HANDLE);
+		vkDestroySurfaceKHR(instance, surface, VK_NULL_HANDLE);
+		vkDestroyInstance(instance, VK_NULL_HANDLE);
 	}
 
 	bool RenderInterface::CreateSurface(VkInstance instance, GLFWwindow* window)
@@ -213,4 +273,114 @@ namespace RetuEngine
 		vkGetDeviceQueue(logicalDevice, indices.displayFamily, 0, &displayQueue);
 		vkGetDeviceQueue(logicalDevice, indices.transferFamily, 0, &transferQueue);
 	}
+
+	bool RenderInterface::CheckValidationLayerSupport()
+	{
+		uint32_t layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount,nullptr);
+		std::vector<VkLayerProperties> availableLayers(layerCount);
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+		for (const char* layername : validationLayers)
+		{
+			bool layerFound = false;
+			for (const auto &layerProperties : availableLayers)
+			{
+				if (strcmp(layername, layerProperties.layerName) == 0)
+				{
+					layerFound = true;
+					break;
+				}
+			}
+			if (!layerFound) { return false; }
+		}
+		return true;
+	}
+
+	std::vector<const char*> RenderInterface::GetRequiredExtensions()
+	{
+		std::vector<const char*> extensions;
+		unsigned int glfwExtensionCount = 0;
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		for (unsigned int i = 0; i < glfwExtensionCount; i++)
+		{
+			extensions.push_back(glfwExtensions[i]);
+		}
+		if (enableValidationLayers) { extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME); }
+		return extensions;
+	}
+
+	void RenderInterface::SetupDebugCallback()
+	{
+		if (!enableValidationLayers)
+		{
+			return;
+		}
+		VkDebugReportCallbackCreateInfoEXT createInfo = {  };
+		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+		createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+		createInfo.pfnCallback = debugCallback;
+
+		if (CreateDebugReportReportCallbackEXT(instance, &createInfo, nullptr, &callback) != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to setup debug callback");
+		}
+		else
+		{
+			std::cout << "Debug callback setup successfull" << std::endl;
+		}
+	}
+
+	VkResult RenderInterface::CreateDebugReportReportCallbackEXT( VkInstance istance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback)
+	{
+		auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
+		if (func != nullptr) { return func(instance, pCreateInfo, pAllocator, pCallback); }
+		else { return VK_ERROR_EXTENSION_NOT_PRESENT; }
+	}
+
+	void RenderInterface::DestoyDebugReportCallbackEXT( VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator)
+	{
+		auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+		if (func != nullptr)
+		{
+			func(instance, callback, pAllocator);
+		}
+	}
+
+	QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice* device,const VkSurfaceKHR* surface)
+	{
+		QueueFamilyIndices indices;
+		uint32_t queueFamilyCount = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(*device, &queueFamilyCount, nullptr);
+		std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+		vkGetPhysicalDeviceQueueFamilyProperties(*device, &queueFamilyCount, queueFamilies.data());
+
+		int i = 0;
+		for (const auto &queueFamily : queueFamilies)
+		{
+			VkBool32 presentSupport = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(*device, i, *surface, &presentSupport);
+
+			if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT && presentSupport)
+			{
+				indices.displayFamily = i;
+			}
+
+			if (queueFamily.queueCount > 0 && (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) && !(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) && presentSupport)
+			{
+				indices.transferFamily = i;
+			}
+
+			if (indices.isComplete())
+			{
+				break;
+			}
+			i++;
+		}
+		if(indices.displayFamily >= 0 && indices.transferFamily == -1)
+		{
+			indices.transferFamily = indices.displayFamily;
+		}
+		return indices;
+	}
+
 }

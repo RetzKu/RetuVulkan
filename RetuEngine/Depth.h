@@ -4,7 +4,7 @@
 #include "Buffer.h"
 #include "RenderInterface.h"
 
-namespace RetuEngine
+namespace Engine 
 {
 	class Depth
 	{

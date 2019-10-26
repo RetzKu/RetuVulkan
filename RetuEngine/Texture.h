@@ -5,7 +5,7 @@
 
 #define MAX_TEXTURE_COUNT 900
 
-namespace RetuEngine
+namespace Engine
 {
 	struct pixel
 	{

@@ -2,12 +2,8 @@
 #include <algorithm>
 #include <array>
 
-namespace RetuEngine
+namespace Engine
 {
-	SwapChain::SwapChain()
-	{
-	}
-
 	SwapChain::~SwapChain()
 	{
 		delete depth;

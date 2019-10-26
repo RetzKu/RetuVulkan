@@ -9,7 +9,7 @@ struct PointLight {
 	vec4 color; //16     
 };
 
-layout(set = 0, binding = 1) uniform sampler2D texSampler[12];
+layout(set = 0, binding = 1) uniform sampler2D texSampler;
 
 layout(std140, set = 1, binding = 0) buffer pointlights
 {

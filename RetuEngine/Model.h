@@ -7,7 +7,7 @@
 
 #include <tiny_obj_loader.h>
 
-namespace RetuEngine
+namespace Engine 
 {
 	enum DefaultModelType
 	{
@@ -17,10 +17,14 @@ namespace RetuEngine
 		TRIANGLE,
 	};
 
+
 	class Model 
 	{
 	public:
 		Model(RenderInterface* renderer, const char* filepath);
+		//Model(RenderInterface* renderer, std::vector<Vertex> newVertices);
+		Model(RenderInterface* renderer, std::vector<Vertex> newVertices, std::vector<uint32_t> indices);
+		Model(RenderInterface* renderer, float newVertices[], uint32_t size, std::vector<uint32_t> indices);
 
 		void Delete();
 

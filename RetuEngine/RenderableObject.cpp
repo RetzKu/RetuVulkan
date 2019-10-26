@@ -2,7 +2,7 @@
 
 
 
-namespace RetuEngine
+namespace Engine 
 {
 	RenderableObject::RenderableObject(RenderInterface* renderer, Model* model, Texture* texture)
 	{
@@ -130,7 +130,7 @@ namespace RetuEngine
 	{
 		fopen_s(&file, path.c_str(), "wb");
 		if (file == nullptr) { std::cout << "Failed to save renderableobject data" << std::endl; return; }
-		uint16_t saveDataSize = saveData.size();
+		size_t saveDataSize = saveData.size();
 
 		fwrite(&saveDataSize, sizeof(uint16_t), 1, file);
 
@@ -138,9 +138,9 @@ namespace RetuEngine
 		{
 			fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
 
-			uint16_t sizeOfName = var.name.size();
-			uint16_t sizeOfModel = var.model.size();
-			uint16_t sizeOfTexture = var.texture.size();
+			size_t sizeOfName = var.name.size();
+			size_t sizeOfModel = var.model.size();
+			size_t sizeOfTexture = var.texture.size();
 
 			fwrite(&sizeOfName, sizeof(uint16_t), 1, file);
 			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file);
@@ -179,9 +179,9 @@ namespace RetuEngine
 
 			fwrite(&var.transformation, sizeof(glm::mat4), 1, file);
 
-			uint16_t sizeOfName = var.name.size();
-			uint16_t sizeOfModel = var.model.size();
-			uint16_t sizeOfTexture = var.texture.size();
+			size_t sizeOfName = var.name.size();
+			size_t sizeOfModel = var.model.size();
+			size_t sizeOfTexture = var.texture.size();
 
 			fwrite(&sizeOfName, sizeof(uint16_t), 1, file);
 			fwrite(&sizeOfModel, sizeof(uint16_t), 1, file);

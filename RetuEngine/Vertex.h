@@ -3,7 +3,7 @@
 #include <glm\glm.hpp>
 #include <array>
 
-namespace RetuEngine
+namespace Engine 
 {
 	struct Vertex
 	{
@@ -17,6 +17,15 @@ namespace RetuEngine
 			VkVertexInputBindingDescription bindingDescription = {};
 			bindingDescription.binding = 0;
 			bindingDescription.stride = sizeof(Vertex);
+			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			return bindingDescription;
+		}
+		
+		static VkVertexInputBindingDescription getCubemapBindingDescription()
+		{
+			VkVertexInputBindingDescription bindingDescription = {};
+			bindingDescription.binding = 0;
+			bindingDescription.stride = sizeof(glm::vec3);
 			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 			return bindingDescription;
 		}
@@ -45,6 +54,20 @@ namespace RetuEngine
 			attributeDescriptions[3].location = 3;
 			attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
 			attributeDescriptions[3].offset = offsetof(Vertex, normal);
+			return attributeDescriptions;
+		}
+
+		static VkVertexInputAttributeDescription getCubemapAttributeDescription()
+		{
+			VkVertexInputAttributeDescription attributeDescriptions;
+			/*Position attributes*/
+
+			attributeDescriptions.binding = 0;
+			attributeDescriptions.location = 0;
+			attributeDescriptions.format = VK_FORMAT_R32G32B32_SFLOAT;
+			attributeDescriptions.offset = 0;
+			//attributeDescriptions.offset = offsetof(Vertex, pos);
+
 			return attributeDescriptions;
 		}
 

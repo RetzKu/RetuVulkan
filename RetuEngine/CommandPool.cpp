@@ -1,7 +1,7 @@
 #include "CommandPool.h"
 #include <iostream>
 
-namespace RetuEngine
+namespace Engine
 {
 	CommandPool::CommandPool(const VkDevice* logicalDevice, uint32_t queueFamilyIndex, VkCommandPoolCreateFlags flags /* = 0*/)
 	{

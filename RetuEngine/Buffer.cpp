@@ -2,7 +2,7 @@
 #include <iostream>
 #include "QueueFamily.h"
 
-namespace RetuEngine
+namespace Engine 
 {
 	void Buffer::CreateBuffer(const VkDevice* logicalDevice,const VkPhysicalDevice* physicalDevice,VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
 	{

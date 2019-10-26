@@ -9,7 +9,7 @@ struct PointLight {
 	vec4 color; //16     
 };
 
-layout(set = 0, binding = 1) uniform sampler2D texSampler[12];
+layout(set = 0, binding = 1) uniform sampler2D texSampler[5];
 
 layout(std140, set = 1, binding = 0) buffer pointlights
 {
@@ -46,7 +46,7 @@ void main()
 	vec4 col = backgroundtexture + redBlend + greenBlend + blueBlend;
 
 
-	//col = vec4(1,1,1,1);
+	//scol = vec4(1,1,1,1);
 
 	vec3 norm = normalize(Normal);
 	vec3 result = vec3(0,0,0);

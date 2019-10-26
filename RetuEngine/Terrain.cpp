@@ -1,6 +1,6 @@
 #include "Terrain.h"
 
-namespace RetuEngine
+namespace Engine
 {
 	Terrain::Terrain(RenderInterface * renderer, Model * model, std::vector<Texture*> textures)
 	{

@@ -7,20 +7,19 @@
 #include "Depth.h"
 #include "RenderInterface.h"
 
-namespace RetuEngine
+namespace Engine
 {
 
 	class SwapChain
 	{
 	public:
-		SwapChain();
 		~SwapChain();
 
 		void Create(RenderInterface* renderer);
 		void CleanUp();
 		void CleanUpFrameBuffers();
 
-
+		
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, Window windowObj);
@@ -43,7 +42,6 @@ namespace RetuEngine
 		VkExtent2D swapChainExtent;
 		const VkDevice* device;
 		Depth* depth;
-
 	};
 }
 

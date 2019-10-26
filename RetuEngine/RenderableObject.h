@@ -4,7 +4,7 @@
 #include "Texture.h"
 #include "Model.h"
 
-namespace RetuEngine
+namespace Engine 
 {
 	enum ObjectType
 	{
@@ -114,7 +114,7 @@ namespace RetuEngine
 		}
 
 		RenderableObject* operator[](int index) { return models[index]; }
-		uint16_t size() { return models.size(); }
+		uint16_t size() { return (uint16_t)models.size(); }
 		
 	private:
 		std::vector<RenderableObject*> models;

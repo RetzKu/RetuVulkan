@@ -3,7 +3,7 @@
 #include <stb_image.h>
 #include <minmax.h>
 
-namespace RetuEngine
+namespace Engine
 {
 	void Texture::CreateTextureImage(const char* file)
 	{

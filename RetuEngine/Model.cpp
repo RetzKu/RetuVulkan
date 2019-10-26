@@ -8,9 +8,9 @@
 #include <glm/gtx/hash.hpp>
 
 namespace std {
-	template<> struct hash<RetuEngine::Vertex> 
+	template<> struct hash<Engine::Vertex> 
 	{
-		size_t operator()(RetuEngine::Vertex const& vertex) const 
+		size_t operator()(Engine::Vertex const& vertex) const 
 		{
 			return ((hash<glm::vec3>()(vertex.pos) ^
 					(hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
@@ -19,19 +19,8 @@ namespace std {
 	};
 }
 
-namespace RetuEngine
+namespace Engine
 {
-	//Model::Model(RenderInterface * renderer, const char * filepath) : RenderableObject(renderer)
-	//{
-	//	LoadModel(filepath);
-
-	//	this->color = glm::vec4(1, 1, 1, 1);
-	//	this->texture = nullptr;
-
-	//	CreateVertexBuffer(vertices);
-	//	CreateIndexBuffer(indices);
-	//	CreateUniformBuffer();
-	//}
 
 	Model::Model(RenderInterface* renderer, const char* filepath)
 	{
@@ -39,14 +28,24 @@ namespace RetuEngine
 
 		vertexBuffer = new VertexBuffer(renderer, vertices);
 		indexBuffer = new IndexBuffer(renderer, indices);
-		//uniformBuffer = new UniformBuffer(renderer);
 	}
-	
+
+	Model::Model(RenderInterface* renderer, std::vector<Vertex> newVertices, std::vector<uint32_t> indices)
+	{
+		vertexBuffer = new VertexBuffer(renderer, newVertices);
+		indexBuffer = new IndexBuffer(renderer, indices);
+	}
+
+	Model::Model(RenderInterface* renderer, float newVertices[], uint32_t size, std::vector<uint32_t> indices)
+	{
+		vertexBuffer = new VertexBuffer(renderer, newVertices, size);
+		indexBuffer = new IndexBuffer(renderer, indices);
+	}
+
 	void Model::Delete()
 	{
 		vertexBuffer->CleanUpBuffer();
 		indexBuffer->CleanUpBuffer();
-		//uniformBuffer->CleanUpBuffer();
 	}
 
 	//Model::Model(RenderInterface * renderer, const char * filepath, Texture* texture) : RenderableObject(renderer)
@@ -185,8 +184,8 @@ namespace RetuEngine
 		}
 
 		fopen_s(&file,filename.c_str(), "wb");
-		uint32_t sizeOfVector = vertices.size();
-		uint32_t sizeOfIndices = indices.size();
+		size_t sizeOfVector = vertices.size();
+		size_t sizeOfIndices = indices.size();
 		fwrite(&sizeOfVector, sizeof(uint32_t), 1, file);
 		fwrite(&sizeOfIndices, sizeof(uint32_t), 1, file);
 		fwrite(vertices.data(), sizeof(Vertex), sizeOfVector,file);

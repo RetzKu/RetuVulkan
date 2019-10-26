@@ -1,21 +1,21 @@
 #pragma once
-#include <GLFW\glfw3.h>
-#include <glm\glm.hpp>
-#include "Engine.h"
+#include "Window.h"
 
-namespace RetuEngine
+namespace Engine
 {
+
 	class Input
 	{
 	public:
-		Input(GLFWwindow* window, float height, float width, Camera* camera) { m_Window = window; this->height = height; this->width = width; this->camera = camera; }
-		~Input() { }
+		Input(Window* window) { m_Window = window->Get(); this->height = window->height; this->width = window->width; this->camera = new Camera(); }
+		~Input() { delete camera; }
+
 		void UpdateCamera(const double xpos,const double ypos)
 		{
-			float xoffset = xpos - lookDirection.x;
-			float yoffset = lookDirection.y - ypos; // reversed since y-coordinates range from bottom to top
-			lookDirection.x = xpos;
-			lookDirection.y = ypos;
+			float xoffset = (float)xpos - lookDirection.x;
+			float yoffset = lookDirection.y - (float)ypos; // reversed since y-coordinates range from bottom to top
+			lookDirection.x = (float)xpos;
+			lookDirection.y = (float)ypos;
 
 			float sensitivity = 0.08f;
 			xoffset *= sensitivity;
@@ -34,12 +34,14 @@ namespace RetuEngine
 			camera->cameraFront = glm::normalize(front);
 		}
 
+
 		Camera* camera;
 		glm::vec3 lookDirection;
 		float yaw;
 		float pitch;
 		GLFWwindow* m_Window;
-		float height;
-		float width;
+		int height;
+		int width;
 	};
+
 }

@@ -1,6 +1,6 @@
 #include "UniformBuffer.h"
 
-namespace RetuEngine
+namespace Engine 
 {
 	void UniformBuffer::Create()
 	{

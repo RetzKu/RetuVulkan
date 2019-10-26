@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{409e0752-2b0e-4384-b1aa-5c338dc938fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{0cb3a165-dd39-4eda-a9c9-a81ef6e25aaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Window.cpp">
@@ -48,9 +51,6 @@
     <ClCompile Include="Gameobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RenderableObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,6 +70,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,9 +110,6 @@
     <ClInclude Include="Gameobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,9 +137,34 @@
     <ClInclude Include="Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\deps\shaders\shader.frag" />
-    <None Include="..\deps\shaders\shader.vert" />
+    <None Include="..\deps\shaders\shader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\deps\shaders\shader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\deps\shaders\terrain.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\deps\shaders\terrain.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\deps\shaders\skybox.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\deps\shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

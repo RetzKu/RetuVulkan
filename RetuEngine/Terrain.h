@@ -4,7 +4,7 @@
 #include "Texture.h"
 #include "Model.h"
 
-namespace RetuEngine
+namespace Engine
 {
 	class Terrain
 	{

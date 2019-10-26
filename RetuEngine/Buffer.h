@@ -6,7 +6,7 @@
 #include "Pointlight.h"
 #include "RenderInterface.h"
 
-namespace RetuEngine
+namespace Engine 
 {
 	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 

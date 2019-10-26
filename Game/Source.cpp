@@ -1,9 +1,9 @@
-#include "Game.h"
+#include <Core.h>
 
 int main()
 {
-	Game newgame;
-	newgame.Run();
+	Engine::Core engine;
+	engine.InitVulkan();
 	system("pause");
 	return 0;
 }

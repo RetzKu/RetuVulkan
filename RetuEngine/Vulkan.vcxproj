@@ -116,12 +116,13 @@
   <ItemGroup>
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="CommandPool.cpp" />
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="CubeMap.cpp" />
     <ClCompile Include="Depth.cpp" />
     <ClCompile Include="Gameobject.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="QueueFamily.cpp" />
-    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="RenderableObject.cpp" />
     <ClCompile Include="RenderInterface.cpp" />
     <ClCompile Include="Sprite.cpp" />
@@ -135,6 +136,8 @@
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="CommandPool.h" />
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="CubeMap.h" />
     <ClInclude Include="Depth.h" />
     <ClInclude Include="Gameobject.h" />
     <ClInclude Include="IndexBuffer.h" />
@@ -142,13 +145,13 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Pointlight.h" />
     <ClInclude Include="QueueFamily.h" />
-    <ClInclude Include="Engine.h" />
     <ClInclude Include="RenderableObject.h" />
     <ClInclude Include="RenderInterface.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="UniformBuffer.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="SwapChain.h" />
@@ -157,6 +160,10 @@
   <ItemGroup>
     <None Include="..\deps\shaders\shader.frag" />
     <None Include="..\deps\shaders\shader.vert" />
+    <None Include="..\deps\shaders\skybox.frag" />
+    <None Include="..\deps\shaders\skybox.vert" />
+    <None Include="..\deps\shaders\terrain.frag" />
+    <None Include="..\deps\shaders\terrain.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

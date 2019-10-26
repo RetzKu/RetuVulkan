@@ -1,8 +1,6 @@
 #include "IndexBuffer.h"
 
-
-
-namespace RetuEngine 
+namespace Engine 
 {
 	IndexBuffer::IndexBuffer(RenderInterface* renderer) : Buffer(renderer)
 	{
@@ -17,7 +15,7 @@ namespace RetuEngine
 	void IndexBuffer::Create(RenderInterface* renderer)
 	{
 		VkDeviceSize bufferSize = sizeof(indices[0])* indices.size();
-
+		int size = sizeof(uint32_t);
 		StartMapping(bufferSize,VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 		Map(indices.data(), (size_t)bufferSize);
 		StopMapping();

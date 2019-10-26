@@ -14,6 +14,6 @@ public:
 private:
 	void InitSystems();
 
-	RetuEngine::Engine m_engine;
+	RetuEngine::Motor m_engine;
 };
 
