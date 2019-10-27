@@ -1250,8 +1250,7 @@ namespace Engine
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
 		VkDescriptorImageInfo imageInfo = { };
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-		//imageInfo.imageView = skyboxRO.textures[0]->imageView;
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = cubemappi->imageView;
 		imageInfo.sampler = defaultSampler;
 
